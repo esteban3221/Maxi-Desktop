@@ -19,7 +19,7 @@ public:
     }
 
 protected:
-    MUsuarios(u_int16_t id, const Glib::ustring &usuario, const Glib::ustring &password)
+    MUsuarios(uint16_t id, const Glib::ustring &usuario, const Glib::ustring &password)
         : m_id(id), m_usuario(usuario), m_passsword(password)
     {
     }

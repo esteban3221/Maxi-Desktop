@@ -1,7 +1,8 @@
 #pragma once
-#include <cpr/cpr.h>
 #include <atomic>
+#include <queue>
 #include <gtkmm.h>
+#include <cpr/cpr.h>
 
 #define RESET "\033[0m"
 #define BLACK "\033[30m"              /* Black */

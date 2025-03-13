@@ -1,4 +1,7 @@
 #include "global.hpp"
+#ifdef ERROR
+#undef ERROR
+#endif
 
 namespace Global
 {

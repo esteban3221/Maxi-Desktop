@@ -2,6 +2,7 @@
 #include <gtkmm.h>
 #include "global.hpp"
 
+
 class VLogin : public Gtk::Box
 {
     protected:

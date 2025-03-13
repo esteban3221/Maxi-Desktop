@@ -11,19 +11,19 @@
 class MLevelCash : public Glib::Object
 {
 public:
-    u_int16_t m_denominacion;
-    u_int16_t m_cant_alm;
-    u_int16_t m_cant_recy;
-    u_int16_t m_nivel_inmo;
-    u_int16_t m_ingreso;
+    uint16_t m_denominacion;
+    uint16_t m_cant_alm;
+    uint16_t m_cant_recy;
+    uint16_t m_nivel_inmo;
+    uint16_t m_ingreso;
 
-    static Glib::RefPtr<MLevelCash> create(u_int16_t denominacion, u_int16_t cant_alm, u_int16_t cant_recy, u_int16_t nivel_inmo, u_int16_t ingreso)
+    static Glib::RefPtr<MLevelCash> create(uint16_t denominacion, uint16_t cant_alm, uint16_t cant_recy, uint16_t nivel_inmo, uint16_t ingreso)
     {
         return Glib::make_refptr_for_instance<MLevelCash>(new MLevelCash(denominacion, cant_alm, cant_recy, nivel_inmo, ingreso));
     }
 
 protected:
-    MLevelCash(u_int16_t denominacion, u_int16_t cant_alm, u_int16_t cant_recy, u_int16_t nivel_inmo, u_int16_t ingreso)
+    MLevelCash(uint16_t denominacion, uint16_t cant_alm, uint16_t cant_recy, uint16_t nivel_inmo, uint16_t ingreso)
         : m_denominacion(denominacion), m_cant_alm(cant_alm), m_cant_recy(cant_recy), m_nivel_inmo(nivel_inmo), m_ingreso(ingreso)
     {
     }
