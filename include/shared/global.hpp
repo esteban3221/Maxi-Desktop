@@ -31,6 +31,9 @@ namespace Global
         extern Gtk::Stack *v_main_stack;
         extern Gtk::Window *v_main_window;
         extern Gtk::Label *v_main_title;
+
+        extern Gtk::Revealer *v_revealer;
+        extern Gtk::Label *v_revealer_title;
         
         namespace Impresora
         {

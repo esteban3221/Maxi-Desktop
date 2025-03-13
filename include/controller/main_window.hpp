@@ -8,7 +8,8 @@
 class MainWindow : public Gtk::Window
 {
 private:
-
+    Gtk::Overlay v_overlay;
+    Gtk::Button v_button;
 
 public:
     MainWindow(/* args */);

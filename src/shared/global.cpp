@@ -11,6 +11,9 @@ namespace Global
         Gtk::Window *v_main_window = nullptr;
         Gtk::Label *v_main_title = nullptr;
 
+        Gtk::Revealer *v_revealer = nullptr;
+        Gtk::Label *v_revealer_title = nullptr;
+
         namespace Impresora
         {
             bool state_vizualizacion[6]{false} ,is_activo{false};
