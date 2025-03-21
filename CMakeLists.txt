@@ -29,6 +29,8 @@ set(SOURCES
     src/model/configuracion.cpp
     src/model/list_ip.cpp
     #===================VIEW====================
+    src/view/bloq_num.cpp
+
     src/view/titlebar.cpp
     src/view/login.cpp
     src/view/menu.cpp
