@@ -1,46 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk" version="4.0"/>
-  <object class="GtkBox" id="boxMenu">
-    <property name="margin-bottom">10</property>
-    <property name="margin-start">10</property>
-    <property name="margin-end">10</property>
-    <property name="margin-top">10</property>
+  <object class="GtkBox" id="box_menu">
     <child>
       <object class="GtkBox">
-        <property name="spacing">10</property>
         <property name="orientation">1</property>
-        <child>
-          <object class="GtkButton" id="btnCerrarSesion">
-            <property name="child">
-              <object class="GtkBox">
-                <child>
-                  <object class="GtkImage">
-                    <property name="icon-name">system-log-out-symbolic</property>
-                  </object>
-                </child>
-                <property name="spacing">10</property>
-                <child>
-                  <object class="GtkLabel">
-                    <property name="label" translatable="yes">Cerrar Sesion</property>
-                  </object>
-                </child>
-              </object>
-            </property>
-            <style>
-              <class name="flat"/>
-            </style>
-          </object>
-        </child>
-        <child>
-          <object class="GtkSeparator"></object>
-        </child>
         <child>
           <object class="GtkScrolledWindow" id="scrolled_window">
             <property name="propagate-natural-width">true</property>
             <property name="vexpand">true</property>
             <child>
-              <object class="GtkListBox" id="listBoxMenu">
+              <object class="GtkListBox" id="list_box_menu">
                 <property name="valign">1</property>
                 <property name="activate-on-single-click">true</property>
                 <property name="selection-mode">1</property>
@@ -210,7 +180,7 @@
           <object class="GtkProgressBar" id="progress"></object>
         </child>
         <child>
-          <object class="GtkStack" id="stackMenu">
+          <object class="GtkStack" id="stack_menu">
             <property name="hexpand">true</property>
           </object>
         </child>

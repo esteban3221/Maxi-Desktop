@@ -16,17 +16,21 @@ namespace Global
 
         namespace Impresora
         {
-            bool state_vizualizacion[6]{false} ,is_activo{false};
+            bool state_vizualizacion[6]{false}, is_activo{false};
         } // namespace Impresora
 
     } // namespace Widget
 
     namespace Utility
     {
+        
     } // namespace Utility
 
     namespace System
     {
+        Glib::ustring IP = "";
+        std::string URL{"http://" + IP + ":44333/"};
+        std::string token = "";
     } // namespace System
 
     namespace User

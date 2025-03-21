@@ -4,7 +4,7 @@
 class Login : public VLogin
 {
 private:
-    /* data */
+    void on_btn_login_clicked();
 public:
     Login(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuilder);
     ~Login();

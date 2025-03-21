@@ -1,8 +1,10 @@
 #pragma once
+#include <iostream>
 #include <atomic>
 #include <queue>
 #include <gtkmm.h>
 #include <cpr/cpr.h>
+#include <nlohmann/json.hpp>
 
 #define RESET "\033[0m"
 #define BLACK "\033[30m"              /* Black */
@@ -44,6 +46,7 @@ namespace Global
 
     namespace Utility
     {
+        
     } // namespace Utility
 
     namespace EValidador
@@ -59,7 +62,9 @@ namespace Global
 
     namespace System
     {
-
+        extern Glib::ustring IP;
+        extern std::string URL;
+        extern std::string token;
     } // namespace System
 
     class Async

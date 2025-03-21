@@ -7,6 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(PkgConfig REQUIRED)
 find_package(cpr REQUIRED)
+find_package(nlohmann_json 3.11.3 REQUIRED)
 pkg_check_modules(GTKMM gtkmm-4.0)
 find_package(SQLite3 REQUIRED)
 
@@ -26,9 +27,11 @@ set(SOURCES
     src/model/usuarios_roles.cpp
     src/model/usuarios.cpp
     src/model/configuracion.cpp
+    src/model/list_ip.cpp
     #===================VIEW====================
     src/view/titlebar.cpp
     src/view/login.cpp
+    src/view/menu.cpp
     # #================CONTROLLER=================
     src/controller/main_window.cpp
     src/controller/titlebar.cpp
@@ -47,12 +50,14 @@ include_directories(include
                     include/shared
 )
 
-# add_subdirectory(lib/Sqlit3-cpp-lib/)
+add_subdirectory(lib/Sqlit3-cpp-lib/)
 
 add_executable(Maxicajero ${SOURCES})
 
 target_link_libraries(Maxicajero 
                         PUBLIC 
+                        Sqlite-cpp
+                        nlohmann_json::nlohmann_json 
                         ${GTKMM_LIBRARIES} 
                         cpr::cpr
 )
