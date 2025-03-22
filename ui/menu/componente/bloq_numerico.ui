@@ -1,31 +1,34 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.95.0 -->
 <interface>
+  <!-- interface-name bloq_numerico.ui -->
   <requires lib="gtk" version="4.0"/>
-  <object class="GtkAdjustment" id="adj">
-    <property name="lower">0</property>
-    <property name="page-increment">1</property>
-    <property name="page-size">1</property>
-    <property name="step-increment">1</property>
-    <property name="upper">1001</property>
-    <property name="value">0</property>
-  </object>
   <object class="GtkBox" id="box_nip">
-    <property name="orientation">1</property>
-    <property name="spacing">30</property>
     <property name="homogeneous">false</property>
     <property name="margin-bottom">10</property>
-    <property name="margin-start">100</property>
     <property name="margin-end">100</property>
+    <property name="margin-start">100</property>
     <property name="margin-top">10</property>
+    <property name="orientation">vertical</property>
+    <property name="spacing">30</property>
     <child>
       <object class="GtkSpinButton" id="ety_spin">
-        <property name="adjustment">adj</property>
-        <property name="numeric">true</property>
-        <property name="hexpand">true</property>
-        <property name="halign">0</property>
-        <property name="xalign">0.5</property>
+        <property name="adjustment">
+          <object class="GtkAdjustment">
+            <property name="lower">1.0</property>
+            <property name="page-increment">1.0</property>
+            <property name="page-size">1.0</property>
+            <property name="step-increment">1.0</property>
+            <property name="upper">100000.0</property>
+          </object>
+        </property>
+        <property name="enable-undo">False</property>
+        <property name="halign">fill</property>
         <property name="height-request">100</property>
+        <property name="hexpand">true</property>
         <property name="max-width-chars">8</property>
+        <property name="numeric">True</property>
+        <property name="xalign">0.5</property>
         <style>
           <class name="title-1"/>
         </style>
@@ -33,15 +36,12 @@
     </child>
     <child>
       <object class="GtkGrid">
-        <property name="vexpand">true</property>
         <property name="column-homogeneous">true</property>
-        <property name="row-homogeneous">true</property>
         <property name="column-spacing">10</property>
+        <property name="halign">fill</property>
+        <property name="row-homogeneous">true</property>
         <property name="row-spacing">10</property>
-        <property name="halign">0</property>
-        <style>
-          <class name="title-1"/>
-        </style>
+        <property name="vexpand">true</property>
         <child>
           <object class="GtkButton" id="btn_nip_1">
             <property name="label">1</property>
@@ -146,6 +146,7 @@
             <property name="icon-name">keyboard-enter-symbolic</property>
             <layout>
               <property name="column">3</property>
+              <property name="row">0</property>
               <property name="row-span">3</property>
             </layout>
           </object>
@@ -159,6 +160,9 @@
             </layout>
           </object>
         </child>
+        <style>
+          <class name="title-1"/>
+        </style>
       </object>
     </child>
   </object>

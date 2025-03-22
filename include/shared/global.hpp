@@ -36,7 +36,8 @@ namespace Global
 
         extern Gtk::Revealer *v_revealer;
         extern Gtk::Label *v_revealer_title;
-        
+        extern Gtk::ProgressBar *v_progress_bar;
+
         namespace Impresora
         {
             extern bool state_vizualizacion[6] ,is_activo;

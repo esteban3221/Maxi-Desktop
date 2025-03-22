@@ -15,6 +15,7 @@ VBaseNip::VBaseNip(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &re
     }
 
     v_btn_nip_del->signal_clicked().connect([this](){v_ety_spin->set_text("");});
+    v_ety_spin->set_numeric(true);
 }
 
 VBaseNip::~VBaseNip()

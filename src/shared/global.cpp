@@ -13,6 +13,7 @@ namespace Global
 
         Gtk::Revealer *v_revealer = nullptr;
         Gtk::Label *v_revealer_title = nullptr;
+        Gtk::ProgressBar *v_progress_bar = nullptr;
 
         namespace Impresora
         {

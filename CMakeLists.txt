@@ -30,14 +30,29 @@ set(SOURCES
     src/model/list_ip.cpp
     #===================VIEW====================
     src/view/bloq_num.cpp
+    src/view/box_columns.cpp
 
     src/view/titlebar.cpp
     src/view/login.cpp
     src/view/menu.cpp
+    src/view/venta.cpp 
+    src/view/retirada.cpp 
+    src/view/refill.cpp 
+    src/view/pago_m.cpp 
+    src/view/pago_a.cpp 
+    src/view/movimientos.cpp 
+    src/view/configuracion.cpp
     # #================CONTROLLER=================
     src/controller/main_window.cpp
     src/controller/titlebar.cpp
     src/controller/login.cpp
+    src/controller/configuracion.cpp 
+    src/controller/movimientos.cpp 
+    src/controller/pago_a.cpp 
+    src/controller/pago_m.cpp 
+    src/controller/refill.cpp 
+    src/controller/retirada.cpp 
+    src/controller/venta.cpp
     #================GLOBAL=================
     src/shared/global.cpp
 )
