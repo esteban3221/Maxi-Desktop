@@ -1,4 +1,4 @@
-#include "configuracion.hpp"
+#include "model/configuracion.hpp"
 
 Configuracion::Configuracion(/* args */)
 {
