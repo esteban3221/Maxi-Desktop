@@ -6,7 +6,7 @@
 #include <glibmm.h>
 #include <giomm.h>
 
-
+#include "global.hpp"
 
 class MLevelCash : public Glib::Object
 {
@@ -32,13 +32,12 @@ protected:
 class LevelCash
 {
 private:
-    const std::string TIPO;
 
 public:
-    LevelCash(const std::string &tipo);
+    LevelCash();
     ~LevelCash();
 
     // std::vector<std::shared_ptr<Model::LevelCash_t>> get_log();
-    Glib::RefPtr<Gio::ListStore<MLevelCash>> get_level_cash();
+    Glib::RefPtr<Gio::ListStore<MLevelCash>> get_level_cash(const nlohmann::json_abi_v3_11_3::json &json);
     void update_level_cash(const Glib::RefPtr<MLevelCash> &level);
 };

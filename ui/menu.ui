@@ -72,22 +72,7 @@
                     </child>
                     <child>
                       <object class="GtkLabel">
-                        <property name="label">Carga / Refill</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkBox">
-                    <property name="spacing">10</property>
-                    <child>
-                      <object class="GtkImage">
-                        <property name="icon-name">resources-symbolic</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkLabel">
-                        <property name="label">Retirada</property>
+                        <property name="label">Carga / Retirada</property>
                       </object>
                     </child>
                   </object>
@@ -103,36 +88,6 @@
                     <child>
                       <object class="GtkLabel">
                         <property name="label">Consulta movimientos</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkBox">
-                    <property name="spacing">10</property>
-                    <child>
-                      <object class="GtkImage">
-                        <property name="icon-name">resources-symbolic</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkLabel">
-                        <property name="label">Traspasar a casete</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkBox">
-                    <property name="spacing">10</property>
-                    <child>
-                      <object class="GtkImage">
-                        <property name="icon-name">resources-symbolic</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkLabel">
-                        <property name="label">Cierre con faltantes</property>
                       </object>
                     </child>
                   </object>

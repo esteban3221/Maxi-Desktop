@@ -1,6 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!-- Created with Cambalache 0.95.0 -->
 <interface>
+  <!-- interface-name pago_m.ui -->
   <requires lib="gtk" version="4.12"/>
   <object class="GtkBox" id="box_pago_m">
     <property name="orientation">vertical</property>

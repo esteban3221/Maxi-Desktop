@@ -5,6 +5,8 @@
 #include "controller/venta.hpp"
 #include "controller/pago_a.hpp"
 #include "controller/pago_m.hpp"
+#include "controller/refill.hpp"
+#include "controller/movimientos.hpp"
 
 class VMenu : public Gtk::Box
 {

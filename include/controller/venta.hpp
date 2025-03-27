@@ -4,7 +4,7 @@
 class Venta : public VVenta
 {
 private:
-    /* data */
+    void on_btn_enter_clicked();
 public:
     Venta(/* args */);
     ~Venta();

@@ -4,7 +4,8 @@
 class PagoA : public VPago
 {
 private:
-    /* data */
+    void on_btn_enter_clicked();
+
 public:
     PagoA(/* args */);
     ~PagoA();

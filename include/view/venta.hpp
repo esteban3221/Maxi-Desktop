@@ -11,6 +11,8 @@ private:
 protected:
     VBaseNip *v_base_nip = nullptr;
     BoxColumns *v_box_columns = nullptr;
+
+    std::unique_ptr<Gtk::MessageDialog> v_dialog;
 public:
     VVenta();
     ~VVenta();

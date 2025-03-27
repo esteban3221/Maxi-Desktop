@@ -17,6 +17,14 @@ VMenu::VMenu(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuild
     auto builder = Gtk::Builder::create_from_file("../ui/menu/pago_m.ui");
     auto pago_m = Gtk::Builder::get_widget_derived<PagoM>(builder, "box_pago_m");
     v_stack_menu->add(*pago_m, "2");
+
+    builder = Gtk::Builder::create_from_file("../ui/menu/refill.ui");
+    auto refill = Gtk::Builder::get_widget_derived<Refill>(builder, "box_refill");
+    v_stack_menu->add(*refill, "3");
+
+    builder = Gtk::Builder::create_from_file("../ui/menu/movimientos.ui");
+    auto movimientos = Gtk::Builder::get_widget_derived<Movimientos>(builder, "box_movimientos");
+    v_stack_menu->add(*movimientos, "4");
 }
 
 VMenu::~VMenu()
