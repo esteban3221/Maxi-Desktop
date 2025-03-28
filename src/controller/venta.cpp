@@ -12,7 +12,8 @@ Venta::~Venta()
 }
 
 void Venta::on_btn_enter_clicked() {
-    if (v_base_nip->v_ety_spin->get_value_as_int() < 1) {
+    if (v_base_nip->v_ety_spin->get_value_as_int() < 1) 
+    {
         v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window, "Error"));
         v_dialog->set_secondary_text("El monto a vender debe ser mayor a 0");
         v_dialog->set_hide_on_close();
@@ -43,7 +44,8 @@ void Venta::on_btn_enter_clicked() {
 
                 auto response = cpy.get();
 
-                if (response.status_code == cpr::status::HTTP_OK) {
+                if (response.status_code == cpr::status::HTTP_OK) 
+                {
                     auto j = nlohmann::json::parse(response.text);
 
                     auto total = j["total"].get<int>();
@@ -55,12 +57,14 @@ void Venta::on_btn_enter_clicked() {
                     v_box_columns->v_ety_columns[1]->set_text(std::to_string(ingreso));
                     v_box_columns->v_ety_columns[2]->set_text(std::to_string(cambio));
 
-                    if (j["Cambio_faltante"].get<int>() > 0) {
+                    if (j["Cambio_faltante"].get<int>() > 0) 
+                    {
                         v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window, "Cambio Faltante"));
                         v_dialog->set_secondary_text("Se requiere un cambio de " + j["Cambio_faltante"].get<std::string>());
                         v_dialog->set_visible();
                     }
-                } else {
+                } else 
+                {
                     v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window, "Error"));
                     v_dialog->set_secondary_text(response.text);
                     v_dialog->set_visible();
@@ -68,7 +72,8 @@ void Venta::on_btn_enter_clicked() {
 
                 set_sensitive(true);
             });
-        } catch (const std::exception& e) {
+        } catch (const std::exception& e) 
+        {
             Glib::signal_idle().connect_once([this, e]() {
                 v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window, "Error"));
                 v_dialog->set_secondary_text("Excepción: No se encuentra el servidor");
