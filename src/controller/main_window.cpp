@@ -4,7 +4,7 @@
 MainWindow::MainWindow(const Glib::RefPtr<Gtk::Application>& app)
 {
     set_default_size(1280, 720);
-    set_margin(15);
+    //set_margin(15);
 
     Global::Widget::v_main_window = this;
     Global::Widget::v_main_stack = Gtk::manage(new Gtk::Stack());

@@ -4,7 +4,7 @@ void PagoA::on_btn_enter_clicked()
 {
     if (v_base_nip->v_ety_spin->get_value_as_int() < 1)
     {
-        v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window, "Error", false, Gtk::MessageType::ERROR));
+        v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window, "Error", false,(Gtk::MessageType) 3 /*Gtk::MessageType::ERROR para windows*/));
         v_dialog->set_secondary_text("El monto a vender debe ser mayor a 0");
         v_dialog->set_hide_on_close();
         v_dialog->set_visible();
@@ -50,7 +50,7 @@ void PagoA::on_btn_enter_clicked()
                     //     v_dialog->set_visible();
                     // }
                 } else {
-                    v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window, "Error", false, Gtk::MessageType::ERROR));
+                    v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window, "Error", false, (Gtk::MessageType)3 /*Gtk::MessageType::ERROR para windows*/));
                     v_dialog->set_secondary_text(response.text);
                     v_dialog->set_visible();
                 }
@@ -59,7 +59,7 @@ void PagoA::on_btn_enter_clicked()
             });
         } catch (const std::exception& e) {
             Glib::signal_idle().connect_once([this, e]() {
-                v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window, "Error", false, Gtk::MessageType::ERROR));
+                v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window, "Error", false,(Gtk::MessageType)3 /*Gtk::MessageType::ERROR para windows*/));
                 v_dialog->set_secondary_text("Excepción: " + std::string(e.what()));
                 v_dialog->set_visible();
                 set_sensitive(true);
