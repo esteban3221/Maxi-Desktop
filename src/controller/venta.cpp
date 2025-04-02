@@ -5,13 +5,17 @@ Venta::Venta(/* args */)
 {
     v_base_nip->v_btn_nip_enter->signal_clicked().connect(sigc::mem_fun(*this, &Venta::on_btn_enter_clicked));
     v_base_nip->v_ety_spin->set_text("");
+    this->signal_map().connect(sigc::mem_fun(*this, &Venta::on_map_show));
+    v_ety_concepto.signal_activate().connect([this](){v_base_nip->v_ety_spin->grab_focus();});
+    v_base_nip->v_ety_spin->signal_activate().connect([this](){v_base_nip->v_btn_nip_enter->grab_focus();});
 }
 
 Venta::~Venta()
 {
 }
 
-void Venta::on_btn_enter_clicked() {
+void Venta::on_btn_enter_clicked() 
+{
     if (v_base_nip->v_ety_spin->get_value_as_int() < 1) 
     {
         v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window, "Error"));
@@ -29,14 +33,14 @@ void Venta::on_btn_enter_clicked() {
         try {
             
             auto value = v_base_nip->v_ety_spin->get_value_as_int();
-            auto json = nlohmann::json{{"value", value}};
+            auto json = nlohmann::json{{"value", value},{"concepto", v_ety_concepto.get_text()}};
             auto future = cpr::PostAsync(cpr::Url{Global::System::URL + "accion/inicia_venta"}, cpr::Body{json.dump()});
 
-            while (future.wait_for(std::chrono::milliseconds(100)) != std::future_status::ready) {
+            while (future.wait_for(std::chrono::milliseconds(100)) != std::future_status::ready) 
                 Glib::signal_idle().connect_once([this]() {
                     Global::Widget::v_progress_bar->pulse();
                 });
-            }
+            
             auto cpy = future.share();  
 
             Glib::signal_idle().connect_once([this, cpy]() {
@@ -60,7 +64,7 @@ void Venta::on_btn_enter_clicked() {
                     if (j["Cambio_faltante"].get<int>() > 0) 
                     {
                         v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window, "Cambio Faltante"));
-                        v_dialog->set_secondary_text("Se requiere un cambio de " + j["Cambio_faltante"].get<std::string>());
+                        v_dialog->set_secondary_text(Glib::ustring::format("Se requiere un cambio de " , j["Cambio_faltante"].get<int>()));
                         v_dialog->set_visible();
                     }
                 } else 
@@ -82,4 +86,11 @@ void Venta::on_btn_enter_clicked() {
             });
         }
     }).detach();
+}
+
+void Venta::on_map_show()
+{
+    v_base_nip->v_ety_spin->set_text("");
+    v_ety_concepto.set_text("");
+    v_ety_concepto.grab_focus();
 }

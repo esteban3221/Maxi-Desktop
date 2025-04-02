@@ -17,6 +17,9 @@ protected:
     Gtk::ColumnView *v_column_log;
     Gtk::Label *v_lbl_total_registros;
 
+    Gtk::Popover v_pop_calendario;
+    Gtk::Calendar v_calendario;
+
 
     void on_setup_label(const Glib::RefPtr<Gtk::ListItem> &list_item);
     void on_setup_label_text(const Glib::RefPtr<Gtk::ListItem> &list_item);

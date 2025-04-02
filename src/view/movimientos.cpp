@@ -14,6 +14,9 @@ VMovimientos::VMovimientos(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Buil
 
     v_column_log = m_builder->get_widget<Gtk::ColumnView>("column_log");
     v_lbl_total_registros = m_builder->get_widget<Gtk::Label>("lbl_total_registros");
+
+    v_pop_calendario.set_child(v_calendario);
+    v_calendario.set_show_day_names();
 }
 
 VMovimientos::~VMovimientos()

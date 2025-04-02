@@ -3,6 +3,7 @@
 
 VMenu::VMenu(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuilder) : Gtk::Box(cobject), m_builder(refBuilder)
 {
+
     v_list_box_menu = m_builder->get_widget<Gtk::ListBox>("list_box_menu");
     v_stack_menu = m_builder->get_widget<Gtk::Stack>("stack_menu");
     v_stack_menu->set_transition_type(Gtk::StackTransitionType::SLIDE_UP_DOWN);
@@ -25,6 +26,8 @@ VMenu::VMenu(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuild
     builder = Gtk::Builder::create_from_file("../ui/menu/movimientos.ui");
     auto movimientos = Gtk::Builder::get_widget_derived<Movimientos>(builder, "box_movimientos");
     v_stack_menu->add(*movimientos, "4");
+
+    signal_map().connect([this](){v_stack_menu->set_visible_child("0");});
 }
 
 VMenu::~VMenu()
