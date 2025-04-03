@@ -3,12 +3,16 @@
 <interface>
   <!-- interface-name impresora.ui -->
   <requires lib="gtk" version="4.0"/>
-  <object class="GtkBox" id="boxConfigImpresora">
-    <property name="homogeneous">true</property>
-    <property name="spacing">10</property>
+  <object class="GtkBox" id="box_config_impresora">
+    <property name="homogeneous">True</property>
     <child>
       <object class="GtkBox">
+        <property name="margin-bottom">10</property>
+        <property name="margin-end">10</property>
+        <property name="margin-start">10</property>
+        <property name="margin-top">10</property>
         <property name="orientation">vertical</property>
+        <property name="vexpand">True</property>
         <child>
           <object class="GtkLabel">
             <property name="halign">start</property>
@@ -23,7 +27,10 @@
           <object class="GtkLabel">
             <property name="halign">start</property>
             <property name="label">Seleccione la impresora a predeterminar para las operaciones.</property>
+            <property name="lines">2</property>
             <property name="margin-bottom">10</property>
+            <property name="natural-wrap-mode">word</property>
+            <property name="wrap">True</property>
             <style>
               <class name="dim-label"/>
             </style>
@@ -31,16 +38,18 @@
         </child>
         <child>
           <object class="GtkScrolledWindow">
+            <property name="hscrollbar-policy">never</property>
             <child>
               <object class="GtkListBox" id="listBoxPrint">
                 <child>
                   <object class="GtkListBoxRow" id="listBoxRowPrint">
                     <property name="activatable">false</property>
+                    <property name="halign">center</property>
                     <child>
                       <object class="GtkLabel">
                         <property name="label">Impresoras no encontradas</property>
                         <style>
-                          <class name="title-2"/>
+                          <class name="title-3"/>
                         </style>
                       </object>
                     </child>
@@ -58,6 +67,10 @@
     </child>
     <child>
       <object class="GtkBox">
+        <property name="margin-bottom">10</property>
+        <property name="margin-end">10</property>
+        <property name="margin-start">10</property>
+        <property name="margin-top">10</property>
         <property name="orientation">vertical</property>
         <property name="vexpand">true</property>
         <child>
@@ -72,283 +85,605 @@
         </child>
         <child>
           <object class="GtkNotebook" id="ntbookPropiedades">
-            <property name="vexpand">true</property>
+            <property name="accessible-role">none</property>
+            <property name="vexpand">True</property>
             <child>
-              <object class="GtkScrolledWindow">
-                <child>
-                  <object class="GtkBox">
-                    <property name="margin-bottom">30</property>
+              <object class="GtkNotebookPage">
+                <property name="child">
+                  <object class="GtkScrolledWindow">
+                    <property name="hscrollbar-policy">never</property>
+                    <property name="margin-bottom">10</property>
                     <property name="margin-end">10</property>
                     <property name="margin-start">10</property>
-                    <property name="orientation">vertical</property>
+                    <property name="margin-top">10</property>
                     <child>
-                      <object class="GtkLabel">
-                        <property name="label">Activar</property>
-                        <property name="margin-bottom">10</property>
-                        <property name="xalign">0</property>
-                        <style>
-                          <class name="title-2"/>
-                        </style>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkListBox" id="listBoxPage1">
+                      <object class="GtkBox">
                         <property name="margin-bottom">30</property>
-                        <property name="selection-mode">none</property>
+                        <property name="margin-end">10</property>
+                        <property name="margin-start">10</property>
+                        <property name="orientation">vertical</property>
                         <child>
-                          <object class="GtkListBoxRow">
+                          <object class="GtkLabel">
+                            <property name="label">Activar</property>
+                            <property name="margin-bottom">10</property>
+                            <property name="xalign">0</property>
+                            <style>
+                              <class name="title-2"/>
+                            </style>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkListBox" id="listBoxPage1">
+                            <property name="margin-bottom">30</property>
+                            <property name="selection-mode">none</property>
                             <child>
-                              <object class="GtkBox">
+                              <object class="GtkListBoxRow">
                                 <child>
-                                  <object class="GtkLabel" id="lblActivar1">
-                                    <property name="halign">start</property>
-                                    <property name="hexpand">true</property>
-                                    <property name="label">Activar Impresión</property>
-                                    <property name="valign">center</property>
-                                    <property name="xalign">0</property>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkSwitch" id="switchImpresion">
-                                    <property name="halign">end</property>
-                                    <property name="valign">center</property>
+                                  <object class="GtkBox">
+                                    <child>
+                                      <object class="GtkLabel" id="lblActivar1">
+                                        <property name="halign">start</property>
+                                        <property name="hexpand">true</property>
+                                        <property name="label">Activar Impresión</property>
+                                        <property name="valign">center</property>
+                                        <property name="xalign">0</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkSwitch" id="switchImpresion">
+                                        <property name="halign">end</property>
+                                        <property name="valign">center</property>
+                                      </object>
+                                    </child>
                                   </object>
                                 </child>
                               </object>
                             </child>
+                            <style>
+                              <class name="rich-list"/>
+                              <class name="boxed-list"/>
+                            </style>
                           </object>
                         </child>
-                        <style>
-                          <class name="rich-list"/>
-                          <class name="boxed-list"/>
-                        </style>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkLabel">
-                        <property name="label">Visualización</property>
-                        <property name="margin-bottom">10</property>
-                        <property name="xalign">0</property>
-                        <style>
-                          <class name="title-2"/>
-                        </style>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkListBox" id="listBoxVisualizacion1">
-                        <property name="selection-mode">none</property>
                         <child>
-                          <object class="GtkListBoxRow">
+                          <object class="GtkLabel">
+                            <property name="label">Visualización</property>
+                            <property name="margin-bottom">10</property>
+                            <property name="xalign">0</property>
+                            <style>
+                              <class name="title-2"/>
+                            </style>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkListBox" id="listBoxVisualizacion1">
+                            <property name="selection-mode">none</property>
                             <child>
-                              <object class="GtkBox">
+                              <object class="GtkListBoxRow">
                                 <child>
-                                  <object class="GtkLabel" id="lblMensaje1">
-                                    <property name="halign">start</property>
-                                    <property name="hexpand">true</property>
-                                    <property name="label">Mensaje de Agradecimiento</property>
-                                    <property name="valign">center</property>
-                                    <property name="xalign">0</property>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkCheckButton" id="checkConfig1">
-                                    <property name="active">true</property>
-                                    <property name="halign">end</property>
-                                    <property name="margin-end">10</property>
-                                    <property name="margin-start">10</property>
-                                    <property name="valign">center</property>
+                                  <object class="GtkBox">
+                                    <child>
+                                      <object class="GtkLabel" id="lblMensaje1">
+                                        <property name="halign">start</property>
+                                        <property name="hexpand">true</property>
+                                        <property name="label">Mensaje de Agradecimiento</property>
+                                        <property name="valign">center</property>
+                                        <property name="xalign">0</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkCheckButton" id="checkConfig1">
+                                        <property name="active">true</property>
+                                        <property name="halign">end</property>
+                                        <property name="margin-end">10</property>
+                                        <property name="margin-start">10</property>
+                                        <property name="valign">center</property>
+                                      </object>
+                                    </child>
                                   </object>
                                 </child>
                               </object>
                             </child>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkListBoxRow">
                             <child>
-                              <object class="GtkBox">
+                              <object class="GtkListBoxRow">
                                 <child>
-                                  <object class="GtkLabel" id="lblFecha1">
-                                    <property name="halign">start</property>
-                                    <property name="hexpand">true</property>
-                                    <property name="label">Fecha</property>
-                                    <property name="valign">center</property>
-                                    <property name="xalign">0</property>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkCheckButton" id="checkConfig2">
-                                    <property name="active">true</property>
-                                    <property name="halign">end</property>
-                                    <property name="margin-end">10</property>
-                                    <property name="margin-start">10</property>
-                                    <property name="valign">center</property>
+                                  <object class="GtkBox">
+                                    <child>
+                                      <object class="GtkLabel" id="lblFecha1">
+                                        <property name="halign">start</property>
+                                        <property name="hexpand">true</property>
+                                        <property name="label">Fecha</property>
+                                        <property name="valign">center</property>
+                                        <property name="xalign">0</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkCheckButton" id="checkConfig2">
+                                        <property name="active">true</property>
+                                        <property name="halign">end</property>
+                                        <property name="margin-end">10</property>
+                                        <property name="margin-start">10</property>
+                                        <property name="valign">center</property>
+                                      </object>
+                                    </child>
                                   </object>
                                 </child>
                               </object>
                             </child>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkListBoxRow">
                             <child>
-                              <object class="GtkBox">
+                              <object class="GtkListBoxRow">
                                 <child>
-                                  <object class="GtkLabel" id="lblDireccion1">
-                                    <property name="halign">start</property>
-                                    <property name="hexpand">true</property>
-                                    <property name="label">Direccion</property>
-                                    <property name="valign">center</property>
-                                    <property name="xalign">0</property>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkCheckButton" id="checkConfig3">
-                                    <property name="active">true</property>
-                                    <property name="halign">end</property>
-                                    <property name="margin-end">10</property>
-                                    <property name="margin-start">10</property>
-                                    <property name="valign">center</property>
+                                  <object class="GtkBox">
+                                    <child>
+                                      <object class="GtkLabel" id="lblDireccion1">
+                                        <property name="halign">start</property>
+                                        <property name="hexpand">true</property>
+                                        <property name="label">Direccion</property>
+                                        <property name="valign">center</property>
+                                        <property name="xalign">0</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkCheckButton" id="checkConfig3">
+                                        <property name="active">true</property>
+                                        <property name="halign">end</property>
+                                        <property name="margin-end">10</property>
+                                        <property name="margin-start">10</property>
+                                        <property name="valign">center</property>
+                                      </object>
+                                    </child>
                                   </object>
                                 </child>
                               </object>
                             </child>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkListBoxRow">
                             <child>
-                              <object class="GtkBox">
+                              <object class="GtkListBoxRow">
                                 <child>
-                                  <object class="GtkLabel" id="lblRFC1">
-                                    <property name="halign">start</property>
-                                    <property name="hexpand">true</property>
-                                    <property name="label">RFC</property>
-                                    <property name="valign">center</property>
-                                    <property name="xalign">0</property>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkCheckButton" id="checkConfig4">
-                                    <property name="active">true</property>
-                                    <property name="halign">end</property>
-                                    <property name="margin-end">10</property>
-                                    <property name="margin-start">10</property>
-                                    <property name="valign">center</property>
+                                  <object class="GtkBox">
+                                    <child>
+                                      <object class="GtkLabel" id="lblRFC1">
+                                        <property name="halign">start</property>
+                                        <property name="hexpand">true</property>
+                                        <property name="label">RFC</property>
+                                        <property name="valign">center</property>
+                                        <property name="xalign">0</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkCheckButton" id="checkConfig4">
+                                        <property name="active">true</property>
+                                        <property name="halign">end</property>
+                                        <property name="margin-end">10</property>
+                                        <property name="margin-start">10</property>
+                                        <property name="valign">center</property>
+                                      </object>
+                                    </child>
                                   </object>
                                 </child>
                               </object>
                             </child>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkListBoxRow">
                             <child>
-                              <object class="GtkBox">
+                              <object class="GtkListBoxRow">
                                 <child>
-                                  <object class="GtkLabel" id="lblVendedor1">
-                                    <property name="halign">start</property>
-                                    <property name="hexpand">true</property>
-                                    <property name="label">Vendedor</property>
-                                    <property name="valign">center</property>
-                                    <property name="xalign">0</property>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkCheckButton" id="checkConfig5">
-                                    <property name="active">true</property>
-                                    <property name="halign">end</property>
-                                    <property name="margin-end">10</property>
-                                    <property name="margin-start">10</property>
-                                    <property name="valign">center</property>
+                                  <object class="GtkBox">
+                                    <child>
+                                      <object class="GtkLabel" id="lblVendedor1">
+                                        <property name="halign">start</property>
+                                        <property name="hexpand">true</property>
+                                        <property name="label">Vendedor</property>
+                                        <property name="valign">center</property>
+                                        <property name="xalign">0</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkCheckButton" id="checkConfig5">
+                                        <property name="active">true</property>
+                                        <property name="halign">end</property>
+                                        <property name="margin-end">10</property>
+                                        <property name="margin-start">10</property>
+                                        <property name="valign">center</property>
+                                      </object>
+                                    </child>
                                   </object>
                                 </child>
                               </object>
                             </child>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkListBoxRow">
                             <child>
-                              <object class="GtkBox">
+                              <object class="GtkListBoxRow">
                                 <child>
-                                  <object class="GtkLabel" id="lblContacto1">
-                                    <property name="halign">start</property>
-                                    <property name="hexpand">true</property>
-                                    <property name="label">Contacto</property>
-                                    <property name="valign">center</property>
-                                    <property name="xalign">0</property>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkCheckButton" id="checkConfig6">
-                                    <property name="active">true</property>
-                                    <property name="halign">end</property>
-                                    <property name="margin-end">10</property>
-                                    <property name="margin-start">10</property>
-                                    <property name="valign">center</property>
+                                  <object class="GtkBox">
+                                    <child>
+                                      <object class="GtkLabel" id="lblContacto1">
+                                        <property name="halign">start</property>
+                                        <property name="hexpand">true</property>
+                                        <property name="label">Contacto</property>
+                                        <property name="valign">center</property>
+                                        <property name="xalign">0</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkCheckButton" id="checkConfig6">
+                                        <property name="active">true</property>
+                                        <property name="halign">end</property>
+                                        <property name="margin-end">10</property>
+                                        <property name="margin-start">10</property>
+                                        <property name="valign">center</property>
+                                      </object>
+                                    </child>
                                   </object>
                                 </child>
                               </object>
                             </child>
+                            <style>
+                              <class name="rich-list"/>
+                              <class name="boxed-list"/>
+                            </style>
                           </object>
                         </child>
-                        <style>
-                          <class name="rich-list"/>
-                          <class name="boxed-list"/>
-                        </style>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkLabel">
-                        <property name="label">Test</property>
-                        <property name="margin-bottom">10</property>
-                        <property name="margin-top">30</property>
-                        <property name="xalign">0</property>
-                        <style>
-                          <class name="title-2"/>
-                        </style>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkListBox" id="listBoxTest1">
-                        <property name="selection-mode">none</property>
                         <child>
-                          <object class="GtkListBoxRow">
+                          <object class="GtkLabel">
+                            <property name="label">Test</property>
+                            <property name="margin-bottom">10</property>
+                            <property name="margin-top">30</property>
+                            <property name="xalign">0</property>
+                            <style>
+                              <class name="title-2"/>
+                            </style>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkListBox" id="listBoxTest1">
+                            <property name="selection-mode">none</property>
                             <child>
-                              <object class="GtkBox">
+                              <object class="GtkListBoxRow">
                                 <child>
-                                  <object class="GtkLabel" id="lblImpresionPrueba1">
-                                    <property name="halign">start</property>
-                                    <property name="hexpand">true</property>
-                                    <property name="label">Impresion de Prueba</property>
-                                    <property name="valign">center</property>
-                                    <property name="xalign">0</property>
-                                  </object>
-                                </child>
-                                <child>
-                                  <object class="GtkImage">
-                                    <property name="halign">end</property>
-                                    <property name="icon-name">printer-symbolic</property>
+                                  <object class="GtkBox">
+                                    <child>
+                                      <object class="GtkLabel" id="lblImpresionPrueba1">
+                                        <property name="halign">start</property>
+                                        <property name="hexpand">true</property>
+                                        <property name="label">Impresion de Prueba</property>
+                                        <property name="valign">center</property>
+                                        <property name="xalign">0</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkImage">
+                                        <property name="halign">end</property>
+                                        <property name="icon-name">printer-symbolic</property>
+                                      </object>
+                                    </child>
                                   </object>
                                 </child>
                               </object>
                             </child>
+                            <style>
+                              <class name="rich-list"/>
+                              <class name="boxed-list"/>
+                            </style>
                           </object>
                         </child>
-                        <style>
-                          <class name="rich-list"/>
-                          <class name="boxed-list"/>
-                        </style>
                       </object>
                     </child>
                   </object>
-                </child>
+                </property>
+                <property name="tab-expand">True</property>
+                <property name="tab-label">Local</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkNotebookPage">
+                <property name="child">
+                  <object class="GtkScrolledWindow">
+                    <property name="hscrollbar-policy">never</property>
+                    <property name="margin-bottom">10</property>
+                    <property name="margin-end">10</property>
+                    <property name="margin-start">10</property>
+                    <property name="margin-top">10</property>
+                    <child>
+                      <object class="GtkBox">
+                        <property name="margin-bottom">30</property>
+                        <property name="margin-end">10</property>
+                        <property name="margin-start">10</property>
+                        <property name="orientation">vertical</property>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="label">Activar</property>
+                            <property name="margin-bottom">10</property>
+                            <property name="xalign">0</property>
+                            <style>
+                              <class name="title-2"/>
+                            </style>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkListBox" id="listBoxPage1">
+                            <property name="margin-bottom">30</property>
+                            <property name="selection-mode">none</property>
+                            <child>
+                              <object class="GtkListBoxRow">
+                                <child>
+                                  <object class="GtkBox">
+                                    <child>
+                                      <object class="GtkLabel" id="lblActivar1">
+                                        <property name="halign">start</property>
+                                        <property name="hexpand">true</property>
+                                        <property name="label">Activar Impresión</property>
+                                        <property name="valign">center</property>
+                                        <property name="xalign">0</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkSwitch" id="switchImpresion">
+                                        <property name="halign">end</property>
+                                        <property name="valign">center</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <style>
+                              <class name="rich-list"/>
+                              <class name="boxed-list"/>
+                            </style>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="label">Visualización</property>
+                            <property name="margin-bottom">10</property>
+                            <property name="xalign">0</property>
+                            <style>
+                              <class name="title-2"/>
+                            </style>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkListBox" id="listBoxVisualizacion1">
+                            <property name="selection-mode">none</property>
+                            <child>
+                              <object class="GtkListBoxRow">
+                                <child>
+                                  <object class="GtkBox">
+                                    <child>
+                                      <object class="GtkLabel" id="lblMensaje1">
+                                        <property name="halign">start</property>
+                                        <property name="hexpand">true</property>
+                                        <property name="label">Mensaje de Agradecimiento</property>
+                                        <property name="valign">center</property>
+                                        <property name="xalign">0</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkCheckButton" id="checkConfig1">
+                                        <property name="active">true</property>
+                                        <property name="halign">end</property>
+                                        <property name="margin-end">10</property>
+                                        <property name="margin-start">10</property>
+                                        <property name="valign">center</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkListBoxRow">
+                                <child>
+                                  <object class="GtkBox">
+                                    <child>
+                                      <object class="GtkLabel" id="lblFecha1">
+                                        <property name="halign">start</property>
+                                        <property name="hexpand">true</property>
+                                        <property name="label">Fecha</property>
+                                        <property name="valign">center</property>
+                                        <property name="xalign">0</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkCheckButton" id="checkConfig2">
+                                        <property name="active">true</property>
+                                        <property name="halign">end</property>
+                                        <property name="margin-end">10</property>
+                                        <property name="margin-start">10</property>
+                                        <property name="valign">center</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkListBoxRow">
+                                <child>
+                                  <object class="GtkBox">
+                                    <child>
+                                      <object class="GtkLabel" id="lblDireccion1">
+                                        <property name="halign">start</property>
+                                        <property name="hexpand">true</property>
+                                        <property name="label">Direccion</property>
+                                        <property name="valign">center</property>
+                                        <property name="xalign">0</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkCheckButton" id="checkConfig3">
+                                        <property name="active">true</property>
+                                        <property name="halign">end</property>
+                                        <property name="margin-end">10</property>
+                                        <property name="margin-start">10</property>
+                                        <property name="valign">center</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkListBoxRow">
+                                <child>
+                                  <object class="GtkBox">
+                                    <child>
+                                      <object class="GtkLabel" id="lblRFC1">
+                                        <property name="halign">start</property>
+                                        <property name="hexpand">true</property>
+                                        <property name="label">RFC</property>
+                                        <property name="valign">center</property>
+                                        <property name="xalign">0</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkCheckButton" id="checkConfig4">
+                                        <property name="active">true</property>
+                                        <property name="halign">end</property>
+                                        <property name="margin-end">10</property>
+                                        <property name="margin-start">10</property>
+                                        <property name="valign">center</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkListBoxRow">
+                                <child>
+                                  <object class="GtkBox">
+                                    <child>
+                                      <object class="GtkLabel" id="lblVendedor1">
+                                        <property name="halign">start</property>
+                                        <property name="hexpand">true</property>
+                                        <property name="label">Vendedor</property>
+                                        <property name="valign">center</property>
+                                        <property name="xalign">0</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkCheckButton" id="checkConfig5">
+                                        <property name="active">true</property>
+                                        <property name="halign">end</property>
+                                        <property name="margin-end">10</property>
+                                        <property name="margin-start">10</property>
+                                        <property name="valign">center</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkListBoxRow">
+                                <child>
+                                  <object class="GtkBox">
+                                    <child>
+                                      <object class="GtkLabel" id="lblContacto1">
+                                        <property name="halign">start</property>
+                                        <property name="hexpand">true</property>
+                                        <property name="label">Contacto</property>
+                                        <property name="valign">center</property>
+                                        <property name="xalign">0</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkCheckButton" id="checkConfig6">
+                                        <property name="active">true</property>
+                                        <property name="halign">end</property>
+                                        <property name="margin-end">10</property>
+                                        <property name="margin-start">10</property>
+                                        <property name="valign">center</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <style>
+                              <class name="rich-list"/>
+                              <class name="boxed-list"/>
+                            </style>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="label">Test</property>
+                            <property name="margin-bottom">10</property>
+                            <property name="margin-top">30</property>
+                            <property name="xalign">0</property>
+                            <style>
+                              <class name="title-2"/>
+                            </style>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkListBox" id="listBoxTest1">
+                            <property name="selection-mode">none</property>
+                            <child>
+                              <object class="GtkListBoxRow">
+                                <child>
+                                  <object class="GtkBox">
+                                    <child>
+                                      <object class="GtkLabel" id="lblImpresionPrueba1">
+                                        <property name="halign">start</property>
+                                        <property name="hexpand">true</property>
+                                        <property name="label">Impresion de Prueba</property>
+                                        <property name="valign">center</property>
+                                        <property name="xalign">0</property>
+                                      </object>
+                                    </child>
+                                    <child>
+                                      <object class="GtkImage">
+                                        <property name="halign">end</property>
+                                        <property name="icon-name">printer-symbolic</property>
+                                      </object>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                            <style>
+                              <class name="rich-list"/>
+                              <class name="boxed-list"/>
+                            </style>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+                <property name="tab-expand">True</property>
+                <property name="tab-label">Remoto</property>
               </object>
             </child>
             <style>
               <class name="tab"/>
             </style>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkBox">
+        <property name="margin-bottom">10</property>
+        <property name="margin-end">10</property>
+        <property name="margin-start">10</property>
+        <property name="margin-top">10</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkLabel">
+            <property name="halign">start</property>
+            <property name="label">Visualización</property>
+            <property name="margin-bottom">20</property>
+            <style>
+              <class name="title-1"/>
+            </style>
+          </object>
+        </child>
+        <child>
+          <object class="GtkTextView">
+            <property name="hexpand">True</property>
+            <property name="monospace">True</property>
+            <property name="vexpand">True</property>
           </object>
         </child>
       </object>

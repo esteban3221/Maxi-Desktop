@@ -8,6 +8,8 @@
 #include "controller/refill.hpp"
 #include "controller/movimientos.hpp"
 
+#include "view/configuracion.hpp"
+
 class VMenu : public Gtk::Box
 {
 protected:
