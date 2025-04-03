@@ -48,8 +48,7 @@ void Refill::on_show_map()
                 v_lbl_total_billetes->set_text(json["total_billetes"].get<std::string>());
                 v_lbl_total_monedas->set_text(json["total_monedas"].get<std::string>());
             } });
-                })
-        .detach();
+                }).detach();
 }
 
 void Refill::init_data(Gtk::ColumnView *vcolumn, const Glib::RefPtr<Gio::ListStore<MLevelCash>> &level)
@@ -88,10 +87,18 @@ void Refill::init_data(Gtk::ColumnView *vcolumn, const Glib::RefPtr<Gio::ListSto
 
     {
         auto factory = Gtk::SignalListItemFactory::create();
-        factory->signal_setup().connect(sigc::mem_fun(*this, &Refill::on_setup_label));
+        factory->signal_setup().connect(sigc::mem_fun(*this, &Refill::on_setup_spin));
         factory->signal_bind().connect(sigc::mem_fun(*this, &Refill::on_bind_inmo));
         auto column = Gtk::ColumnViewColumn::create("Inmovilidad", factory);
         column->set_expand(true);
+        vcolumn->append_column(column);
+    }
+
+    {
+        auto factory = Gtk::SignalListItemFactory::create();
+        factory->signal_setup().connect(sigc::mem_fun(*this, &Refill::on_setup_button));
+        factory->signal_bind().connect(sigc::mem_fun(*this, &Refill::on_bind_btn));
+        auto column = Gtk::ColumnViewColumn::create("Guardar", factory);
         vcolumn->append_column(column);
     }
 
@@ -137,12 +144,10 @@ void Refill::safe_clear_column_view(Gtk::ColumnView *column_view)
 
         if (!selection)
             return;
-
         if (auto single_sel = std::dynamic_pointer_cast<Gtk::SingleSelection>(selection))
         {
             if (auto list_model = single_sel->get_model())
             {
-
                 if (auto list_store = std::dynamic_pointer_cast<Gio::ListStore<MLevelCash>>(list_model))
                 {
                     list_store->remove_all();

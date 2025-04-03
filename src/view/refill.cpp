@@ -1,4 +1,5 @@
 #include "view/refill.hpp"
+#include "refill.hpp"
 
 VRefill::VRefill(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuilder) : Gtk::Box(cobject),
                                                                                           m_builder(refBuilder)
@@ -19,6 +20,20 @@ VRefill::VRefill(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refB
 void VRefill::on_setup_label(const Glib::RefPtr<Gtk::ListItem> &list_item)
 {
     list_item->set_child(*Gtk::make_managed<Gtk::Label>("", Gtk::Align::END));
+}
+
+void VRefill::on_setup_button(const Glib::RefPtr<Gtk::ListItem> &list_item)
+{
+    auto button = (Gtk::make_managed<Gtk::Button>());
+    button->set_icon_name("document-save-symbolic");
+    list_item->set_child(*button);
+}
+
+void VRefill::on_setup_spin(const Glib::RefPtr<Gtk::ListItem> &list_item)
+{
+    auto spin = Gtk::make_managed<Gtk::SpinButton>(Gtk::Adjustment::create(0, 0, 100, 1, 10), 1.0, 0);
+    spin->set_halign(Gtk::Align::FILL);
+    list_item->set_child(*spin);
 }
 
 void VRefill::on_bind_deno(const Glib::RefPtr<Gtk::ListItem> &list_item)
@@ -56,9 +71,19 @@ void VRefill::on_bind_ingreso(const Glib::RefPtr<Gtk::ListItem> &list_item)
 void VRefill::on_bind_inmo(const Glib::RefPtr<Gtk::ListItem> &list_item)
 {
     auto col = std::dynamic_pointer_cast<MLevelCash>(list_item->get_item());
-    auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
+    auto spin = dynamic_cast<Gtk::SpinButton *>(list_item->get_child());
 
-    label->set_text(Glib::ustring::format(col->m_nivel_inmo));
+    spin->set_adjustment(Gtk::Adjustment::create(col->m_nivel_inmo,0,100));
+}
+
+void VRefill::on_bind_btn(const Glib::RefPtr<Gtk::ListItem> &list_item)
+{
+    auto col = std::dynamic_pointer_cast<MLevelCash>(list_item->get_item());
+    auto button = dynamic_cast<Gtk::Button *>(list_item->get_child());
+
+    button->signal_clicked().connect([this,col](){
+        std::cout << "Denominacion: " << col->m_denominacion << '\n';
+    });
 }
 
 
