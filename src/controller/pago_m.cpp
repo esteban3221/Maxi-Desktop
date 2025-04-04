@@ -19,7 +19,7 @@ PagoM::~PagoM()
 
 void PagoM::on_spin_value_changed()
 {
-    size_t total = 0;
+    total = 0;
     for (size_t i = 0; i < 4; i++)
         total += coins.at(i) * v_spin_coin[i]->get_value_as_int();
     
@@ -32,7 +32,7 @@ void PagoM::on_spin_value_changed()
 
 void PagoM::on_btn_cobrar_clicked()
 {
-    size_t total = 0;
+    total = 0;
     for (size_t i = 0; i < 4; i++)
         total += coins.at(i) * v_spin_coin[i]->get_value_as_int();
     
@@ -43,7 +43,8 @@ void PagoM::on_btn_cobrar_clicked()
     {
         std::thread([this]() {
             try {
-                auto json = nlohmann::json{
+                auto json = nlohmann::json
+                {
                     {"bill", nlohmann::json::array({
                         v_spin_bill[0]->get_value_as_int(),
                         v_spin_bill[1]->get_value_as_int(),
@@ -57,7 +58,8 @@ void PagoM::on_btn_cobrar_clicked()
                         v_spin_coin[1]->get_value_as_int(),
                         v_spin_coin[2]->get_value_as_int(),
                         v_spin_coin[3]->get_value_as_int()
-                    })}
+                    })},
+                    {"total", total}
                 };
 
                 auto future = cpr::PostAsync(cpr::Url{Global::System::URL + "accion/inicia_pago_manual"}, cpr::Body{json.dump()});

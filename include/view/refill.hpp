@@ -23,11 +23,14 @@ protected:
     Gtk::Button *v_btn_retirada = nullptr;
 
     void on_setup_label(const Glib::RefPtr<Gtk::ListItem> &list_item);
+    void on_setup_button(const Glib::RefPtr<Gtk::ListItem> &list_item);
+    void on_setup_spin(const Glib::RefPtr<Gtk::ListItem> &list_item);
     void on_bind_deno(const Glib::RefPtr<Gtk::ListItem> &list_item);
     void on_bind_alm(const Glib::RefPtr<Gtk::ListItem> &list_item);
     void on_bind_recy(const Glib::RefPtr<Gtk::ListItem> &list_item);
     void on_bind_ingreso(const Glib::RefPtr<Gtk::ListItem> &list_item);
     void on_bind_inmo(const Glib::RefPtr<Gtk::ListItem> &list_item);
+    void on_bind_btn(const Glib::RefPtr<Gtk::ListItem> &list_item);
 
 public:
     VRefill(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuilder);

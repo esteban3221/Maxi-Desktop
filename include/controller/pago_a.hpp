@@ -5,8 +5,10 @@ class PagoA : public VPago
 {
 private:
     void on_btn_enter_clicked();
+    void on_map_show();
 
 public:
     PagoA(/* args */);
     ~PagoA();
+    
 };

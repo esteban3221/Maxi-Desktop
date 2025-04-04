@@ -42,6 +42,12 @@ set(SOURCES
     src/view/pago_a.cpp 
     src/view/movimientos.cpp 
     src/view/configuracion.cpp
+
+    src/view/configuracion/general.cpp
+    src/view/configuracion/sistema.cpp
+    src/view/configuracion/empresa.cpp
+    src/view/configuracion/usuarios.cpp
+    src/view/configuracion/impresora.cpp
     # #================CONTROLLER=================
     src/controller/main_window.cpp
     src/controller/titlebar.cpp
@@ -53,6 +59,12 @@ set(SOURCES
     src/controller/refill.cpp 
     src/controller/retirada.cpp 
     src/controller/venta.cpp
+
+    src/controller/configuracion/general.cpp
+    src/controller/configuracion/sistema.cpp
+    src/controller/configuracion/empresa.cpp
+    src/controller/configuracion/usuarios.cpp
+    src/controller/configuracion/impresora.cpp
     #================GLOBAL=================
     src/shared/global.cpp
 )

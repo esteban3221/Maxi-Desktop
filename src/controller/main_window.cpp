@@ -4,7 +4,7 @@
 MainWindow::MainWindow(const Glib::RefPtr<Gtk::Application>& app)
 {
     set_default_size(1280, 720);
-    //set_margin(15);
+
 
     Global::Widget::v_main_window = this;
     Global::Widget::v_main_stack = Gtk::manage(new Gtk::Stack());
@@ -81,9 +81,19 @@ void MainWindow::acceleretors(const Glib::RefPtr<Gtk::Application>& app)
         about.set_modal(true);
         about.set_hide_on_close(true);
         about.set_visible(true); });
+    
+    m_refActionGroup->add_action("cerrarsesion", [this]() 
+        { 
+            if (not Global::User::Current.empty())
+            {
+                cpr::PostAsync(cpr::Url{Global::System::URL + "sesion/logout"});
+                Global::Widget::v_main_stack->set_visible_child("login");
+            }
+        });
 
     insert_action_group("app", m_refActionGroup);
 
     app->set_accel_for_action("app.quit", "<Primary>q");
+    app->set_accel_for_action("app.cerrarsesion", "<Primary>d");
     app->set_accel_for_action("app.about", "<Primary>i");
 }
