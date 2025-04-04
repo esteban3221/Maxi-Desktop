@@ -4,6 +4,10 @@
   <!-- interface-name datos_empresa.ui -->
   <requires lib="gtk" version="4.0"/>
   <object class="GtkBox" id="boxDatosEmpresa">
+    <property name="margin-bottom">10</property>
+    <property name="margin-end">10</property>
+    <property name="margin-start">10</property>
+    <property name="margin-top">10</property>
     <property name="orientation">vertical</property>
     <child>
       <object class="GtkListBox" id="list_config_datos">

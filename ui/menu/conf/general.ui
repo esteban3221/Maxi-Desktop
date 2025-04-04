@@ -4,6 +4,10 @@
   <!-- interface-name general.ui -->
   <requires lib="gtk" version="4.0"/>
   <object class="GtkBox" id="boxConfGeneral">
+    <property name="margin-bottom">10</property>
+    <property name="margin-end">10</property>
+    <property name="margin-start">10</property>
+    <property name="margin-top">10</property>
     <property name="orientation">vertical</property>
     <property name="spacing">10</property>
     <child>
@@ -11,7 +15,7 @@
         <property name="halign">start</property>
         <property name="label" translatable="yes">Configuración General</property>
         <style>
-          <class name="title-2"/>
+          <class name="title-1"/>
         </style>
       </object>
     </child>
@@ -21,7 +25,7 @@
         <property name="label" translatable="yes">Visualización</property>
         <property name="margin-top">25</property>
         <style>
-          <class name="title-4"/>
+          <class name="title-2"/>
         </style>
       </object>
     </child>
@@ -55,7 +59,7 @@
         <property name="halign">start</property>
         <property name="label" translatable="yes">Operaciones en efectivo</property>
         <style>
-          <class name="title-4"/>
+          <class name="title-2"/>
         </style>
       </object>
     </child>
@@ -144,5 +148,4 @@
       </object>
     </child>
   </object>
-  <object class="GtkNotebookPage"/>
 </interface>

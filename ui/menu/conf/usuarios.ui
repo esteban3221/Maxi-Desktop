@@ -3,7 +3,11 @@
 <interface>
   <!-- interface-name usuarios.ui -->
   <requires lib="gtk" version="4.0"/>
-  <object class="GtkBox" id="page_4">
+  <object class="GtkBox" id="box_usuarios">
+    <property name="margin-bottom">10</property>
+    <property name="margin-end">10</property>
+    <property name="margin-start">10</property>
+    <property name="margin-top">10</property>
     <property name="spacing">10</property>
     <child>
       <object class="GtkBox">
