@@ -16,7 +16,7 @@ Glib::RefPtr<Gio::ListStore<MLevelCash>> LevelCash::get_level_cash(const nlohman
     {
         m_list->append(MLevelCash::create(
             i["Denominacion"].get<int>(),
-            i["Almamcenado"].get<int>(),
+            i["Almacenado"].get<int>(),
             i["Recyclador"].get<int>(),
             i["Inmovilidad"].get<int>(),
             0
