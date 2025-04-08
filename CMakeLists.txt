@@ -82,6 +82,12 @@ include_directories(include
 add_subdirectory(lib/Sqlit3-cpp-lib/)
 
 add_executable(Maxicajero ${SOURCES})
+if (UNIX AND NOT APPLE)  # Linux (no macOS)
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(CUPS REQUIRED cups)
+    include_directories(${CUPS_INCLUDE_DIRS})
+    target_link_libraries(Maxicajero PRIVATE ${CUPS_LIBRARIES})
+endif()
 
 target_link_libraries(Maxicajero 
                         PUBLIC 

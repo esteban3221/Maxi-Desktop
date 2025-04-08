@@ -2,6 +2,7 @@
 #include <iostream>
 #include <glibmm.h>
 #include <giomm.h>
+#include "db/coneccion.hpp"
 
 class MConfiguracion : public Glib::Object
 {
@@ -32,6 +33,6 @@ public:
     Configuracion(/* args */);
     ~Configuracion();
 
-    Glib::RefPtr<Gio::ListStore<MConfiguracion>> get_conf_data(int inicio, int fin);
+    Glib::RefPtr<Gio::ListStore<MConfiguracion>> get_conf_data(int inicio, int fin)const;
     void update_conf(const Glib::RefPtr<MConfiguracion> &conf);
 };

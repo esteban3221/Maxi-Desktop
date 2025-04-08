@@ -47,6 +47,7 @@ namespace Global
 
     namespace Utility
     {
+        extern void consume_and_do(cpr::AsyncResponse &async , const std::function<void(const cpr::Response &)> &callback);
         
     } // namespace Utility
 

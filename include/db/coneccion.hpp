@@ -22,6 +22,27 @@ private:
                                    "id INTEGER PRIMARY KEY AUTOINCREMENT,\n"
                                    "ip TEXT NOT NULL UNIQUE\n"
                                    ")");
+
+            this->sqlite3->command("CREATE TABLE configuracion (\n"
+                                    "id INTEGER PRIMARY KEY AUTOINCREMENT,\n"
+                                    "descripcion TEXT NOT NULL,\n"
+                                    "valor TEXT NOT NULL\n"
+                                    ")");
+            
+            this->sqlite3->command("INSERT into configuracion values"
+                                   // 1 - 3
+                                   "(1,'Mostrar Notificacion','1'),"
+                                   "(2,'Mensaje Inicio','Bienvenido'),"
+                                   "(3,'Pagos Superiores','10000'),"
+                                   // 4 - 11
+                                   "(4,'Impresora default',''),"
+                                   "(5,'Activa Impresion','1'),"
+                                   "(6,'Visualiza Agradecimineto','1'),"
+                                   "(7,'Visualiza Fecha','1'),"
+                                   "(8,'Visualiza Direccion','1'),"
+                                   "(9,'Visualiza RFC','1'),"
+                                   "(10,'Visualiza Vendedor','1'),"
+                                   "(11,'Visualiza Contacto','1'),");
             
         }
     }

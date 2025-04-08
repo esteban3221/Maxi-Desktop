@@ -24,7 +24,29 @@ namespace Global
 
     namespace Utility
     {
+        void consume_and_do(cpr::AsyncResponse &async, const std::function<void(const cpr::Response &)> &callback)
+        {
+            std::thread([async = std::move(async), callback]() mutable {
+                try {
+                    while (async.wait_for(std::chrono::milliseconds(100)) != std::future_status::ready) {
+                        Glib::signal_idle().connect_once([]() {
+                            Global::Widget::v_progress_bar->pulse();
+                        });
+                    }
         
+                    auto response = async.get();
+        
+                    Glib::signal_idle().connect_once([response, callback]() {
+                        Global::Widget::v_progress_bar->set_fraction(1.0);
+                        callback(response);
+                    });
+                } 
+                catch (const std::exception& e) 
+                {
+                    std::cerr << "Error: " << e.what() << std::endl;
+                } 
+            }).detach();
+        }
     } // namespace Utility
 
     namespace System

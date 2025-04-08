@@ -13,6 +13,7 @@ class MainWindow : public Gtk::Window
 private:
     Gtk::Overlay v_overlay;
     Gtk::Button v_button;
+    Gtk::Button v_button_conatiner;
 
     Glib::RefPtr<Gio::SimpleActionGroup> m_refActionGroup;
     Glib::RefPtr<Gio::SimpleAction> m_refActionRain;

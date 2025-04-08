@@ -40,8 +40,11 @@
         <child>
           <object class="GtkScrolledWindow">
             <property name="hscrollbar-policy">never</property>
+            <property name="vexpand">True</property>
             <child>
-              <object class="GtkListBox" id="listBoxPrint">
+              <object class="GtkListBox" id="list_box_print">
+                <property name="selection-mode">none</property>
+                <property name="show-separators">True</property>
                 <child>
                   <object class="GtkListBoxRow" id="listBoxRowPrint">
                     <property name="activatable">false</property>
@@ -605,18 +608,8 @@
                           </object>
                         </child>
                         <child>
-                          <object class="GtkLabel">
-                            <property name="label">Test</property>
-                            <property name="margin-bottom">10</property>
-                            <property name="margin-top">30</property>
-                            <property name="xalign">0</property>
-                            <style>
-                              <class name="title-2"/>
-                            </style>
-                          </object>
-                        </child>
-                        <child>
                           <object class="GtkListBox" id="listBoxTest1">
+                            <property name="margin-top">10</property>
                             <property name="selection-mode">none</property>
                             <child>
                               <object class="GtkListBoxRow">
@@ -626,7 +619,7 @@
                                       <object class="GtkLabel" id="lblImpresionPrueba1">
                                         <property name="halign">start</property>
                                         <property name="hexpand">true</property>
-                                        <property name="label">Impresion de Prueba</property>
+                                        <property name="label">Guardar</property>
                                         <property name="valign">center</property>
                                         <property name="xalign">0</property>
                                       </object>
@@ -634,7 +627,7 @@
                                     <child>
                                       <object class="GtkImage">
                                         <property name="halign">end</property>
-                                        <property name="icon-name">printer-symbolic</property>
+                                        <property name="icon-name">document-save-all</property>
                                       </object>
                                     </child>
                                   </object>
