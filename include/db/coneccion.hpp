@@ -42,7 +42,7 @@ private:
                                    "(8,'Visualiza Direccion','1'),"
                                    "(9,'Visualiza RFC','1'),"
                                    "(10,'Visualiza Vendedor','1'),"
-                                   "(11,'Visualiza Contacto','1'),");
+                                   "(11,'Visualiza Contacto','1')");
             
         }
     }

@@ -22,7 +22,20 @@ protected:
         Gtk::Box *v_box;
     };
 
+    struct
+    {
+        Gtk::ListBox *v_lbox_activa;
+        Gtk::Switch *v_switch_activa;
+
+        Gtk::ListBox *v_lbox_vizualizador;
+        Gtk::CheckButton *v_check_vizualizador[6]{nullptr};
+
+        Gtk::ListBox *v_lbox_test;
+    }local,remoto;
+
     Gtk::ListBox *v_list_box_print;
+    Gtk::Notebook *v_ntbook_propiedades;
+    Gtk::TextView *v_text_view;
 public:
     VImpresora(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuilder);
     ~VImpresora();

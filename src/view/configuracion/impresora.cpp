@@ -3,6 +3,25 @@
 VImpresora::VImpresora(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuilder) : Gtk::Box(cobject),m_builder(refBuilder)
 {
     v_list_box_print = m_builder->get_widget<Gtk::ListBox>("list_box_print");
+    v_ntbook_propiedades = m_builder->get_widget<Gtk::Notebook>("ntbookPropiedades");
+    v_text_view = m_builder->get_widget<Gtk::TextView>("text_view");
+
+    local.v_lbox_activa = m_builder->get_widget<Gtk::ListBox>("listBoxPage1_");
+    local.v_switch_activa = m_builder->get_widget<Gtk::Switch>("switchImpresion_");
+    local.v_lbox_vizualizador = m_builder->get_widget<Gtk::ListBox>("listBoxVisualizacion1_");
+
+    for (size_t i = 0; i < 6; i++)
+    {
+        local.v_check_vizualizador[i] = m_builder->get_widget<Gtk::CheckButton>("checkConfig" + std::to_string(i+1) + "_");
+        remoto.v_check_vizualizador[i] = m_builder->get_widget<Gtk::CheckButton>("checkConfig" + std::to_string(i+1));
+    }
+
+    local.v_lbox_test = m_builder->get_widget<Gtk::ListBox>("listBoxTest1");
+
+    remoto.v_lbox_activa = m_builder->get_widget<Gtk::ListBox>("listBoxPage1");
+    remoto.v_switch_activa = m_builder->get_widget<Gtk::Switch>("switchImpresion");
+    remoto.v_lbox_vizualizador = m_builder->get_widget<Gtk::ListBox>("listBoxVisualizacion1");
+    remoto.v_lbox_test = m_builder->get_widget<Gtk::ListBox>("listBoxTest1");
 }
 
 VImpresora::~VImpresora()

@@ -30,5 +30,9 @@ Glib::RefPtr<Gio::ListStore<MConfiguracion>> Configuracion::get_conf_data(int in
 
 void Configuracion::update_conf(const Glib::RefPtr<MConfiguracion> &conf)
 {
-
+    auto &database = Database::getInstance();
+    database.sqlite3->command("UPDATE configuracion set descripcion = ?, valor = ? WHERE id = ?", 
+        conf->m_descripcion.c_str(),
+        conf->m_valor.c_str(),
+        conf->m_id);
 }
