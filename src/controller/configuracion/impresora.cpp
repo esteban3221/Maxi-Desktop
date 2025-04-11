@@ -9,6 +9,9 @@ Impresora::Impresora(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &
     signal_map().connect(sigc::mem_fun(*this, &Impresora::init_impresoras_windows));
 #endif
 
+    m_refPageSetup = Gtk::PageSetup::create();
+    m_refSettings = Gtk::PrintSettings::create();
+
     v_text_view->set_buffer(text_buffer);
     test_text_impresion(0);
     signal_map().connect(sigc::mem_fun(*this, &Impresora::init_local));
@@ -18,6 +21,7 @@ Impresora::Impresora(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &
 
     local.v_lbox_activa->signal_row_activated().connect(sigc::mem_fun(*this, &Impresora::on_activalist_activate));
     local.v_lbox_vizualizador->signal_row_activated().connect(sigc::mem_fun(*this, &Impresora::on_vizaliza_list_activate));
+    local.v_lbox_test->signal_row_activated().connect(sigc::mem_fun(*this, &Impresora::on_list_test_printer));
 
     v_list_box_print->signal_row_activated().connect(sigc::mem_fun(*this, &Impresora::on_list_box_row_selected));
     remoto.v_lbox_test->signal_row_activated().connect(sigc::mem_fun(*this, &Impresora::on_list_remoto_guardar));
@@ -75,15 +79,27 @@ void Impresora::on_vizaliza_list_activate(Gtk::ListBoxRow *row)
 
 void Impresora::on_vizaliza_list_activate_remoto(Gtk::ListBoxRow *row)
 {
-    // auto db = std::make_unique<Configuracion>();
-    // remoto.v_switch_activa->set_active(!remoto.v_switch_activa->get_active());
-    // db->update_conf(MConfiguracion::create(5,
-    //                                        "Impresion Local",
-    //                                        std::to_string(remoto.v_switch_activa->get_active())));
-
-    // actualiza_buffer();
 }
 
+void Impresora::on_list_test_printer(Gtk::ListBoxRow *row)
+{
+
+    m_refPrintFormOperation->set_track_print_status();
+    m_refPrintFormOperation->set_default_page_setup(m_refPageSetup);
+    m_refPrintFormOperation->set_print_settings(m_refSettings);
+
+    try
+    {
+
+        m_refPrintFormOperation->run(Gtk::PrintOperation::Action::PRINT, *Global::Widget::v_main_window);
+    }
+    catch (const Gtk::PrintError &ex)
+    {
+        // See documentation for exact Gtk::PrintError error codes.
+        std::cerr << "An error occurred while trying to run a print operation:"
+                  << ex.what() << std::endl;
+    }
+}
 void Impresora::on_switch_tab_changed(Gtk::Widget *, guint id)
 {
     if (id == 0)
@@ -119,8 +135,13 @@ void Impresora::init_impresoras_linux()
                 if (subtitle.empty())
                     subtitle = "None";
                 auto printer = Gtk::make_managed<VListPrinters>(name, subtitle);
+                
                 if (name == impresora_default)
+                {
                     printer->v_image_check->set_opacity(1);
+                    m_refSettings->set_printer(impresora_default);
+                }
+                    
 
                 v_list_box_print->append(*printer);
             }
@@ -188,14 +209,13 @@ std::vector<Impresora::PrinterInfo> Impresora::listarImpresoras()
     return printers;
 };
 
-
 void Impresora::init_impresoras_windows()
 {
     v_list_box_print->remove_all();
     auto db_impresora = std::make_unique<Configuracion>();
     auto db_contendor = db_impresora->get_conf_data(4, 4);
     std::string impresora_default = db_contendor->get_item(0)->m_valor;
-    
+
     for (auto &&i : listarImpresoras())
     {
         auto printer = Gtk::make_managed<VListPrinters>(i.name, i.uri);
@@ -203,7 +223,6 @@ void Impresora::init_impresoras_windows()
         if (i.name == impresora_default)
             printer->v_image_check->set_opacity(1);
     }
-    
 }
 #endif
 
@@ -251,6 +270,7 @@ void Impresora::on_list_box_row_selected(Gtk::ListBoxRow *row)
             if (printer == this_row)
             {
                 printer->v_image_check->set_opacity(1);
+                m_refSettings->set_printer(printer->v_titulo->get_text());
                 auto id_impresora = this_row->v_titulo->get_text();
                 db_impresora->update_conf(MConfiguracion::create(4, "Impresora default", id_impresora));
             }
@@ -266,6 +286,7 @@ void Impresora::test_text_impresion(int id)
         if (response.status_code == 200)
         {
             text_buffer->set_text("");
+            m_refPrintFormOperation = PrintFormOperation::create();
             auto json = nlohmann::json::parse(response.text);
             auto ticket_config = std::make_unique<std::stringstream>();
 
@@ -323,6 +344,7 @@ void Impresora::test_text_impresion(int id)
                             << "\n"
                             << "--------------------------------\n";
 
+            m_refPrintFormOperation->set_markup(ticket_config->str());
             
             text_buffer->insert_markup(text_buffer->end(), ticket_config->str());
         } });

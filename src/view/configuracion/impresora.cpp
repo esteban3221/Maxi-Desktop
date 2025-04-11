@@ -16,7 +16,7 @@ VImpresora::VImpresora(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder>
         remoto.v_check_vizualizador[i] = m_builder->get_widget<Gtk::CheckButton>("checkConfig" + std::to_string(i+1));
     }
 
-    local.v_lbox_test = m_builder->get_widget<Gtk::ListBox>("listBoxTest1");
+    local.v_lbox_test = m_builder->get_widget<Gtk::ListBox>("listBoxTest1_");
 
     remoto.v_lbox_activa = m_builder->get_widget<Gtk::ListBox>("listBoxPage1");
     remoto.v_switch_activa = m_builder->get_widget<Gtk::Switch>("switchImpresion");

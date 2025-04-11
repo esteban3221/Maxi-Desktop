@@ -14,6 +14,9 @@ Glib::RefPtr<Gio::ListStore<MListIp>> ListIp::get_all_ip()
     auto contenedor_data = database.sqlite3->command("select * from ip");
     auto m_list = Gio::ListStore<MListIp>::create();
 
+    if(contenedor_data->empty())
+        return m_list;
+    
     for (size_t i = 0; i < contenedor_data->at("id").size(); i++)
     {
         m_list->append(MListIp::create(std::stoi(contenedor_data->at("id")[i]), contenedor_data->at("ip")[i]));

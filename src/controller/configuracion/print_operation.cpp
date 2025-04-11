@@ -30,11 +30,11 @@ void PrintFormOperation::on_begin_print(
   m_refLayout->set_width(static_cast<int>(width * Pango::SCALE));
 
   //Set and mark up the text to print:
-  Glib::ustring marked_up_form_text;
-  marked_up_form_text += "<b>Name</b>: " + m_Name + "\n\n";
-  marked_up_form_text += "<b>Comments</b>: " + m_Comments;
+  Glib::ustring marked_up_form_text = this->markup;
 
   m_refLayout->set_markup(marked_up_form_text);
+
+  this->markup.clear(); 
 
   //Set the number of pages to print by determining the line numbers
   //where page breaks occur:

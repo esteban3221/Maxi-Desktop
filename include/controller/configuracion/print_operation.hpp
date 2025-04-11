@@ -11,9 +11,10 @@ public:
     static Glib::RefPtr<PrintFormOperation> create();
     virtual ~PrintFormOperation();
 
-    void set_name(const Glib::ustring &name) { m_Name = name; }
-    void set_comments(const Glib::ustring &comments) { m_Comments = comments; }
-
+    void set_markup(const Glib::ustring &markup)
+    {
+        this->markup = markup;
+    }
 protected:
     PrintFormOperation();
 
@@ -21,8 +22,7 @@ protected:
     void on_begin_print(const Glib::RefPtr<Gtk::PrintContext> &context) override;
     void on_draw_page(const Glib::RefPtr<Gtk::PrintContext> &context, int page_nr) override;
 
-    Glib::ustring m_Name;
-    Glib::ustring m_Comments;
+    Glib::ustring markup;
     Glib::RefPtr<Pango::Layout> m_refLayout;
     std::vector<int> m_PageBreaks; // line numbers where a page break occurs
 };
