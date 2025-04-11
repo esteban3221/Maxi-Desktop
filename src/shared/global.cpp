@@ -24,6 +24,14 @@ namespace Global
 
     namespace Utility
     {
+        #ifdef __WIN32__
+        std::string WStrToUTF8(const wchar_t* wstr)
+        {
+            std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+            std::string utf8_str = converter.to_bytes(wstr);
+            return utf8_str;
+        }
+        #endif
         void consume_and_do(cpr::AsyncResponse &async, const std::function<void(const cpr::Response &)> &callback)
         {
             std::thread([async = std::move(async), callback]() mutable {

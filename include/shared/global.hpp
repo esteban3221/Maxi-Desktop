@@ -48,6 +48,11 @@ namespace Global
     namespace Utility
     {
         extern void consume_and_do(cpr::AsyncResponse &async , const std::function<void(const cpr::Response &)> &callback);
+        #ifdef __WIN32__
+        #include <locale>
+        #include <codecvt>
+        extern std::string WStrToUTF8(const wchar_t* wstr);
+        #endif
         
     } // namespace Utility
 

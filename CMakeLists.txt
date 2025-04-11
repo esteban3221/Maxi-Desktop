@@ -65,6 +65,8 @@ set(SOURCES
     src/controller/configuracion/empresa.cpp
     src/controller/configuracion/usuarios.cpp
     src/controller/configuracion/impresora.cpp
+
+    src/controller/configuracion/print_operation.cpp
     #================GLOBAL=================
     src/shared/global.cpp
 )

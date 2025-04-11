@@ -25,8 +25,7 @@ void TitleBar::init_list_ip(void)
         Global::System::URL = "http://" + Global::System::IP + ":44333/";
     }
 
-    std::thread([this]() { while (poll_ip())  std::this_thread::sleep_for(std::chrono::seconds(5)); })
-        .detach();
+    std::thread([this]() { while (poll_ip())  std::this_thread::sleep_for(std::chrono::seconds(5)); }).detach();
 }
 
 bool TitleBar::poll_ip(void)
