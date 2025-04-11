@@ -13,15 +13,14 @@ Glib::RefPtr<PrintFormOperation> PrintFormOperation::create()
   return Glib::make_refptr_for_instance<PrintFormOperation>(new PrintFormOperation());
 }
 
-void PrintFormOperation::on_begin_print(
-        const Glib::RefPtr<Gtk::PrintContext>& print_context)
+void PrintFormOperation::on_begin_print(const Glib::RefPtr<Gtk::PrintContext>& print_context)
 {
   //Create and set up a Pango layout for PrintData based on the passed
   //PrintContext: We then use this to calculate the number of pages needed, and
   //the lines that are on each page.
   m_refLayout = print_context->create_pango_layout();
 
-  Pango::FontDescription font_desc("sans 12");
+  Pango::FontDescription font_desc("mono 9");
   m_refLayout->set_font_description(font_desc);
 
   const double width = print_context->get_width();

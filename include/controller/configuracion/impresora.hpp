@@ -24,6 +24,7 @@ private:
     };
 
     std::vector<PrinterInfo> listarImpresoras();
+    std::string ticket_markup;
     void init_impresoras_windows();
 
     void init_local();

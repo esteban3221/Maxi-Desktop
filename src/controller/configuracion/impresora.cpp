@@ -74,7 +74,7 @@ void Impresora::on_vizaliza_list_activate(Gtk::ListBoxRow *row)
                                            "Visualiza Impresion",
                                            std::to_string(local.v_check_vizualizador[indice]->get_active())));
 
-    // actualiza_buffer();
+    
 }
 
 void Impresora::on_vizaliza_list_activate_remoto(Gtk::ListBoxRow *row)
@@ -83,15 +83,24 @@ void Impresora::on_vizaliza_list_activate_remoto(Gtk::ListBoxRow *row)
 
 void Impresora::on_list_test_printer(Gtk::ListBoxRow *row)
 {
+    m_refPrintFormOperation = PrintFormOperation::create();
+
+    m_refPrintFormOperation->set_markup(ticket_markup);
 
     m_refPrintFormOperation->set_track_print_status();
+    m_refSettings->set_paper_height(80, Gtk::Unit::MM);
+    m_refSettings->set_paper_width(297, Gtk::Unit::MM);
+
     m_refPrintFormOperation->set_default_page_setup(m_refPageSetup);
     m_refPrintFormOperation->set_print_settings(m_refSettings);
 
     try
     {
-
-        m_refPrintFormOperation->run(Gtk::PrintOperation::Action::PRINT, *Global::Widget::v_main_window);
+        m_refPrintFormOperation->run(Gtk::PrintOperation::Action::PRINT);
+        m_refPrintFormOperation->signal_done().connect([this](Gtk::PrintOperation::Result result){
+            Global::Widget::v_revealer->set_reveal_child();
+            Global::Widget::v_revealer_title->set_text("Impresion realizada correctamente");
+        });
     }
     catch (const Gtk::PrintError &ex)
     {
@@ -270,7 +279,6 @@ void Impresora::on_list_box_row_selected(Gtk::ListBoxRow *row)
             if (printer == this_row)
             {
                 printer->v_image_check->set_opacity(1);
-                m_refSettings->set_printer(printer->v_titulo->get_text());
                 auto id_impresora = this_row->v_titulo->get_text();
                 db_impresora->update_conf(MConfiguracion::create(4, "Impresora default", id_impresora));
             }
@@ -281,12 +289,13 @@ void Impresora::on_list_box_row_selected(Gtk::ListBoxRow *row)
 void Impresora::test_text_impresion(int id)
 {
     auto response = cpr::GetAsync(cpr::Url{Global::System::URL, "configuracion/get_informacion_empresa"});
+    
     Global::Utility::consume_and_do(response, [this, id](const cpr::Response &response)
                                     {
         if (response.status_code == 200)
         {
             text_buffer->set_text("");
-            m_refPrintFormOperation = PrintFormOperation::create();
+
             auto json = nlohmann::json::parse(response.text);
             auto ticket_config = std::make_unique<std::stringstream>();
 
@@ -344,8 +353,7 @@ void Impresora::test_text_impresion(int id)
                             << "\n"
                             << "--------------------------------\n";
 
-            m_refPrintFormOperation->set_markup(ticket_config->str());
-            
+            ticket_markup = ticket_config->str();
             text_buffer->insert_markup(text_buffer->end(), ticket_config->str());
         } });
 }
