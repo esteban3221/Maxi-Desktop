@@ -49,6 +49,7 @@
                 <child>
                   <object class="GtkEntry" id="ety_conf_direccion">
                     <property name="hexpand">true</property>
+                    <property name="invisible-char-set">True</property>
                     <property name="placeholder-text">Type here…</property>
                   </object>
                 </child>
@@ -94,6 +95,7 @@
                   <object class="GtkEntry" id="ety_conf_contacto">
                     <property name="hexpand">true</property>
                     <property name="placeholder-text">Type here…</property>
+                    <property name="show-emoji-icon">True</property>
                   </object>
                 </child>
               </object>
@@ -116,6 +118,7 @@
                   <object class="GtkEntry" id="ety_conf_thanks">
                     <property name="hexpand">true</property>
                     <property name="placeholder-text">Type here…</property>
+                    <property name="show-emoji-icon">True</property>
                   </object>
                 </child>
               </object>

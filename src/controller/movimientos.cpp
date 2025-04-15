@@ -12,6 +12,7 @@ Movimientos::Movimientos(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builde
     v_ety_fin->signal_icon_press().connect(sigc::mem_fun(*this, &Movimientos::muestra_calendario_fin));
     v_calendario.signal_day_selected().connect(sigc::mem_fun(*this, &Movimientos::set_fecha));
     v_btn_remueve_filtros->signal_clicked().connect(sigc::mem_fun(*this, &Movimientos::borra_filtro));
+    v_btn_printer->signal_clicked().connect(sigc::mem_fun(*this, &Movimientos::reimprime_tickets));
 }
 
 Movimientos::~Movimientos()
@@ -27,6 +28,19 @@ void Movimientos::init_datos()
 
     auto model_list = Gio::ListStore<MLog>::create();
 
+    auto size_expression = Gtk::ClosureExpression<Glib::ustring::size_type>::create(
+        [](const Glib::RefPtr<Glib::ObjectBase> &item) -> Glib::ustring::size_type
+        {
+            const auto col = std::dynamic_pointer_cast<MLog>(item);
+            return col ? col->m_user.size() : 0;
+        });
+
+    m_LengthSorter = Gtk::NumericSorter<Glib::ustring::size_type>::create(size_expression);
+    m_LengthSorter->set_sort_order(Gtk::SortType::ASCENDING);
+
+    auto sorter_model = Gtk::SortListModel::create(model_list, m_LengthSorter);
+    auto selection = Gtk::SingleSelection::create(sorter_model);
+
     auto uint_expression = Gtk::ClosureExpression<unsigned int>::create(
         [](const Glib::RefPtr<Glib::ObjectBase> &item) -> unsigned int
         {
@@ -34,10 +48,6 @@ void Movimientos::init_datos()
             return col ? col->m_id : 0;
         });
     m_IdSorter = Gtk::NumericSorter<unsigned int>::create(uint_expression);
-
-    auto sorter_model = Gtk::SortListModel::create(model_list, m_IdSorter);
-    auto selection = Gtk::SingleSelection::create(sorter_model); 
-
     v_column_log->set_model(selection);
 
     {
@@ -45,8 +55,8 @@ void Movimientos::init_datos()
         factory->signal_setup().connect(sigc::mem_fun(*this, &Movimientos::on_setup_label));
         factory->signal_bind().connect(sigc::mem_fun(*this, &Movimientos::on_bind_id));
 
-        column_id = Gtk::ColumnViewColumn::create("ID", factory); 
-
+        column_id = Gtk::ColumnViewColumn::create("ID", factory);
+        column_id->set_sorter(m_IdSorter);
         v_column_log->append_column(column_id);
     }
 
@@ -114,6 +124,18 @@ void Movimientos::init_datos()
     }
 }
 
+void Movimientos::reimprime_tickets()
+{
+    auto row = v_column_log->get_model()->get_selection()->get_minimum();
+
+    auto single_selection = std::dynamic_pointer_cast<Gtk::SingleSelection>(v_column_log->get_model());
+    auto m_list = single_selection->get_typed_object<MLog>(row);
+
+    m_list->m_tipo += " (Reimpresion)";
+
+    Global::System::imprime_ticket(m_list, 0);
+}
+
 void Movimientos::actualiza_data(const Glib::RefPtr<Gtk::SelectionModel> &selection, const Glib::RefPtr<Gio::ListStore<MLog>> &log)
 {
     auto single = std::dynamic_pointer_cast<Gtk::SingleSelection>(selection);
@@ -125,9 +147,8 @@ void Movimientos::actualiza_data(const Glib::RefPtr<Gtk::SelectionModel> &select
     for (size_t i = 0; i < log->get_n_items(); i++)
     {
         list_store->append(log->get_item(i));
-        single->set_selected(i);
     }
-    single->unselect_all();
+    column_id->set_sorter(m_IdSorter);
 }
 
 void Movimientos::consume_data()
@@ -163,7 +184,7 @@ void Movimientos::consume_data()
 
             auto response = cpy.get();
 
-            if (response.status_code == cpr::status::HTTP_OK) 
+            if (response.status_code == 200) 
             {
                 auto j = nlohmann::json::parse(response.text);
 

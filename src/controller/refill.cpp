@@ -1,5 +1,4 @@
 #include "controller/refill.hpp"
-#include "refill.hpp"
 
 Refill::Refill(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuilder) : VRefill(cobject, refBuilder)
 {
@@ -17,21 +16,10 @@ Refill::~Refill()
 
 void Refill::on_show_map()
 {
-    std::thread([this]()
-                {
-                    auto future = cpr::GetAsync(cpr::Url{Global::System::URL + "validadores/get_dashboard"});
-                    while (future.wait_for(std::chrono::milliseconds(100)) != std::future_status::ready)
-                    {
-                        Glib::signal_idle().connect_once([this]() { Global::Widget::v_progress_bar->pulse(); });
-                    }
-
-                    auto cpy = future.share();
-
-                    Glib::signal_idle().connect_once([this, cpy]()
-                                                     {
-            auto response = cpy.get();
-
-            if (response.status_code == cpr::status::HTTP_OK) 
+    auto future = cpr::GetAsync(cpr::Url{Global::System::URL + "validadores/get_dashboard"});
+    Global::Utility::consume_and_do(future,[this](cpr::Response response)
+    {
+        if (response.status_code == cpr::status::HTTP_OK) 
             {
                 auto level = std::make_unique<LevelCash>();
                 auto json = nlohmann::json::parse(response.text);
@@ -47,8 +35,9 @@ void Refill::on_show_map()
                 v_lbl_total->set_text(json["total"].get<std::string>());
                 v_lbl_total_billetes->set_text(json["total_billetes"].get<std::string>());
                 v_lbl_total_monedas->set_text(json["total_monedas"].get<std::string>());
-            } });
-                }).detach();
+            }
+    });
+    
 }
 
 void Refill::init_data(Gtk::ColumnView *vcolumn, const Glib::RefPtr<Gio::ListStore<MLevelCash>> &level)

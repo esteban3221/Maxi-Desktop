@@ -1,5 +1,7 @@
 #pragma once
 #include "view/pago_m.hpp"
+#include "model/log.hpp"
+#include "controller/configuracion/impresora.hpp"
 
 class PagoM : public VPagoM
 {

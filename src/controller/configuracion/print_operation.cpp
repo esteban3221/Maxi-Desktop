@@ -28,10 +28,13 @@ void PrintFormOperation::on_begin_print(const Glib::RefPtr<Gtk::PrintContext>& p
 
   m_refLayout->set_width(static_cast<int>(width * Pango::SCALE));
 
-  //Set and mark up the text to print:
-  Glib::ustring marked_up_form_text = this->markup;
 
-  m_refLayout->set_markup(marked_up_form_text);
+  m_refLayout->set_markup(this->markup);
+  Pango::TabArray tabs(2);
+  tabs.set_tab(0, Pango::TabAlign::LEFT, 0);
+  tabs.set_tab(1, Pango::TabAlign::RIGHT, 150); 
+
+  m_refLayout->set_tabs(tabs);
 
   this->markup.clear(); 
 

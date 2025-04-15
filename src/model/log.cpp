@@ -2,7 +2,7 @@
 
 Log::Log(/* args */)
 {
-    Glib::init();
+    
 }
 
 Log::~Log()

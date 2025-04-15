@@ -53,6 +53,6 @@ namespace Global
 {
     namespace System
     {
-        extern std::string imprime_ticket(Glib::RefPtr<MLog> log, int faltante = 0);
+        extern void imprime_ticket(Glib::RefPtr<MLog> log, int faltante = 0);
     } // namespace System
 }
