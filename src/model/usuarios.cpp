@@ -8,31 +8,19 @@ Usuarios::~Usuarios()
 {
 }
 
-Glib::RefPtr<Gio::ListStore<MUsuarios>> Usuarios::get_usuarios()
+Glib::RefPtr<Gio::ListStore<MUsuarios>> Usuarios::get_usuarios(const nlohmann::json_abi_v3_11_3::json &json)
 {
     auto m_list = Gio::ListStore<MUsuarios>::create();
 
+    for (auto &item : json)
+    {
+        auto id = item["id"].get<size_t>();
+        auto usuario = item["username"].get<std::string>();
+        auto password = item["password"].get<std::string>();
+
+        auto m_usuario = MUsuarios::create(id, usuario, password);
+        m_list->append(m_usuario);
+    }
+
     return m_list;
-}
-
-const std::pair<int, std::string> Usuarios::existe_usuario(const std::string &pass) const
-{
-
-    return {-1 , "sds"};
-}
-
-size_t Usuarios::insert_usuario(const Glib::RefPtr<MUsuarios> &usuario)
-{
-    
-    return std::stoull("0");
-}
-
-void Usuarios::update_usuario(const Glib::RefPtr<MUsuarios> &usuario)
-{
-    
-}
-
-void Usuarios::delete_usuario(const Glib::RefPtr<MUsuarios> &usuario)
-{
-    
 }

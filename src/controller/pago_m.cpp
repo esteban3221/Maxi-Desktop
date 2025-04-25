@@ -52,7 +52,7 @@ void PagoM::on_btn_cobrar_clicked()
                                             v_spin_coin[3]->get_value_as_int()})},
             {"total", total}};
 
-        auto future = cpr::PostAsync(cpr::Url{Global::System::URL + "accion/inicia_pago_manual"}, cpr::Body{json.dump()});
+        auto future = cpr::PostAsync(cpr::Url{Global::System::URL + "accion/inicia_pago_manual"}, Global::Utility::header, cpr::Body{json.dump()});
 
         Global::Utility::consume_and_do(future, [this](const cpr::Response &response)
                                         {

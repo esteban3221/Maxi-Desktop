@@ -8,15 +8,19 @@ UsuariosRoles::~UsuariosRoles()
 {
 }
 
-Glib::RefPtr<Gio::ListStore<MUsuariosRoles>> UsuariosRoles::get_usuario_roles_by_id(size_t id)
+Glib::RefPtr<Gio::ListStore<MUsuariosRoles>> UsuariosRoles::get_usuario_roles_by_id(const nlohmann::json_abi_v3_11_3::json &json)
 {
     auto m_list = Gio::ListStore<MUsuariosRoles>::create();
 
+    for (auto &item : json)
+    {
+        auto id = item["id"].get<size_t>();
+        auto id_usuario = item["id_usuario"].get<size_t>();
+        auto id_rol = item["id_rol"].get<uint16_t>();
 
+        auto m_usuario_roles = MUsuariosRoles::create(id, id_usuario, id_rol);
+        m_list->append(m_usuario_roles);
+    }
+    
     return m_list;
-}
-
-void UsuariosRoles::update_usuario_roles(size_t id, const Glib::RefPtr<Gio::ListStore<MRoles>> & list_roles)
-{
-
 }

@@ -47,6 +47,7 @@ namespace Global
 
     namespace Utility
     {
+        extern cpr::Header header;
         extern void consume_and_do(cpr::AsyncResponse &async , const std::function<void(const cpr::Response &)> &callback);
         #ifdef __WIN32__
         #include <locale>

@@ -14,6 +14,8 @@ VRefill::VRefill(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refB
     v_lbl_total = m_builder->get_widget<Gtk::Label>("lblTotalMXN3");
 
     v_btn_incia = m_builder->get_widget<Gtk::Button>("btn_iniciar");
+    v_btn_transpaso = m_builder->get_widget<Gtk::Button>("btn_transpaso");
+    v_btn_retirada = m_builder->get_widget<Gtk::Button>("btn_retirada");
     
 }
 

@@ -12,7 +12,7 @@ Empresa::~Empresa()
 
 void Empresa::on_show_map()
 {
-    auto future = cpr::GetAsync(cpr::Url{Global::System::URL + "configuracion/get_informacion_empresa"});
+    auto future = cpr::GetAsync(cpr::Url{Global::System::URL + "configuracion/get_informacion_empresa"}, Global::Utility::header);
     Global::Utility::consume_and_do(future, [this](const cpr::Response &response) {
         if (response.status_code == cpr::status::HTTP_OK) 
         {
@@ -43,7 +43,7 @@ void Empresa::on_btn_clicked()
         {"contacto", v_datos_empresa[3]->get_text()},
         {"agradecimiento", v_datos_empresa[4]->get_text()}
     };
-    auto future = cpr::PostAsync(cpr::Url{Global::System::URL + "configuracion/actualiza_informacion_empresa"},
+    auto future = cpr::PostAsync(cpr::Url{Global::System::URL + "configuracion/actualiza_informacion_empresa"}, Global::Utility::header,
         cpr::Body{json.dump()}
     );
 

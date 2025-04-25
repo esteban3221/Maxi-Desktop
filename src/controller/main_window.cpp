@@ -92,6 +92,7 @@ void MainWindow::acceleretors(const Glib::RefPtr<Gtk::Application>& app)
             {
                 cpr::PostAsync(cpr::Url{Global::System::URL + "sesion/logout"});
                 Global::Widget::v_main_stack->set_visible_child("login");
+                Global::Widget::v_main_title->set_text("Maxicajero");
             }
         });
 

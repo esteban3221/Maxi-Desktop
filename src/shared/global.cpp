@@ -32,6 +32,7 @@ namespace Global
             return utf8_str;
         }
         #endif
+        cpr::Header header{{"Authorization", "Bearer " + Global::System::token}};
         void consume_and_do(cpr::AsyncResponse &async, const std::function<void(const cpr::Response &)> &callback)
         {
             std::thread([async = std::move(async), callback]() mutable {

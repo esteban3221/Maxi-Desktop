@@ -14,7 +14,7 @@ void PagoA::on_btn_enter_clicked()
 
     auto value = v_base_nip->v_ety_spin->get_value_as_int();
     auto json = nlohmann::json{{"value", value}};
-    auto future = cpr::PostAsync(cpr::Url{Global::System::URL + "accion/inicia_pago"}, cpr::Body{json.dump()});
+    auto future = cpr::PostAsync(cpr::Url{Global::System::URL + "accion/inicia_pago"}, Global::Utility::header,cpr::Body{json.dump()});
 
     Global::Utility::consume_and_do(future, [this](const cpr::Response &response)
                                     {

@@ -3,7 +3,7 @@
 #include <glibmm.h>
 #include <giomm.h>
 #include <memory>
-
+#include "global.hpp"
 
 
 class MUsuarios : public Glib::Object
@@ -33,14 +33,5 @@ public:
     Usuarios(/* args */);
     ~Usuarios();
 
-    Glib::RefPtr<Gio::ListStore<MUsuarios>> get_usuarios();
-
-    /// @brief Verifica si existe un usuario a travez de su contraseña
-    /// @param passw
-    /// @return Nombre de usuario si es que existe, Si no vacio ""
-    const std::pair<int, std::string> existe_usuario(const std::string &) const;
-
-    size_t insert_usuario(const Glib::RefPtr<MUsuarios> &usuario);
-    void update_usuario(const Glib::RefPtr<MUsuarios> &usuario);
-    void delete_usuario(const Glib::RefPtr<MUsuarios> &usuario);
+    Glib::RefPtr<Gio::ListStore<MUsuarios>> get_usuarios(const nlohmann::json_abi_v3_11_3::json &json);
 };

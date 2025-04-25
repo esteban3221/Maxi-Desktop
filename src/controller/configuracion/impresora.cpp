@@ -44,7 +44,7 @@ void Impresora::on_list_remoto_guardar(Gtk::ListBoxRow *)
 
     auto response = cpr::PostAsync(cpr::Url{Global::System::URL, "configuracion/actualiza_impresion"},
                                    cpr::Body{json.dump()},
-                                   cpr::Header{{"Content-Type", "application/json"}});
+                                   Global::Utility::header);
 
     Global::Utility::consume_and_do(response, [this](const cpr::Response &response)
                                     {
@@ -246,7 +246,7 @@ void Impresora::init_local()
 
 void Impresora::init_remoto()
 {
-    auto response = cpr::GetAsync(cpr::Url{Global::System::URL, "configuracion/get_informacion_impresora"});
+    auto response = cpr::GetAsync(cpr::Url{Global::System::URL, "configuracion/get_informacion_impresora"},Global::Utility::header);
     Global::Utility::consume_and_do(response, [this](const cpr::Response &response)
                                     {
         if (response.status_code == 200)
@@ -286,7 +286,7 @@ void Impresora::on_list_box_row_selected(Gtk::ListBoxRow *row)
 
 void Impresora::test_text_impresion(int id)
 {
-    auto response = cpr::GetAsync(cpr::Url{Global::System::URL, "configuracion/get_informacion_empresa"});
+    auto response = cpr::GetAsync(cpr::Url{Global::System::URL, "configuracion/get_informacion_empresa"},Global::Utility::header);
 
     Global::Utility::consume_and_do(response, [this, id](const cpr::Response &response)
                                     {
@@ -378,20 +378,20 @@ namespace Global
                               << "--------------------------------\n\n"
                               << json["razon_social"].get<std::string>() << "\n\n";
 
-                if (db_->get_item(3)->m_valor != "1")
+                if (db_->get_item(3)->m_valor == "1")
                     ticket_config << "<span weight=\"bold\">Direccion:</span>" << json["direccion"].get<std::string>() << "\n"
                                   << "--------------------------------\n";
 
-                if (db_->get_item(4)->m_valor != "1")
+                if (db_->get_item(4)->m_valor == "1")
                     ticket_config << "<span weight=\"bold\">RFC:</span> " << json["rfc"].get<std::string>() << "\n"
                                   << "--------------------------------\n";
 
-                if (db_->get_item(2)->m_valor != "1")
+                if (db_->get_item(2)->m_valor == "1")
                     ticket_config << "<span weight=\"bold\">Fecha:</span> " << Glib::DateTime::create_now_local().format("%Y-%m-%d %H:%M:%S") << "\n";
 
                 ticket_config << "<span weight=\"bold\">No. Ticket:</span> " << log->m_id << "\n\n";
 
-                if (db_->get_item(5)->m_valor != "1")
+                if (db_->get_item(5)->m_valor == "1")
                     ticket_config << "Le atendio: " << log->m_user << "\n\n"
                                   << "--------------------------------\n";
 
@@ -406,11 +406,11 @@ namespace Global
                               << log->m_estatus << "\n"
                               << "--------------------------------\n";
 
-                if (db_->get_item(6)->m_valor != "1")
+                if (db_->get_item(6)->m_valor == "1")
                     ticket_config << "**<span weight=\"bold\">" << json["contacto"].get<std::string>() << "</span>**\n"
                                   << "--------------------------------\n";
 
-                if (db_->get_item(1)->m_valor != "1")
+                if (db_->get_item(1)->m_valor == "1")
                     ticket_config << "**<span weight=\"bold\">" << json["agradecimiento"].get<std::string>() << "</span>**\n"
                                   << "--------------------------------\n";
                 

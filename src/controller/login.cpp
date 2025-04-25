@@ -5,6 +5,7 @@ Login::Login(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuild
 {
     v_btn_acceder->signal_clicked().connect(sigc::mem_fun(*this, &Login::on_btn_login_clicked));
     ((Gtk::Entry *)v_ety_passwd)->signal_activate().connect(sigc::mem_fun(*this, &Login::on_btn_login_clicked));
+    signal_map().connect([this](){v_ety_passwd->delete_text(0,v_ety_passwd->get_text().size());});
 }
 
 Login::~Login()
@@ -25,6 +26,8 @@ void Login::on_btn_login_clicked()
 
             Global::User::Current = j["usuario"].get<std::string>();
             Global::System::token = j["token"].get<std::string>();
+            
+            Global::Utility::header = cpr::Header{{"Authorization", "Bearer " + Global::System::token}};
             Global::Widget::v_main_title->set_text(Global::User::Current);
             Global::Widget::v_main_stack->set_visible_child("menu");
         }

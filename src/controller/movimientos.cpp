@@ -134,6 +134,8 @@ void Movimientos::reimprime_tickets()
     m_list->m_tipo += " (Reimpresion)";
 
     Global::System::imprime_ticket(m_list, 0);
+
+    m_list->m_tipo.erase(m_list->m_tipo.size() - 14, 14);
 }
 
 void Movimientos::actualiza_data(const Glib::RefPtr<Gtk::SelectionModel> &selection, const Glib::RefPtr<Gio::ListStore<MLog>> &log)
@@ -155,54 +157,46 @@ void Movimientos::consume_data()
 {
     v_spin_pag->update();
 
-    std::thread([this]()
-                {
-        auto id_tipo = v_dp_tipo->get_selected();
-        auto tipo = m_list_tipos->get_string(id_tipo);
-        auto f_ini = v_ety_ini->get_text();
-        auto f_fin = v_ety_fin->get_text();
-        auto pag = v_spin_pag->get_value_as_int();
+    auto id_tipo = v_dp_tipo->get_selected();
+    auto tipo = m_list_tipos->get_string(id_tipo);
+    auto f_ini = v_ety_ini->get_text();
+    auto f_fin = v_ety_fin->get_text();
+    auto pag = v_spin_pag->get_value_as_int();
 
-        pag == 1 ? pag = 0 : pag-- * 100;
+    pag == 1 ? pag = 0 : pag-- * 100;
 
-        auto json = nlohmann::json{
-            {"tipo", tipo},
-            {"f_ini", f_ini},
-            {"f_fin", f_fin},
-            {"pag", pag}};
+    auto json = nlohmann::json{
+        {"tipo", tipo},
+        {"f_ini", f_ini},
+        {"f_fin", f_fin},
+        {"pag", pag}};
 
-        auto future = cpr::PostAsync(cpr::Url{Global::System::URL + "log/movimientos"}, cpr::Body{json.dump()});
-
-        while (future.wait_for(std::chrono::milliseconds(100)) != std::future_status::ready)
-            Glib::signal_idle().connect_once([this]() { Global::Widget::v_progress_bar->pulse(); });
-        
-        auto cpy = future.share();
-
-        Glib::signal_idle().connect_once([this, cpy]()
+    auto future = cpr::PostAsync(cpr::Url{Global::System::URL + "log/movimientos"}, Global::Utility::header, cpr::Body{json.dump()});
+    
+    Global::Utility::consume_and_do(future, [this](const cpr::Response &response)
+    {
+        if (response.status_code == 200)
         {
-            Global::Widget::v_progress_bar->set_fraction(1.0);
+            auto j = nlohmann::json::parse(response.text);
 
-            auto response = cpy.get();
+            auto log = std::make_unique<Log>();
+            auto m_log = log->get_log(j["log"]);
 
-            if (response.status_code == 200) 
-            {
-                auto j = nlohmann::json::parse(response.text);
+            auto model = v_column_log->get_model();
+            actualiza_data(model, m_log);
 
-                auto log = std::make_unique<Log>();
-                auto m_log = log->get_log(j["log"]);
+            v_lbl_total_registros->set_text(Glib::ustring::format("Mostrando ", m_log->get_n_items(), " de ", j["total_rows"].get<int>()));
 
-                auto model = v_column_log->get_model();
-                actualiza_data(model, m_log);
-
-                v_lbl_total_registros->set_text(Glib::ustring::format("Mostrando ", m_log->get_n_items(), " de ", j["total_rows"].get<int>()));
-                
-                    auto pag = j["total_rows"].get<int>() > 0 ? j["total_rows"].get<int>() / m_log->get_n_items() : 0;
-                    v_ety_pag->set_text("de " + std::to_string(pag));
-                    v_spin_pag->set_adjustment(Gtk::Adjustment::create(1,1,pag));
-                
-            }
-        }); })
-        .detach();
+            auto pag = j["total_rows"].get<int>() > 0 ? j["total_rows"].get<int>() / m_log->get_n_items() : 0;
+            v_ety_pag->set_text("de " + std::to_string(pag));
+            v_spin_pag->set_adjustment(Gtk::Adjustment::create(1, 1, pag));
+        }
+        else
+        {
+            auto model = v_column_log->get_model();
+            actualiza_data(model, Gio::ListStore<MLog>::create());
+        }
+    });
 }
 
 void Movimientos::muestra_calendario_inicio(Gtk::Entry::IconPosition icon_pos)

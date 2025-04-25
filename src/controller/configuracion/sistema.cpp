@@ -11,21 +11,9 @@ Sistema::~Sistema()
 
 void Sistema::on_show_map()
 {
-    std::thread([this]() 
+    auto future = cpr::GetAsync(cpr::Url{Global::System::URL + "configuracion/get_informacion_sistema"}, Global::Utility::header);
+    Global::Utility::consume_and_do(future, [this](const cpr::Response &response)
     {
-        try 
-        {
-            auto future = cpr::GetAsync(cpr::Url{Global::System::URL + "configuracion/get_informacion_sistema"});
-            while (future.wait_for(std::chrono::milliseconds(100)) != std::future_status::ready) 
-                Glib::signal_idle().connect_once([this]() {
-                    Global::Widget::v_progress_bar->pulse();
-                });
-            
-            auto cpy = future.share();  
-
-            Glib::signal_idle().connect_once([this, cpy]() {
-                Global::Widget::v_progress_bar->set_fraction(1.0);
-                auto response = cpy.get();
 
                 if (response.status_code == cpr::status::HTTP_OK) 
                 {
@@ -86,14 +74,4 @@ void Sistema::on_show_map()
                     
                 }
             });
-        }catch(...)
-        {
-            Glib::signal_idle().connect_once([this]() {
-                auto dialog = Gtk::MessageDialog(*Global::Widget::v_main_window, "Error");
-                dialog.set_secondary_text("Error al obtener la información del sistema");
-                dialog.set_hide_on_close();
-                dialog.set_visible();
-            });
-        }
-    }).detach();
 }

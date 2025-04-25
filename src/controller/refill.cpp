@@ -8,6 +8,11 @@ Refill::Refill(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBui
     auto m_list_coin = Gio::ListStore<MLevelCash>::create();
     init_data(v_tree_reciclador_billetes, m_list_bill);
     init_data(v_tree_reciclador_monedas, m_list_coin);
+
+    v_btn_incia->signal_clicked().connect(sigc::mem_fun(*this, &Refill::on_btn_iniciar));
+    v_btn_retirada->signal_clicked().connect(sigc::mem_fun(*this, &Refill::on_btn_retirada));
+    v_btn_transpaso->signal_clicked().connect(sigc::mem_fun(*this, &Refill::on_btn_transpaso));
+
 }
 
 Refill::~Refill()
@@ -16,10 +21,10 @@ Refill::~Refill()
 
 void Refill::on_show_map()
 {
-    auto future = cpr::GetAsync(cpr::Url{Global::System::URL + "validadores/get_dashboard"});
+    auto future = cpr::GetAsync(cpr::Url{Global::System::URL + "validadores/get_dashboard"}, Global::Utility::header);
     Global::Utility::consume_and_do(future,[this](cpr::Response response)
     {
-        if (response.status_code == cpr::status::HTTP_OK) 
+        if (response.status_code == 200) 
             {
                 auto level = std::make_unique<LevelCash>();
                 auto json = nlohmann::json::parse(response.text);
@@ -56,6 +61,7 @@ void Refill::init_data(Gtk::ColumnView *vcolumn, const Glib::RefPtr<Gio::ListSto
         vcolumn->append_column(column);
     }
 
+    if(vcolumn == v_tree_reciclador_billetes)
     {
         auto factory = Gtk::SignalListItemFactory::create();
         factory->signal_setup().connect(sigc::mem_fun(*this, &Refill::on_setup_label));
@@ -134,18 +140,92 @@ void Refill::safe_clear_column_view(Gtk::ColumnView *column_view)
         if (!selection)
             return;
         if (auto single_sel = std::dynamic_pointer_cast<Gtk::SingleSelection>(selection))
-        {
             if (auto list_model = single_sel->get_model())
-            {
                 if (auto list_store = std::dynamic_pointer_cast<Gio::ListStore<MLevelCash>>(list_model))
-                {
                     list_store->remove_all();
-                }
-            }
-        }
     }
     catch (const std::exception &e)
     {
         std::cerr << "Error clearing ColumnView: " << e.what() << std::endl;
     }
+}
+
+void Refill::on_btn_iniciar()
+{
+    auto future = cpr::GetAsync(cpr::Url{Global::System::URL + "/accion/inicia_refill"}, Global::Utility::header);
+    Global::Utility::consume_and_do(future,[this](cpr::Response response)
+    {
+        if (response.status_code == 200) 
+        {
+            auto j = nlohmann::json::parse(response.text);
+
+            auto log = std::make_unique<Log>();
+            auto m_log = log->get_log(j["ticket"]);
+            auto ticket = m_log->get_item(0);
+
+            auto faltante = j["Cambio_faltante"].get<int>();
+
+            Global::System::imprime_ticket(ticket, faltante);
+
+            on_show_map();
+            v_lbl_total_parcial_billetes->set_text(j["billetes"].get<std::string>());
+            v_lbl_total_parcial_monedas->set_text(j["monedas"].get<std::string>());
+
+        }
+    });
+}
+
+void Refill::on_btn_transpaso()
+{
+    auto json = nlohmann::json
+    {
+        {"rol", 8}, 
+        {"bill", 
+            {"command","SmartEmpty"},
+            {"args", 
+                {
+                    {"ModuleNumber", 0},
+                    {"IsNV4000", true}
+                }
+            }
+        }
+    };
+    auto future = cpr::GetAsync(cpr::Url{Global::System::URL + "/configuracion/custom_command"}, Global::Utility::header , cpr::Body{json.dump()});
+    Global::Utility::consume_and_do(future,[this](cpr::Response response)
+    {
+        if (response.status_code == 200) 
+        {
+            Global::Widget::v_revealer->set_reveal_child();
+            Global::Widget::v_revealer_title->set_text("Exito");
+        }
+
+        std::cout << response.text << std::endl;
+    });
+}
+
+void Refill::on_btn_retirada()
+{
+    auto json = nlohmann::json
+    {
+        {"rol", 9}, 
+        {"bill", 
+            {"command","Purge"},
+            {"args", ""}
+        },
+        {"coin", 
+            {"command","Purge"},
+            {"args", ""}
+        }
+    };
+    auto future = cpr::GetAsync(cpr::Url{Global::System::URL + "/configuracion/custom_command"}, Global::Utility::header , cpr::Body{json.dump()});
+    Global::Utility::consume_and_do(future,[this](cpr::Response response)
+    {
+        if (response.status_code == 200) 
+        {
+            Global::Widget::v_revealer->set_reveal_child();
+            Global::Widget::v_revealer_title->set_text("Exito");
+        }
+
+        std::cout << response.text << std::endl;
+    });
 }

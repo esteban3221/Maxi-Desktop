@@ -37,6 +37,7 @@ bool TitleBar::poll_ip(void)
         async.dispatch_to_gui([this](){
             v_menu_status->set_label("Conectado");
             v_menu_status->set_css_classes({"suggested-action"});
+            Global::Widget::v_revealer->set_reveal_child(false);
         });
         
     }
@@ -45,6 +46,12 @@ bool TitleBar::poll_ip(void)
         async.dispatch_to_gui([this](){
             v_menu_status->set_label("Desconectado");
             v_menu_status->set_css_classes({"destructive-action"});
+            Global::Widget::v_main_title->set_text("Maxicajero");
+            Global::Widget::v_main_stack->set_visible_child("login");
+
+            Global::System::token = "";
+            Global::Widget::v_revealer_title->set_text("Desconexión con el servidor");
+            Global::Widget::v_revealer->set_reveal_child(true);
         });
     }
 

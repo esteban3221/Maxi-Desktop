@@ -6,6 +6,7 @@
 
 
 #include "roles.hpp"
+#include "global.hpp"
 
 class MUsuariosRoles : public Glib::Object
 {
@@ -34,6 +35,5 @@ public:
     UsuariosRoles(/* args */);
     ~UsuariosRoles();
     
-    Glib::RefPtr<Gio::ListStore<MUsuariosRoles>> get_usuario_roles_by_id(size_t id);
-    void update_usuario_roles(size_t, const Glib::RefPtr<Gio::ListStore<MRoles>> &);
+    Glib::RefPtr<Gio::ListStore<MUsuariosRoles>> get_usuario_roles_by_id(const nlohmann::json_abi_v3_11_3::json &json);
 };
