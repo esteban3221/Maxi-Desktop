@@ -21,7 +21,7 @@ Refill::~Refill()
 
 void Refill::on_show_map()
 {
-    auto future = cpr::GetAsync(cpr::Url{Global::System::URL + "validadores/get_dashboard"}, Global::Utility::header);
+    auto future = cpr::GetAsync(cpr::Url{Global::System::URL, "validadores/get_dashboard"}, Global::Utility::header);
     Global::Utility::consume_and_do(future,[this](cpr::Response response)
     {
         if (response.status_code == 200) 
@@ -152,7 +152,7 @@ void Refill::safe_clear_column_view(Gtk::ColumnView *column_view)
 
 void Refill::on_btn_iniciar()
 {
-    auto future = cpr::GetAsync(cpr::Url{Global::System::URL + "/accion/inicia_refill"}, Global::Utility::header);
+    auto future = cpr::PostAsync(cpr::Url{Global::System::URL + "accion/inicia_refill"}, Global::Utility::header);
     Global::Utility::consume_and_do(future,[this](cpr::Response response)
     {
         if (response.status_code == 200) 
@@ -177,20 +177,18 @@ void Refill::on_btn_iniciar()
 
 void Refill::on_btn_transpaso()
 {
-    auto json = nlohmann::json
-    {
-        {"rol", 8}, 
-        {"bill", 
-            {"command","SmartEmpty"},
-            {"args", 
-                {
-                    {"ModuleNumber", 0},
-                    {"IsNV4000", true}
-                }
-            }
-        }
+    nlohmann::json json = {
+        {"rol", 8},
+        {"bill", {
+            {"command", "SmartEmpty"},
+            {"args", {
+                {"ModuleNumber", 0},
+                {"IsNV4000", true}
+            }}
+        }}
     };
-    auto future = cpr::GetAsync(cpr::Url{Global::System::URL + "/configuracion/custom_command"}, Global::Utility::header , cpr::Body{json.dump()});
+    
+    auto future = cpr::PostAsync(cpr::Url{Global::System::URL + "configuracion/custom_command"}, Global::Utility::header , cpr::Body{json.dump()});
     Global::Utility::consume_and_do(future,[this](cpr::Response response)
     {
         if (response.status_code == 200) 
@@ -205,19 +203,18 @@ void Refill::on_btn_transpaso()
 
 void Refill::on_btn_retirada()
 {
-    auto json = nlohmann::json
-    {
-        {"rol", 9}, 
-        {"bill", 
-            {"command","Purge"},
+    nlohmann::json json = {
+        {"rol", 9},
+        {"bill", {
+            {"command", "Purge"},
             {"args", ""}
-        },
-        {"coin", 
-            {"command","Purge"},
+        }},
+        {"coin", {
+            {"command", "Purge"},
             {"args", ""}
-        }
+        }}
     };
-    auto future = cpr::GetAsync(cpr::Url{Global::System::URL + "/configuracion/custom_command"}, Global::Utility::header , cpr::Body{json.dump()});
+    auto future = cpr::PostAsync(cpr::Url{Global::System::URL + "configuracion/custom_command"}, Global::Utility::header , cpr::Body{json.dump()});
     Global::Utility::consume_and_do(future,[this](cpr::Response response)
     {
         if (response.status_code == 200) 

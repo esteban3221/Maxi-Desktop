@@ -5,7 +5,7 @@ Login::Login(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuild
 {
     v_btn_acceder->signal_clicked().connect(sigc::mem_fun(*this, &Login::on_btn_login_clicked));
     ((Gtk::Entry *)v_ety_passwd)->signal_activate().connect(sigc::mem_fun(*this, &Login::on_btn_login_clicked));
-    signal_map().connect([this](){v_ety_passwd->delete_text(0,v_ety_passwd->get_text().size());});
+    signal_map().connect(sigc::mem_fun(*this, &Login::on_show_map));
 }
 
 Login::~Login()
@@ -42,4 +42,13 @@ void Login::on_btn_login_clicked()
         Global::Widget::v_revealer->set_reveal_child();
         Global::Widget::v_revealer_title->set_text(e.what());
     }
+}
+void Login::on_show_map()
+{
+    v_ety_passwd->delete_text(0,v_ety_passwd->get_text().size());
+
+    auto db = std::make_unique<Configuracion>();
+    auto data = db->get_conf_data(2,2);
+
+    v_lbl_titulo->set_text(data->get_item(0)->m_valor);
 }

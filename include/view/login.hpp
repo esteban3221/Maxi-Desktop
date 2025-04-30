@@ -9,6 +9,7 @@ private:
 protected:
     Gtk::PasswordEntry *v_ety_passwd;
     Gtk::Button *v_btn_acceder;
+    Gtk::Label *v_lbl_titulo;
 
 public:
     VLogin(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuilder);

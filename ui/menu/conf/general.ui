@@ -4,6 +4,7 @@
   <!-- interface-name general.ui -->
   <requires lib="gtk" version="4.0"/>
   <object class="GtkBox" id="boxConfGeneral">
+    <property name="homogeneous">True</property>
     <property name="margin-bottom">10</property>
     <property name="margin-end">10</property>
     <property name="margin-start">10</property>
@@ -30,28 +31,25 @@
       </object>
     </child>
     <child>
-      <object class="GtkSeparator"/>
-    </child>
-    <child>
-      <object class="GtkCheckButton">
-        <property name="active">true</property>
-        <property name="label" translatable="yes">Mostrar notificaciones</property>
-      </object>
-    </child>
-    <child>
       <object class="GtkBox">
-        <property name="homogeneous">True</property>
         <child>
           <object class="GtkLabel">
             <property name="halign">start</property>
             <property name="label">Mensaje de Inicio</property>
+            <property name="margin-end">10</property>
           </object>
         </child>
         <child>
-          <object class="GtkEntry">
-            <property name="halign">end</property>
+          <object class="GtkEntry" id="ety_mensaje_inicio">
+            <property name="halign">baseline-center</property>
+            <property name="hexpand">True</property>
           </object>
         </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparator">
+        <property name="valign">center</property>
       </object>
     </child>
     <child>
@@ -64,9 +62,6 @@
       </object>
     </child>
     <child>
-      <object class="GtkSeparator"/>
-    </child>
-    <child>
       <object class="GtkCheckButton">
         <property name="active">true</property>
         <property name="label" translatable="yes">Redondear cambio a favor del cliente</property>
@@ -75,76 +70,27 @@
     <child>
       <object class="GtkCheckButton">
         <property name="active">true</property>
-        <property name="label" translatable="yes">Al introducir un billete controlar su posible devolución</property>
+        <property name="label" translatable="yes">Poder finalizar cualquier operación (No Disponible)</property>
+        <property name="sensitive">False</property>
       </object>
     </child>
     <child>
-      <object class="GtkCheckButton">
-        <property name="active">true</property>
-        <property name="label" translatable="yes">Poder finalizar cualquier operación</property>
+      <object class="GtkSeparator">
+        <property name="valign">center</property>
       </object>
     </child>
     <child>
-      <object class="GtkGrid">
-        <property name="column-homogeneous">True</property>
-        <property name="row-homogeneous">True</property>
-        <property name="row-spacing">15</property>
-        <child>
-          <object class="GtkLabel">
-            <property name="halign">start</property>
-            <property name="label" translatable="yes">No permitir pagos superiores a       </property>
-            <layout>
-              <property name="column">0</property>
-              <property name="row">0</property>
-            </layout>
-          </object>
-        </child>
-        <child>
-          <object class="GtkSpinButton">
-            <property name="editable">false</property>
-            <property name="halign">end</property>
-            <layout>
-              <property name="column">1</property>
-              <property name="row">0</property>
-            </layout>
-          </object>
-        </child>
-        <child>
-          <object class="GtkLabel">
-            <property name="halign">start</property>
-            <property name="label">Gestión de niveles y enrutamientos</property>
-            <layout>
-              <property name="column">0</property>
-              <property name="row">1</property>
-            </layout>
-          </object>
-        </child>
-        <child>
-          <object class="GtkCheckButton">
-            <property name="active">true</property>
-            <property name="label" translatable="yes">Manual</property>
-            <layout>
-              <property name="column">1</property>
-              <property name="row">1</property>
-            </layout>
-          </object>
-        </child>
-        <child>
-          <object class="GtkCheckButton">
-            <property name="active">true</property>
-            <property name="label" translatable="yes">Automático</property>
-            <layout>
-              <property name="column">2</property>
-              <property name="row">1</property>
-            </layout>
-          </object>
-        </child>
+      <object class="GtkLabel">
+        <property name="halign">start</property>
+        <property name="label" translatable="yes">Validadores</property>
+        <style>
+          <class name="title-2"/>
+        </style>
       </object>
     </child>
     <child>
-      <object class="GtkCheckButton">
-        <property name="active">true</property>
-        <property name="label" translatable="yes">Mostrar barra de alertas de efectivo</property>
+      <object class="GtkButton" id="btn_reinicia_val">
+        <property name="label">Reiniciar Validadores</property>
       </object>
     </child>
   </object>

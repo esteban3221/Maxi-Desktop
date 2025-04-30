@@ -6,6 +6,9 @@ class VGeneral : public Gtk::Box
 {
 private:
     Glib::RefPtr<Gtk::Builder> m_builder;
+protected:
+    Gtk::Entry *v_ety_mensaje_inicio;
+    Gtk::Button *v_btn_reinicia_val;
 public:
     VGeneral(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuilder);
     ~VGeneral();
