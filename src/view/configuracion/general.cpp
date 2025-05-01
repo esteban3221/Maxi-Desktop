@@ -10,3 +10,110 @@ VGeneral::VGeneral(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &re
 VGeneral::~VGeneral()
 {
 }
+
+
+
+namespace View
+{
+    namespace Conf
+    {
+        const char *general_ui = R"(<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.96.0 -->
+<interface>
+  <!-- interface-name general.ui -->
+  <requires lib="gtk" version="4.0"/>
+  <object class="GtkBox" id="boxConfGeneral">
+    <property name="homogeneous">True</property>
+    <property name="margin-bottom">10</property>
+    <property name="margin-end">10</property>
+    <property name="margin-start">10</property>
+    <property name="margin-top">10</property>
+    <property name="orientation">vertical</property>
+    <property name="spacing">10</property>
+    <child>
+      <object class="GtkLabel">
+        <property name="halign">start</property>
+        <property name="label" translatable="yes">Configuración General</property>
+        <style>
+          <class name="title-1"/>
+        </style>
+      </object>
+    </child>
+    <child>
+      <object class="GtkLabel">
+        <property name="halign">start</property>
+        <property name="label" translatable="yes">Visualización</property>
+        <property name="margin-top">25</property>
+        <style>
+          <class name="title-2"/>
+        </style>
+      </object>
+    </child>
+    <child>
+      <object class="GtkBox">
+        <child>
+          <object class="GtkLabel">
+            <property name="halign">start</property>
+            <property name="label">Mensaje de Inicio</property>
+            <property name="margin-end">10</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkEntry" id="ety_mensaje_inicio">
+            <property name="halign">baseline-center</property>
+            <property name="hexpand">True</property>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparator">
+        <property name="valign">center</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkLabel">
+        <property name="halign">start</property>
+        <property name="label" translatable="yes">Operaciones en efectivo</property>
+        <style>
+          <class name="title-2"/>
+        </style>
+      </object>
+    </child>
+    <child>
+      <object class="GtkCheckButton">
+        <property name="active">true</property>
+        <property name="label" translatable="yes">Redondear cambio a favor del cliente</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkCheckButton">
+        <property name="active">true</property>
+        <property name="label" translatable="yes">Poder finalizar cualquier operación (No Disponible)</property>
+        <property name="sensitive">False</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparator">
+        <property name="valign">center</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkLabel">
+        <property name="halign">start</property>
+        <property name="label" translatable="yes">Validadores</property>
+        <style>
+          <class name="title-2"/>
+        </style>
+      </object>
+    </child>
+    <child>
+      <object class="GtkButton" id="btn_reinicia_val">
+        <property name="label">Reiniciar Validadores</property>
+      </object>
+    </child>
+  </object>
+</interface>
+)";
+    } // namespace Conf
+} // namespace View

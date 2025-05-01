@@ -16,3 +16,11 @@ public:
     VSistema(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuilder);
     ~VSistema();
 };
+
+namespace View
+{
+    namespace Conf
+    {
+        extern const char *sistema_ui;
+    } // namespace Conf
+} // namespace View

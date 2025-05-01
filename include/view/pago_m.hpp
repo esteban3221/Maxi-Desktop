@@ -16,3 +16,8 @@ public:
     VPagoM(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuilder);
     ~VPagoM();
 };
+
+namespace View
+{
+    extern const char *pagom_ui;
+} // namespace View

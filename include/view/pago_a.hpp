@@ -17,3 +17,9 @@ public:
     VPago();
     ~VPago();
 };
+
+
+// namespace View
+// {
+//     extern const char *pagoa_ui;
+// } // namespace View

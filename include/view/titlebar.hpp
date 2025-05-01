@@ -23,11 +23,13 @@ protected:
         ListItem(const Glib::RefPtr<MListIp> &);
         ~ListItem();
     };
-    
-    
-    
 
 public:
     VTitlebar(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuilder);
     ~VTitlebar();
 };
+
+namespace View
+{
+    extern const char *titlebar_ui;
+}

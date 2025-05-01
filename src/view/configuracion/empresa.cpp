@@ -16,3 +16,157 @@ VEmpresa::VEmpresa(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &re
 VEmpresa::~VEmpresa()
 {
 }
+
+namespace View
+{
+    namespace Conf
+    {
+      const char *empresa_ui = R"(<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.96.0 -->
+<interface>
+  <!-- interface-name datos_empresa.ui -->
+  <requires lib="gtk" version="4.0"/>
+  <object class="GtkBox" id="boxDatosEmpresa">
+    <property name="margin-bottom">10</property>
+    <property name="margin-end">10</property>
+    <property name="margin-start">10</property>
+    <property name="margin-top">10</property>
+    <property name="orientation">vertical</property>
+    <child>
+      <object class="GtkListBox" id="list_config_datos">
+        <property name="selection-mode">none</property>
+        <child>
+          <object class="GtkListBoxRow">
+            <property name="activatable">false</property>
+            <child>
+              <object class="GtkBox">
+                <child>
+                  <object class="GtkLabel" id="entry_label_7">
+                    <property name="label">Razón social</property>
+                    <property name="width-request">110</property>
+                    <property name="xalign">0</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="ety_conf_razon">
+                    <property name="hexpand">true</property>
+                    <property name="placeholder-text">Type here…</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkListBoxRow">
+            <property name="activatable">false</property>
+            <child>
+              <object class="GtkBox">
+                <child>
+                  <object class="GtkLabel" id="entry_label_3">
+                    <property name="label">Direccion</property>
+                    <property name="width-request">110</property>
+                    <property name="xalign">0</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="ety_conf_direccion">
+                    <property name="hexpand">true</property>
+                    <property name="invisible-char-set">True</property>
+                    <property name="placeholder-text">Type here…</property>
+                    <property name="truncate-multiline">True</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkListBoxRow">
+            <property name="activatable">false</property>
+            <child>
+              <object class="GtkBox">
+                <child>
+                  <object class="GtkLabel" id="entry_label">
+                    <property name="label">RFC</property>
+                    <property name="width-request">110</property>
+                    <property name="xalign">0</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="ety_conf_rfc">
+                    <property name="hexpand">true</property>
+                    <property name="placeholder-text">Type here…</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkListBoxRow">
+            <property name="activatable">false</property>
+            <child>
+              <object class="GtkBox">
+                <child>
+                  <object class="GtkLabel" id="entry_label_4">
+                    <property name="label">Contacto</property>
+                    <property name="width-request">110</property>
+                    <property name="xalign">0</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="ety_conf_contacto">
+                    <property name="hexpand">true</property>
+                    <property name="placeholder-text">Type here…</property>
+                    <property name="show-emoji-icon">True</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkListBoxRow">
+            <property name="activatable">false</property>
+            <child>
+              <object class="GtkBox">
+                <child>
+                  <object class="GtkLabel" id="entry_label_5">
+                    <property name="label">Agradecimiento</property>
+                    <property name="width-request">110</property>
+                    <property name="xalign">0</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="ety_conf_thanks">
+                    <property name="hexpand">true</property>
+                    <property name="placeholder-text">Type here…</property>
+                    <property name="show-emoji-icon">True</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <style>
+          <class name="rich-list"/>
+          <class name="boxed-list"/>
+        </style>
+      </object>
+    </child>
+    <child>
+      <object class="GtkButton" id="btnGuardar">
+        <property name="halign">end</property>
+        <property name="label">Guardar</property>
+        <property name="margin-top">10</property>
+        <style>
+          <class name="suggested-action"/>
+        </style>
+      </object>
+    </child>
+  </object>
+</interface>
+)";
+    } // namespace Conf
+} // namespace View

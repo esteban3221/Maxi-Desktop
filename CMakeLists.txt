@@ -79,6 +79,11 @@ include_directories(include
                     include/db
                     include/model
                     include/shared
+                    ui
+                    ui/menu
+                    ui/componente
+                    ui/conf
+
 )
 
 add_subdirectory(lib/Sqlit3-cpp-lib/)

@@ -48,3 +48,100 @@ VTitlebar::ListItem::~ListItem()
 {
     
 }
+
+namespace View
+{
+    const char *titlebar_ui = R"(<?xml version='1.0' encoding='UTF-8'?>
+    <!-- Created with Cambalache 0.96.0 -->
+    <interface>
+      <!-- interface-name titlebar.ui -->
+      <requires lib="gio" version="2.0"/>
+      <requires lib="gtk" version="4.0"/>
+      <object class="GtkHeaderBar" id="header">
+        <property name="title-widget">
+          <object class="GtkLabel" id="lbl_titlebar"/>
+        </property>
+        <child type="start">
+          <object class="GtkMenuButton" id="menu_status">
+            <property name="label">Conectado</property>
+            <property name="popover">popover_titlebar</property>
+          </object>
+        </child>
+        <child type="end">
+          <object class="GtkMenuButton" id="menu_titlebar">
+            <property name="icon-name">open-menu-symbolic</property>
+            <property name="menu-model">window_menu</property>
+            <property name="primary">true</property>
+            <property name="tooltip-text" translatable="yes">Main Menu</property>
+          </object>
+        </child>
+      </object>
+      <menu id="window_menu">
+        <section>
+          <item>
+            <attribute name="action">app.cerrarsesion</attribute>
+            <attribute name="label">Cerrar Sesion</attribute>
+          </item>
+          <item>
+            <attribute name="action">app.shortcuts</attribute>
+            <attribute name="label" translatable="yes">Keyboard Shortcuts</attribute>
+          </item>
+          <item>
+            <attribute name="action">app.about</attribute>
+            <attribute name="label" translatable="yes">About App</attribute>
+          </item>
+          <item>
+            <attribute name="action">app.quit</attribute>
+            <attribute name="label" translatable="yes">Quit App</attribute>
+          </item>
+        </section>
+      </menu>
+      <object class="GtkPopover" id="popover_titlebar">
+        <property name="child">
+          <object class="GtkBox" id="plain-popover-box">
+            <property name="margin-bottom">10</property>
+            <property name="margin-end">10</property>
+            <property name="margin-start">10</property>
+            <property name="margin-top">10</property>
+            <property name="name">plain-popover-box</property>
+            <property name="orientation">vertical</property>
+            <property name="spacing">10</property>
+            <child>
+              <object class="GtkEntry" id="ety_servidor">
+                <property name="placeholder-text">Introduzca la dirección de servidor...</property>
+                <property name="primary-icon-name">network-transmit-receive-symbolic</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="halign">start</property>
+                <property name="label">Direcciónes Guardadas</property>
+                <property name="margin-top">10</property>
+                <style>
+                  <class name="title-3"/>
+                </style>
+              </object>
+            </child>
+            <child>
+              <object class="GtkScrolledWindow">
+                <property name="height-request">250</property>
+                <property name="propagate-natural-width">true</property>
+                <property name="vexpand">true</property>
+                <child>
+                  <object class="GtkListBox" id="list_ip">
+                    <style>
+                      <class name="boxed-list"/>
+                      <class name="rich-list"/>
+                    </style>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </property>
+        <property name="has-arrow">true</property>
+        <property name="name">plain_popover</property>
+      </object>
+    </interface>
+    )";
+}

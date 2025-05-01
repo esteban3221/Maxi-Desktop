@@ -1,5 +1,4 @@
 #include "view/movimientos.hpp"
-#include "movimientos.hpp"
 
 VMovimientos::VMovimientos(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuilder) : Gtk::Box(cobject), m_builder(refBuilder)
 {
@@ -96,3 +95,102 @@ void VMovimientos::on_bind_fecha(const Glib::RefPtr<Gtk::ListItem> &list_item)
 
     label->set_text(Glib::ustring::format(col->m_fecha.format("%A, %d de %B de %Y - Hora: %H:%M")));
 }
+
+namespace View
+{
+    const char *movimientos_ui = R"(<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.96.0 -->
+<interface>
+  <!-- interface-name movimientos.ui -->
+  <requires lib="gtk" version="4.14"/>
+  <object class="GtkBox" id="box_movimientos">
+    <property name="orientation">vertical</property>
+    <property name="spacing">5</property>
+    <child>
+      <object class="GtkBox">
+        <property name="spacing">7</property>
+        <child>
+          <object class="GtkButton" id="btn_printer">
+            <property name="icon-name">document-print-symbolic</property>
+            <property name="tooltip-text">Reimprimir Ticket</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkDropDown" id="dp_tipo">
+            <property name="tooltip-text">Tipo de Movimiento</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkEntry" id="ety_ini">
+            <property name="placeholder-text">Fecha Inicio</property>
+            <property name="secondary-icon-name">calendar</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkEntry" id="ety_fin">
+            <property name="placeholder-text">Fecha Fin</property>
+            <property name="secondary-icon-name">calendar</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="css-classes">linked</property>
+            <property name="tooltip-text">Paginacion</property>
+            <child>
+              <object class="GtkSpinButton" id="spin_pag">
+                <property name="height-request">1</property>
+                <property name="numeric">True</property>
+                <property name="snap-to-ticks">True</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkEntry" id="ety_pag">
+                <property name="css-classes">dim-label</property>
+                <property name="editable">False</property>
+                <property name="max-width-chars">5</property>
+                <property name="text">de 6</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="btn_aplica_filtro">
+            <property name="halign">end</property>
+            <property name="hexpand">True</property>
+            <property name="icon-name">view-filter-symbolic</property>
+            <property name="tooltip-text">Aplicar Filtro</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="btn_remueve_filtros">
+            <property name="halign">end</property>
+            <property name="icon-name">clear_left</property>
+            <property name="tooltip-text">Eliminar Filtros</property>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkScrolledWindow">
+        <child>
+          <object class="GtkColumnView" id="column_log">
+            <property name="enable-rubberband">True</property>
+            <property name="hexpand">True</property>
+            <property name="show-column-separators">True</property>
+            <property name="show-row-separators">True</property>
+            <property name="vexpand">True</property>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkLabel" id="lbl_total_registros">
+        <property name="css-classes">dim-label</property>
+        <property name="halign">start</property>
+        <property name="label">Mostrando 10 de 100 registros</property>
+      </object>
+    </child>
+  </object>
+</interface>
+)";
+} // namespace View

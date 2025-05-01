@@ -37,3 +37,8 @@ public:
     VMovimientos(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuilder);
     ~VMovimientos();
 };
+
+namespace View
+{
+    extern const char *movimientos_ui;
+} // namespace View

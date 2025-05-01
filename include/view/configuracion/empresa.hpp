@@ -14,3 +14,11 @@ public:
     VEmpresa(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuilder);
     ~VEmpresa();
 };
+
+namespace View
+{
+    namespace Conf
+    {
+        extern const char *empresa_ui;
+    } // namespace Conf
+} // namespace View

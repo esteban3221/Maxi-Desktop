@@ -28,3 +28,12 @@ public:
     VUsuarios(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuilder);
     ~VUsuarios();
 };
+
+
+namespace View
+{
+    namespace Conf
+    {
+        extern const char *usuario_ui;
+    } // namespace Conf
+} // namespace View

@@ -15,3 +15,8 @@ public:
     VLogin(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuilder);
     ~VLogin();
 };
+
+namespace View
+{
+    extern const char *login_ui;
+}

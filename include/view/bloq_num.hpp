@@ -18,3 +18,8 @@ public:
     Gtk::Button *v_btn_nip_back = nullptr;
     Gtk::SpinButton *v_ety_spin = nullptr;
 };
+
+namespace View
+{
+    extern const char *bloq_num_ui;
+} // namespace View

@@ -127,6 +127,8 @@ void Movimientos::init_datos()
 void Movimientos::reimprime_tickets()
 {
     auto row = v_column_log->get_model()->get_selection()->get_minimum();
+    if (row == -1)
+        return;
 
     auto single_selection = std::dynamic_pointer_cast<Gtk::SingleSelection>(v_column_log->get_model());
     auto m_list = single_selection->get_typed_object<MLog>(row);

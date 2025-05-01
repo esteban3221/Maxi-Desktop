@@ -10,7 +10,9 @@ private:
     void on_ety_servidor_activate(void);
 
     Global::Async async;
+
 public:
     TitleBar(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuilder);
     ~TitleBar();
 };
+

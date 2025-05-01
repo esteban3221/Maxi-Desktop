@@ -166,6 +166,12 @@ void CUsuarios::on_btn_nuevo_clicked()
 void CUsuarios::on_btn_edit_clicked()
 {
     auto row = v_treeview->get_model()->get_selection()->get_minimum();
+    if (row == -1)
+    {
+        Global::Widget::v_revealer->set_reveal_child();
+        Global::Widget::v_revealer_title->set_text("Seleccione un usuario para editar");
+        return;
+    }
 
     auto single_selection = std::dynamic_pointer_cast<Gtk::SingleSelection>(v_treeview->get_model());
     auto m_list = single_selection->get_typed_object<const MUsuarios>(row);
@@ -237,6 +243,12 @@ void CUsuarios::on_dialog_btn_delete_clicked(int response)
     if (response == Gtk::ResponseType::APPLY)
     {
         auto row = v_treeview->get_model()->get_selection()->get_minimum();
+        if (row == -1)
+        {
+            Global::Widget::v_revealer->set_reveal_child();
+            Global::Widget::v_revealer_title->set_text("Seleccione un usuario para eliminar");
+            return;
+        }
 
         auto single_selection = std::dynamic_pointer_cast<Gtk::SingleSelection>(v_treeview->get_model());
         auto m_list = single_selection->get_typed_object<const MUsuarios>(row);

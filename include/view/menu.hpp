@@ -23,3 +23,8 @@ public:
     VMenu(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuilder);
     ~VMenu();
 };
+
+namespace View
+{
+    extern const char *menu_ui;    
+}// namespace View
