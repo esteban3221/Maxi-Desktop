@@ -1,0 +1,6 @@
+Maxicajero utiliza las siguientes bibliotecas de terceros:
+
+- GTKMM 4.0 (LGPL-2.1): https://www.gtk.org/
+- CPR (MIT): https://github.com/libcpr/cpr
+- nlohmann_json (MIT): https://github.com/nlohmann/json
+- SQLite3 (Public Domain): https://www.sqlite.org/

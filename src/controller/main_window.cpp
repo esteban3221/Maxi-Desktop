@@ -82,19 +82,20 @@ void MainWindow::acceleretors(const Glib::RefPtr<Gtk::Application>& app)
     m_refActionGroup = Gio::SimpleActionGroup::create();
 
     m_refActionGroup->add_action("quit", [this]() { this->close(); });
-    m_refActionGroup->add_action("about",  [this]() { 
+    m_refActionGroup->add_action("about",  [this,&app]() { 
         about.set_transient_for(*this);
         about.set_program_name("Maxicajero Desktop");
         about.set_artists({"Maxicajero"});
         about.set_authors({"Maxicajero","Esteban Noé"});
         about.set_version("1.0.0");
         about.set_license_type(Gtk::License::BSD_3);
-        about.set_copyright("Maxicajero");
+        about.set_copyright("© 2025 Maxicajero");
         about.set_comments("Aplicación de escritorio para el manejo de cajeros automáticos");
         about.set_logo_icon_name("utilities-terminal");
         about.set_title("Acerca de MaxiCajero");
         about.set_modal(true);
         about.set_hide_on_close(true);
+        about.set_application(app);
         about.set_visible(true); });
     
     m_refActionGroup->add_action("cerrarsesion", [this]() 

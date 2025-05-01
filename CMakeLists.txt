@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG") 
 
 if (WIN32)
-    # Añadir -mwindows solo en Windows (MinGW)
+    set(APP_ICON_RESOURCE ${CMAKE_CURRENT_SOURCE_DIR}/icono.rc)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -mwindows")
 endif()
 
@@ -93,7 +93,11 @@ include_directories(include
 
 add_subdirectory(lib/Sqlit3-cpp-lib/)
 
-add_executable(Maxicajero ${SOURCES})
+if(WIN32)
+add_executable(Maxicajero ${SOURCES}  ${APP_ICON_RESOURCE})
+else()
+    add_executable(Maxicajero ${SOURCES})
+endif()
 if (UNIX AND NOT APPLE)  # Linux (no macOS)
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(CUPS REQUIRED cups)

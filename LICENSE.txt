@@ -1,0 +1,16 @@
+LICENCIA DE SOFTWARE PROPIETARIO - MAXICAJERO
+
+Copyright © 2025 MAXICAJERO. Todos los derechos reservados.
+
+1. Uso concedido:
+   - Licencia personal y no transferible.
+   - Prohibida la modificación, ingeniería inversa o redistribución.
+
+2. Dependencias de terceros:
+   - GTKMM (LGPL-2.1): Uso permitido en binarios cerrados, pero debes proporcionar 
+     enlace al código fuente de GTKMM si lo modificas.
+   - CPR (MIT), nlohmann_json (MIT), SQLite3 (Public Domain): Uso libre sin restricciones.
+   - Más detalles en "DEPENDENCIES.txt".
+
+3. Limitación de responsabilidad:
+   - El software se distribuye "TAL CUAL", sin garantías.
