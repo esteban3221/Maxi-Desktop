@@ -5,6 +5,11 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG") 
 
+if (WIN32)
+    # Añadir -mwindows solo en Windows (MinGW)
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -mwindows")
+endif()
+
 find_package(PkgConfig REQUIRED)
 find_package(cpr REQUIRED)
 find_package(nlohmann_json 3.11.3 REQUIRED)

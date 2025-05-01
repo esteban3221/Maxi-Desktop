@@ -87,7 +87,7 @@ namespace View
             </child>
             <child>
               <object class="GtkButton" id="btn_edit">
-                <property name="icon-name">edit-symbolic</property>
+                <property name="icon-name">document-edit-symbolic</property>
                 <style>
                   <class name="circular"/>
                   <class name="warning"/>

@@ -75,7 +75,7 @@ namespace View
                 <property name="spacing">10</property>
                 <child>
                   <object class="GtkImage">
-                    <property name="icon-name">object-merge-symbolic</property>
+                    <property name="icon-name">applications-utilities-symbolic</property>
                   </object>
                 </child>
                 <child>
@@ -90,7 +90,7 @@ namespace View
                 <property name="spacing">10</property>
                 <child>
                   <object class="GtkImage">
-                    <property name="icon-name">outbox-symbolic</property>
+                    <property name="icon-name">applications-utilities-symbolic</property>
                   </object>
                 </child>
                 <child>
@@ -105,7 +105,7 @@ namespace View
                 <property name="spacing">10</property>
                 <child>
                   <object class="GtkImage">
-                    <property name="icon-name">outbox-symbolic</property>
+                    <property name="icon-name">applications-utilities-symbolic</property>
                   </object>
                 </child>
                 <child>
@@ -120,7 +120,7 @@ namespace View
                 <property name="spacing">10</property>
                 <child>
                   <object class="GtkImage">
-                    <property name="icon-name">xapp-prefs-display-symbolic</property>
+                    <property name="icon-name">emoji-symbols-symbolic</property>
                   </object>
                 </child>
                 <child>
@@ -135,7 +135,7 @@ namespace View
                 <property name="spacing">10</property>
                 <child>
                   <object class="GtkImage">
-                    <property name="icon-name">sidebar-tree-symbolic</property>
+                    <property name="icon-name">emoji-recent-symbolic</property>
                   </object>
                 </child>
                 <child>
@@ -150,7 +150,7 @@ namespace View
                 <property name="spacing">10</property>
                 <child>
                   <object class="GtkImage">
-                    <property name="icon-name">configure-symbolic</property>
+                    <property name="icon-name">preferences-other-symbolic</property>
                   </object>
                 </child>
                 <child>
@@ -185,6 +185,5 @@ namespace View
       </object>
     </child>
   </object>
-</interface>
-)";
+</interface>)";
 } // namespace View

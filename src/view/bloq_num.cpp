@@ -166,7 +166,7 @@ namespace View
         </child>
         <child>
           <object class="GtkButton" id="btn_nip_del">
-            <property name="icon-name">edit-clear-symbolic</property>
+            <property name="icon-name">edit-delete-symbolic</property>
             <layout>
               <property name="column">3</property>
               <property name="row">3</property>
@@ -175,7 +175,7 @@ namespace View
         </child>
         <child>
           <object class="GtkButton" id="btn_nip_enter">
-            <property name="icon-name">keyboard-enter-symbolic</property>
+            <property name="icon-name">go-jump-symbolic</property>
             <layout>
               <property name="column">3</property>
               <property name="row">0</property>

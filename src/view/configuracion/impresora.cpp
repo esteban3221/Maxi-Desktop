@@ -35,7 +35,7 @@ VImpresora::VListPrinters::VListPrinters(const std::string &titulo, const std::s
     v_image_printer->set_icon_size(Gtk::IconSize::LARGE);
 
     v_image_check = Gtk::manage(new Gtk::Image());
-    v_image_check->set_from_icon_name("checkmark-symbolic");
+    v_image_check->set_from_icon_name("object-select-symbolic");
     v_image_check->set_opacity(0);
 
     v_titulo = Gtk::manage(new Gtk::Label(titulo));
@@ -695,7 +695,7 @@ namespace View
                                     <child>
                                       <object class="GtkImage">
                                         <property name="halign">end</property>
-                                        <property name="icon-name">document-save-all</property>
+                                        <property name="icon-name">document-send-symbolic</property>
                                       </object>
                                     </child>
                                   </object>

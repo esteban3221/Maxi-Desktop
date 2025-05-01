@@ -123,13 +123,13 @@ namespace View
         <child>
           <object class="GtkEntry" id="ety_ini">
             <property name="placeholder-text">Fecha Inicio</property>
-            <property name="secondary-icon-name">calendar</property>
+            <property name="secondary-icon-name">x-office-calendar-symbolic</property>
           </object>
         </child>
         <child>
           <object class="GtkEntry" id="ety_fin">
             <property name="placeholder-text">Fecha Fin</property>
-            <property name="secondary-icon-name">calendar</property>
+            <property name="secondary-icon-name">x-office-calendar-symbolic</property>
           </object>
         </child>
         <child>
@@ -157,14 +157,14 @@ namespace View
           <object class="GtkButton" id="btn_aplica_filtro">
             <property name="halign">end</property>
             <property name="hexpand">True</property>
-            <property name="icon-name">view-filter-symbolic</property>
+            <property name="icon-name">object-select-symbolic</property>
             <property name="tooltip-text">Aplicar Filtro</property>
           </object>
         </child>
         <child>
           <object class="GtkButton" id="btn_remueve_filtros">
             <property name="halign">end</property>
-            <property name="icon-name">clear_left</property>
+            <property name="icon-name">edit-delete-symbolic</property>
             <property name="tooltip-text">Eliminar Filtros</property>
           </object>
         </child>
