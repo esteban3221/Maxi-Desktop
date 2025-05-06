@@ -34,12 +34,12 @@ void PagoA::on_btn_enter_clicked()
                     Global::System::imprime_ticket(ticket, faltante);
 
                     if (faltante > 0) {
-                        v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window, "Cambio Faltante", false, Gtk::MessageType::INFO));
+                        v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window, "Cambio Faltante", false, Gtk::MessageType::INFO, Gtk::ButtonsType::NONE));
                         v_dialog->set_secondary_text("Se requiere un cambio de " + j["Cambio_faltante"].get<std::string>());
                         v_dialog->set_visible();
                     }
                 } else {
-                    v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window, "Error", false, (Gtk::MessageType)3 /*Gtk::MessageType::ERROR para windows*/));
+                    v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window, "Error", false, (Gtk::MessageType)3 /*Gtk::MessageType::ERROR para windows*/, Gtk::ButtonsType::NONE));
                     v_dialog->set_secondary_text(response.text);
                     v_dialog->set_visible();
                 }

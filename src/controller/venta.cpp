@@ -19,7 +19,7 @@ void Venta::on_btn_enter_clicked()
 {
     if (v_base_nip->v_ety_spin->get_value_as_int() < 1)
     {
-        v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window, "Error"));
+        v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window,"Info",false,Gtk::MessageType::INFO, Gtk::ButtonsType::NONE));
         v_dialog->set_secondary_text("El monto a vender debe ser mayor a 0");
         v_dialog->set_hide_on_close();
         v_dialog->set_visible();
@@ -54,7 +54,7 @@ void Venta::on_btn_enter_clicked()
 
                     if (faltante > 0) 
                     {
-                        v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window, "Cambio Faltante"));
+                        v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window,"Cambio Faltante",false,Gtk::MessageType::INFO, Gtk::ButtonsType::NONE));
                         v_dialog->set_secondary_text(Glib::ustring::format("Se requiere un cambio de " , faltante));
                         v_dialog->set_visible();
                     }

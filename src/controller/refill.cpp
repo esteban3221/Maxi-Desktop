@@ -181,10 +181,11 @@ void Refill::on_btn_transpaso()
         {"rol", 8},
         {"bill", {
             {"command", "SmartEmpty"},
-            {"args", {
-                {"ModuleNumber", 0},
-                {"IsNV4000", true}
-            }}
+            {"args","{"
+                    "\"ModuleNumber\": 0,"
+                    "\"IsNV4000\": true"
+                    "}"
+            }
         }}
     };
     
@@ -210,8 +211,12 @@ void Refill::on_btn_retirada()
             {"args", ""}
         }},
         {"coin", {
-            {"command", "Purge"},
-            {"args", ""}
+            {"command", "SmartEmpty"},
+            {"args","{"
+                    "\"ModuleNumber\": 0,"
+                    "\"IsNV4000\": true"
+                    "}"
+            }
         }}
     };
     auto future = cpr::PostAsync(cpr::Url{Global::System::URL + "configuracion/custom_command"}, Global::Utility::header , cpr::Body{json.dump()});

@@ -59,7 +59,7 @@ void PagoM::on_btn_cobrar_clicked()
                                             set_sensitive(false);
                                             if (response.status_code == 500)
                                             {
-                                                v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window, "Error"));
+                                                v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window,"Info",false,Gtk::MessageType::INFO, Gtk::ButtonsType::NONE));
                                                 v_dialog->set_secondary_text(response.text);
                                                 v_dialog->set_visible();
                                             }
@@ -80,7 +80,7 @@ void PagoM::on_btn_cobrar_clicked()
                                             }
                                             else
                                             {
-                                                v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window, "Error"));
+                                                v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window,"Info",false,Gtk::MessageType::INFO, Gtk::ButtonsType::NONE));
                                                 v_dialog->set_secondary_text(response.text);
                                                 v_dialog->set_visible();
                                             }
@@ -92,7 +92,7 @@ void PagoM::on_btn_cobrar_clicked()
 
         }else
         {
-            v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window, "Error"));
+            v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window,"Info",false,Gtk::MessageType::INFO, Gtk::ButtonsType::NONE));
             v_dialog->set_secondary_text("El monto a vender debe ser mayor a 0");
             v_dialog->set_visible();
         }

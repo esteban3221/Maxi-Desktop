@@ -35,5 +35,5 @@ public:
     UsuariosRoles(/* args */);
     ~UsuariosRoles();
     
-    Glib::RefPtr<Gio::ListStore<MUsuariosRoles>> get_usuario_roles_by_id(const nlohmann::json_abi_v3_11_3::json &json);
+    Glib::RefPtr<Gio::ListStore<MUsuariosRoles>> get_usuario_roles_by_id(const nlohmann::json_abi_v3_12_0::json &json);
 };

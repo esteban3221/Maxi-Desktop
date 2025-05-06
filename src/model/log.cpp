@@ -9,7 +9,7 @@ Log::~Log()
 {
 }
 
-Glib::RefPtr<Gio::ListStore<MLog>> Log::get_log(const nlohmann::json_abi_v3_11_3::json &json)
+Glib::RefPtr<Gio::ListStore<MLog>> Log::get_log(const nlohmann::json_abi_v3_12_0::json &json)
 {
     auto m_list = Gio::ListStore<MLog>::create();
 

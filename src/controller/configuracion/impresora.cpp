@@ -367,7 +367,7 @@ namespace Global
 
             std::stringstream ticket_config;
 
-            auto response = cpr::Get(cpr::Url{Global::System::URL, "configuracion/get_informacion_empresa"});
+            auto response = cpr::Get(cpr::Url{Global::System::URL, "configuracion/get_informacion_empresa"}, Global::Utility::header);
             if (response.status_code != 200)
                 return;
             else

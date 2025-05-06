@@ -8,7 +8,7 @@ LevelCash::~LevelCash()
 {
 }
 
-Glib::RefPtr<Gio::ListStore<MLevelCash>> LevelCash::get_level_cash(const nlohmann::json_abi_v3_11_3::json &json)
+Glib::RefPtr<Gio::ListStore<MLevelCash>> LevelCash::get_level_cash(const nlohmann::json_abi_v3_12_0::json &json)
 {
     auto m_list = Gio::ListStore<MLevelCash>::create();
 
