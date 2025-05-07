@@ -28,6 +28,7 @@ void VRefill::on_setup_button(const Glib::RefPtr<Gtk::ListItem> &list_item)
 {
     auto button = (Gtk::make_managed<Gtk::Button>());
     button->set_icon_name("document-save-symbolic");
+    button->set_css_classes({"circular","flat"});
     list_item->set_child(*button);
 }
 
@@ -76,6 +77,9 @@ void VRefill::on_bind_inmo(const Glib::RefPtr<Gtk::ListItem> &list_item)
     auto spin = dynamic_cast<Gtk::SpinButton *>(list_item->get_child());
 
     spin->set_adjustment(Gtk::Adjustment::create(col->m_nivel_inmo,0,100));
+    spin->signal_changed().connect([this, col, spin](){
+        col->m_nivel_inmo = spin->get_value_as_int();
+    });
 }
 
 void VRefill::on_bind_btn(const Glib::RefPtr<Gtk::ListItem> &list_item)
@@ -84,7 +88,28 @@ void VRefill::on_bind_btn(const Glib::RefPtr<Gtk::ListItem> &list_item)
     auto button = dynamic_cast<Gtk::Button *>(list_item->get_child());
 
     button->signal_clicked().connect([this,col](){
-        std::cout << "Denominacion: " << col->m_denominacion << '\n';
+
+      auto json = nlohmann::json
+      {
+            {"denominacion", col->m_denominacion},
+            {"nivel_inmo", col->m_nivel_inmo}
+        };
+      cpr::Body body = json.dump();
+
+      auto future = cpr::PostAsync(cpr::Url{Global::System::URL + "validadores/update_imovilidad"}, Global::Utility::header, body);
+
+        Global::Utility::consume_and_do(future,[this](cpr::Response response)
+        {
+            if (response.status_code == 200) 
+            {
+                Global::Widget::v_revealer->set_reveal_child();
+                Global::Widget::v_revealer_title->set_text("Exito");
+            }
+            else
+            {
+                std::cerr << "Error: " << response.status_code << std::endl;
+            }
+        });
     });
 }
 

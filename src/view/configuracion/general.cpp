@@ -5,6 +5,7 @@ VGeneral::VGeneral(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &re
 {
     v_ety_mensaje_inicio = m_builder->get_widget<Gtk::Entry>("ety_mensaje_inicio");
     v_btn_reinicia_val = m_builder->get_widget<Gtk::Button>("btn_reinicia_val");
+    v_btn_actualiza_pos = m_builder->get_widget<Gtk::Button>("btn_actualiza_pos");
 }
 
 VGeneral::~VGeneral()
@@ -60,7 +61,7 @@ namespace View
         </child>
         <child>
           <object class="GtkEntry" id="ety_mensaje_inicio">
-            <property name="halign">baseline-center</property>
+            <property name="halign">baseline-fill</property>
             <property name="hexpand">True</property>
           </object>
         </child>
@@ -110,6 +111,11 @@ namespace View
     <child>
       <object class="GtkButton" id="btn_reinicia_val">
         <property name="label">Reiniciar Validadores</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkButton" id="btn_actualiza_pos">
+        <property name="label">Actualiza Sistema POS</property>
       </object>
     </child>
   </object>

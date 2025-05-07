@@ -41,7 +41,7 @@
         </child>
         <child>
           <object class="GtkEntry" id="ety_mensaje_inicio">
-            <property name="halign">baseline-center</property>
+            <property name="halign">baseline-fill</property>
             <property name="hexpand">True</property>
           </object>
         </child>
@@ -91,6 +91,11 @@
     <child>
       <object class="GtkButton" id="btn_reinicia_val">
         <property name="label">Reiniciar Validadores</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkButton" id="btn_actualiza_pos">
+        <property name="label">Actualiza Sistema POS</property>
       </object>
     </child>
   </object>

@@ -36,7 +36,7 @@ MainWindow::MainWindow(const Glib::RefPtr<Gtk::Application>& app)
     #ifdef _WIN32
     auto builder = Gtk::Builder::create_from_string(View::titlebar_ui);
     #else
-    auto builder = Gtk::Builder::create_from_file("ui/titlebar.ui");
+    auto builder = Gtk::Builder::create_from_file("../ui/titlebar.ui");
     #endif
     auto titlebar = Gtk::Builder::get_widget_derived<TitleBar>(builder, "header");
 
