@@ -76,8 +76,9 @@ void General::on_btn_actualiza_pos_clicked()
 
             dialog->set_filters(filters);
             dialog->open(sigc::bind(sigc::mem_fun(*this, &General::on_file_dialog_finish), dialog));
-            v_dialog->close();
+            
         }
+        v_dialog->close();
     });
 
     v_dialog->show();
