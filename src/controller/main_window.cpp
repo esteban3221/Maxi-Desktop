@@ -33,25 +33,13 @@ MainWindow::MainWindow(const Glib::RefPtr<Gtk::Application>& app)
     Global::Widget::v_revealer->set_transition_type(Gtk::RevealerTransitionType::SWING_DOWN);
     Global::Widget::v_revealer->set_child(v_button_conatiner);
 
-    #ifdef _WIN32
     auto builder = Gtk::Builder::create_from_string(View::titlebar_ui);
-    #else
-    auto builder = Gtk::Builder::create_from_file("../ui/titlebar.ui");
-    #endif
     auto titlebar = Gtk::Builder::get_widget_derived<TitleBar>(builder, "header");
 
-    #ifdef _WIN32
     builder = Gtk::Builder::create_from_string(View::login_ui);
-    #else
-    builder = Gtk::Builder::create_from_file("../ui/login.ui");
-    #endif
     auto login = Gtk::Builder::get_widget_derived<Login>(builder, "box_login");
 
-    #ifdef _WIN32
     builder = Gtk::Builder::create_from_string(View::menu_ui);
-    #else
-    builder = Gtk::Builder::create_from_file("../ui/menu.ui");
-    #endif
     auto menu = Gtk::Builder::get_widget_derived<VMenu>(builder, "box_menu");
 
     Global::Widget::v_main_stack->set_transition_type(Gtk::StackTransitionType::ROTATE_LEFT_RIGHT);

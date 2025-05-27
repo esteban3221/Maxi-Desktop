@@ -1,6 +1,7 @@
 #include "controller/pago_m.hpp"
 #include "pago_m.hpp"
 
+
 PagoM::PagoM(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuilder) : VPagoM(cobject, refBuilder)
 {
     for (auto &&i : v_spin_coin)
@@ -9,10 +10,39 @@ PagoM::PagoM(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuild
         i->signal_value_changed().connect(sigc::mem_fun(*this, &PagoM::on_spin_value_changed));
 
     v_btn_cobrar->signal_clicked().connect(sigc::mem_fun(*this, &PagoM::on_btn_cobrar_clicked));
+    signal_map().connect(sigc::mem_fun(*this, &PagoM::on_show_map));
 }
 
 PagoM::~PagoM()
 {
+}
+
+void PagoM::on_show_map()
+{
+    auto future = cpr::GetAsync(cpr::Url{Global::System::URL, "validadores/get_dashboard"}, Global::Utility::header);
+    Global::Utility::consume_and_do(future,[this](cpr::Response response)
+    {
+        if (response.status_code == 200) 
+        {
+            auto level = std::make_unique<LevelCash>();
+            auto json = nlohmann::json::parse(response.text);
+            auto level_coin = level->get_level_cash(json["coin"]);
+            auto level_bill = level->get_level_cash(json["bill"]);
+
+            for (size_t i = 0; i < 4; i++)
+            {
+                auto it = level_coin->get_item(i);
+                v_spin_coin[i]->set_adjustment(Gtk::Adjustment::create(0,0,it->m_cant_recy));
+            }
+
+            for (size_t i = 0; i < 6; i++)
+            {
+                auto it = level_bill->get_item(i);
+                v_spin_bill[i]->set_adjustment(Gtk::Adjustment::create(0,0,it->m_cant_recy));
+            }
+        }
+    });
+    
 }
 
 void PagoM::on_spin_value_changed()

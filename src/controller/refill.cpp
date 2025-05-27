@@ -176,58 +176,35 @@ void Refill::on_btn_iniciar()
 }
 
 void Refill::on_btn_transpaso()
-{
-    nlohmann::json json = {
-        {"rol", 8},
-        {"bill", {
-            {"command", "SmartEmpty"},
-            {"args","{"
-                    "\"ModuleNumber\": 0,"
-                    "\"IsNV4000\": true"
-                    "}"
-            }
-        }}
-    };
-    
-    auto future = cpr::PostAsync(cpr::Url{Global::System::URL + "configuracion/custom_command"}, Global::Utility::header , cpr::Body{json.dump()});
+{   
+    auto future = cpr::PostAsync(cpr::Url{Global::System::URL , "validador/transpaso"}, Global::Utility::header);
     Global::Utility::consume_and_do(future,[this](cpr::Response response)
     {
-        if (response.status_code == 200) 
+        auto j = nlohmann::json::parse(response.text);
+        if (j.contains("ticket")) 
         {
-            Global::Widget::v_revealer->set_reveal_child();
-            Global::Widget::v_revealer_title->set_text("Exito");
-        }
+            auto log = std::make_unique<Log>();
+            auto m_log = log->get_log(j["ticket"]);
+            auto ticket = m_log->get_item(0);
 
-        std::cout << response.text << std::endl;
+            Global::System::imprime_ticket(ticket, 0);
+        }
     });
 }
 
 void Refill::on_btn_retirada()
 {
-    nlohmann::json json = {
-        {"rol", 9},
-        {"bill", {
-            {"command", "Purge"},
-            {"args", ""}
-        }},
-        {"coin", {
-            {"command", "SmartEmpty"},
-            {"args","{"
-                    "\"ModuleNumber\": 0,"
-                    "\"IsNV4000\": true"
-                    "}"
-            }
-        }}
-    };
-    auto future = cpr::PostAsync(cpr::Url{Global::System::URL + "configuracion/custom_command"}, Global::Utility::header , cpr::Body{json.dump()});
+    auto future = cpr::PostAsync(cpr::Url{Global::System::URL + "validador/retirada"}, Global::Utility::header);
     Global::Utility::consume_and_do(future,[this](cpr::Response response)
     {
-        if (response.status_code == 200) 
+        auto j = nlohmann::json::parse(response.text);
+        if (j.contains("ticket")) 
         {
-            Global::Widget::v_revealer->set_reveal_child();
-            Global::Widget::v_revealer_title->set_text("Exito");
-        }
+            auto log = std::make_unique<Log>();
+            auto m_log = log->get_log(j["ticket"]);
+            auto ticket = m_log->get_item(0);
 
-        std::cout << response.text << std::endl;
+            Global::System::imprime_ticket(ticket, 0);
+        }
     });
 }
