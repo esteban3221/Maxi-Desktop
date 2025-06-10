@@ -76,7 +76,7 @@ void MainWindow::acceleretors(const Glib::RefPtr<Gtk::Application>& app)
         about.set_program_name("Maxicajero Desktop");
         about.set_artists({"Maxicajero"});
         about.set_authors({"Maxicajero","Esteban Noé"});
-        about.set_version("1.0.0");
+        about.set_version("1.12.1");
         about.set_license_type(Gtk::License::BSD_3);
         about.set_copyright("© 2025 Maxicajero");
         about.set_comments("Aplicación de escritorio para el manejo de cajeros automáticos");
