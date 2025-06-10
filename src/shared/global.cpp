@@ -29,7 +29,7 @@ namespace Global
             case Gtk::MessageType::QUESTION:
                 v_button_conatiner->set_css_classes({"pill", "suggested-action"});
             break;
-            case Gtk::MessageType::ERROR:
+            case (Gtk::MessageType)3:
                 v_button_conatiner->set_css_classes({"pill", "destructive-action"});
             break;
             case Gtk::MessageType::OTHER:

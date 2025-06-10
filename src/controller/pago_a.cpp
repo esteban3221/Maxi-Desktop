@@ -39,7 +39,7 @@ void PagoA::on_btn_enter_clicked()
                         v_dialog->set_visible();
                     }
                 } else {
-                    v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window, "Error", false, (Gtk::MessageType)3 /*Gtk::MessageType::ERROR para windows*/, Gtk::ButtonsType::NONE));
+                    v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window, "Error", false, (Gtk::MessageType)3 /*(Gtk::MessageType)3 para windows*/, Gtk::ButtonsType::NONE));
                     v_dialog->set_secondary_text(response.text);
                     v_dialog->set_visible();
                 }

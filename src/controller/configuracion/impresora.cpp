@@ -52,7 +52,7 @@ void Impresora::on_list_remoto_guardar(Gtk::ListBoxRow *)
         if (response.status_code == 200)
             Global::Widget::reveal_toast("Configuracion de impresion guardada correctamente");
         else
-            Global::Widget::reveal_toast("Error al guardar la configuracion de impresion", Gtk::MessageType::ERROR); });
+            Global::Widget::reveal_toast("Error al guardar la configuracion de impresion", (Gtk::MessageType)3); });
 }
 
 void Impresora::on_activalist_activate(Gtk::ListBoxRow *row)
@@ -440,7 +440,7 @@ namespace Global
                                   {
                                       // See documentation for exact Gtk::PrintError error codes.
                                       
-                                          Global::Widget::reveal_toast(ex.what(), Gtk::MessageType::ERROR); 
+                                          Global::Widget::reveal_toast(ex.what(), (Gtk::MessageType)3); 
                                       std::cerr << "An error occurred while trying to run a print operation:"
                                                 << ex.what() << std::endl;
                                   }

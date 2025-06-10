@@ -29,7 +29,7 @@ void Sistema::on_click_list(Gtk::ListBoxRow *row)
                 Global::Widget::v_main_title->set_text("Maxicajero");
             }
             else 
-                Global::Widget::reveal_toast("Error al procesar la solicitud", Gtk::MessageType::ERROR);
+                Global::Widget::reveal_toast("Error al procesar la solicitud", (Gtk::MessageType)3);
         }
     );
     

@@ -66,7 +66,7 @@ void CUsuarios::on_show_map()
             auto model = v_treeview->get_model();
             actualiza_data(model, Gio::ListStore<MUsuarios>::create());
             
-            Global::Widget::reveal_toast("No tiene permisos para acceder a esta seccion", Gtk::MessageType::ERROR);
+            Global::Widget::reveal_toast("No tiene permisos para acceder a esta seccion", (Gtk::MessageType)3);
         }
         
     });
@@ -104,7 +104,7 @@ void CUsuarios::on_row_activated(guint id)
         else
         {
             
-            Global::Widget::reveal_toast("No tiene permisos para acceder a esta seccion", Gtk::MessageType::ERROR);
+            Global::Widget::reveal_toast("No tiene permisos para acceder a esta seccion", (Gtk::MessageType)3);
         }
         
     });
@@ -229,7 +229,7 @@ void CUsuarios::on_dialog_btn_edit_clicked()
         else
         {
             
-            Global::Widget::reveal_toast("No tiene permisos para acceder a esta seccion", Gtk::MessageType::ERROR);
+            Global::Widget::reveal_toast("No tiene permisos para acceder a esta seccion", (Gtk::MessageType)3);
         }
         
     });
@@ -351,7 +351,7 @@ void CUsuarios::on_btn_guardar_roles_clicked()
         else
         {
             
-            Global::Widget::reveal_toast("No tiene permisos para acceder a esta seccion", Gtk::MessageType::ERROR);
+            Global::Widget::reveal_toast("No tiene permisos para acceder a esta seccion", (Gtk::MessageType)3);
         }
         
     });
@@ -380,7 +380,7 @@ void CUsuarios::on_dialog_btn_add_clicked()
         }
         else
         {
-            Global::Widget::reveal_toast("No tiene permisos para acceder a esta seccion", Gtk::MessageType::ERROR);
+            Global::Widget::reveal_toast("No tiene permisos para acceder a esta seccion", (Gtk::MessageType)3);
         }
         
     });

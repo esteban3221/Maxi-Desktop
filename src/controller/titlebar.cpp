@@ -52,7 +52,7 @@ bool TitleBar::poll_ip(void)
             Global::Widget::v_main_stack->set_visible_child("login");
 
             Global::System::token = "";
-            Global::Widget::reveal_toast("Desconexión con el servidor", Gtk::MessageType::ERROR, 5000);
+            Global::Widget::reveal_toast("Desconexión con el servidor", (Gtk::MessageType)3, 5000);
             
         });
     }
