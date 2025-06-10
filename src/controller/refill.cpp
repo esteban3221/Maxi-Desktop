@@ -195,6 +195,7 @@ void Refill::on_btn_transpaso()
 void Refill::on_btn_retirada()
 {
     auto future = cpr::PostAsync(cpr::Url{Global::System::URL + "validador/retirada"}, Global::Utility::header);
+    Global::Widget::reveal_toast("Retire el casette de billetes o cancele desde POS", Gtk::MessageType::WARNING);
     Global::Utility::consume_and_do(future,[this](cpr::Response response)
     {
         auto j = nlohmann::json::parse(response.text);
@@ -206,5 +207,6 @@ void Refill::on_btn_retirada()
 
             Global::System::imprime_ticket(ticket, 0);
         }
+        Global::Widget::reveal_toast("Retirada realizada con exito", Gtk::MessageType::INFO);
     });
 }

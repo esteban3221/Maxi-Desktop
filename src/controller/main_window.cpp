@@ -8,6 +8,7 @@ MainWindow::MainWindow(const Glib::RefPtr<Gtk::Application>& app)
     Global::Widget::v_main_window = this;
     Global::Widget::v_main_stack = Gtk::manage(new Gtk::Stack());
     Global::Widget::v_main_title = Gtk::manage(new Gtk::Label());
+    Global::Widget::v_button_conatiner = Gtk::manage(new Gtk::Button());
 
     Global::Widget::v_revealer = Gtk::manage(new Gtk::Revealer());
     Global::Widget::v_revealer_title = Gtk::manage(new Gtk::Label());
@@ -16,22 +17,22 @@ MainWindow::MainWindow(const Glib::RefPtr<Gtk::Application>& app)
     Global::Widget::v_revealer->set_valign(Gtk::Align::START);
     Global::Widget::v_revealer->set_margin_top(30);
 
-    Global::Widget::v_revealer_title->set_text("Configuración");
     Gtk::Box *v_box = Gtk::manage(new Gtk::Box(Gtk::Orientation::HORIZONTAL, 30));
-    v_button_conatiner.set_child(*v_box);
+    Global::Widget::v_button_conatiner->set_child(*v_box);
+
     v_button.set_icon_name("window-close-symbolic");
     v_button.set_css_classes({"circular"});
-    v_button_conatiner.set_css_classes({"pill","opaque"});
-    v_button_conatiner.set_opacity(0.9);
+    Global::Widget::v_button_conatiner->set_css_classes({"pill","opaque"});
+    Global::Widget::v_button_conatiner->set_opacity(0.9);
 
     v_box->append(*Global::Widget::v_revealer_title);
     v_box->append(v_button);
 
     v_button.signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::on_button_clicked));
-    v_button_conatiner.signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::on_button_clicked));
+    Global::Widget::v_button_conatiner->signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::on_button_clicked));
 
     Global::Widget::v_revealer->set_transition_type(Gtk::RevealerTransitionType::SWING_DOWN);
-    Global::Widget::v_revealer->set_child(v_button_conatiner);
+    Global::Widget::v_revealer->set_child(*Global::Widget::v_button_conatiner);
 
     auto builder = Gtk::Builder::create_from_string(View::titlebar_ui);
     auto titlebar = Gtk::Builder::get_widget_derived<TitleBar>(builder, "header");

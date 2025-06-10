@@ -31,13 +31,15 @@ void TitleBar::init_list_ip(void)
 bool TitleBar::poll_ip(void)
 {
     auto r = cpr::Post(cpr::Url{Global::System::URL, "test_coneccion"});
+    std::string r_title = Global::Widget::v_revealer_title->get_text();
 
     if (r.status_code == cpr::status::HTTP_OK)
     {
-        async.dispatch_to_gui([this](){
+        async.dispatch_to_gui([this,r_title](){
             v_menu_status->set_label("Conectado");
             v_menu_status->set_css_classes({"suggested-action"});
-            Global::Widget::v_revealer->set_reveal_child(false);
+            if(r_title == "Desconexión con el servidor")
+                Global::Widget::v_revealer->set_reveal_child(false);
         });
         
     }
@@ -50,8 +52,8 @@ bool TitleBar::poll_ip(void)
             Global::Widget::v_main_stack->set_visible_child("login");
 
             Global::System::token = "";
-            Global::Widget::v_revealer_title->set_text("Desconexión con el servidor");
-            Global::Widget::v_revealer->set_reveal_child(true);
+            Global::Widget::reveal_toast("Desconexión con el servidor", Gtk::MessageType::ERROR, 5000);
+            
         });
     }
 

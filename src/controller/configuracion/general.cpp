@@ -37,8 +37,8 @@ void General::on_btn_reinicia_val_clicked()
                                     {
         if (response.status_code == 200) 
         {
-            Global::Widget::v_revealer->set_reveal_child();
-            Global::Widget::v_revealer_title->set_text("Exito");
+            
+            Global::Widget::reveal_toast("Exito");
         }
 
         std::cout << response.text << std::endl; });
@@ -101,8 +101,8 @@ void General::on_file_dialog_finish(const Glib::RefPtr<Gio::AsyncResult> &result
                                         {
             if (response.status_code == 200)
             {
-                Global::Widget::v_revealer->set_reveal_child();
-                Global::Widget::v_revealer_title->set_text("Exito");
+                
+                Global::Widget::reveal_toast("Exito");
             }
             std::cout << response.text << std::endl; });
     }

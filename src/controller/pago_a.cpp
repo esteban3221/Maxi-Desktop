@@ -4,8 +4,8 @@ void PagoA::on_btn_enter_clicked()
 {
     if (v_base_nip->v_ety_spin->get_value_as_int() < 1)
     {
-        Global::Widget::v_revealer_title->set_text("El monto a pagar debe ser mayor a 0");
-        Global::Widget::v_revealer->set_reveal_child(true);
+        Global::Widget::reveal_toast("El monto a pagar debe ser mayor a 0", Gtk::MessageType::WARNING);
+        
         return;
     }
 

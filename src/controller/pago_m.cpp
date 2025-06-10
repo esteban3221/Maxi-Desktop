@@ -96,8 +96,8 @@ void PagoM::on_btn_cobrar_clicked()
                                             else if (response.status_code == 200)
                                             {
 
-                                                Global::Widget::v_revealer->set_reveal_child(true);
-                                                Global::Widget::v_revealer_title->set_text("Pago Manual Realizado");
+                                                
+                                                Global::Widget::reveal_toast("Pago Manual Realizado");
 
                                                 auto j = nlohmann::json::parse(response.text);
                                                 auto log = std::make_unique<Log>();

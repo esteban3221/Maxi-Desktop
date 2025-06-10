@@ -4,6 +4,10 @@ Empresa::Empresa(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refB
 {
     signal_map().connect(sigc::mem_fun(*this, &Empresa::on_show_map));
     v_btn_guardar->signal_clicked().connect(sigc::mem_fun(*this, &Empresa::on_btn_clicked));
+
+    for (auto &&i : v_datos_empresa)
+        Global::Utility::set_multiline_text(*i);
+    
 }
 
 Empresa::~Empresa()
@@ -51,8 +55,8 @@ void Empresa::on_btn_clicked()
         if (response.status_code == cpr::status::HTTP_OK) 
         {
             
-            Global::Widget::v_revealer->set_reveal_child(true);
-            Global::Widget::v_revealer_title->set_text("Datos de empresa guardados con exito.");
+            
+            Global::Widget::reveal_toast("Datos de empresa guardados con exito.");
         }
     });
 }

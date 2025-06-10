@@ -3,10 +3,36 @@
 Sistema::Sistema(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuilder) : VSistema(cobject, refBuilder) 
 {
     signal_map().connect(sigc::mem_fun(*this, &Sistema::on_show_map));
+    v_list_acciones->signal_row_activated().connect(sigc::mem_fun(*this, &Sistema::on_click_list));
 }
 
 Sistema::~Sistema()
 {
+}
+
+void Sistema::on_click_list(Gtk::ListBoxRow *row)
+{
+    auto index = row->get_index();
+    std::optional<cpr::AsyncResponse> future;
+    if (index == 0) 
+        future = cpr::GetAsync(cpr::Url{Global::System::URL + "configuracion/reiniciar"}, Global::Utility::header);
+    else if (index == 1) 
+        future = cpr::GetAsync(cpr::Url{Global::System::URL + "configuracion/apagar"}, Global::Utility::header);
+
+    if (future)
+        Global::Utility::consume_and_do(future.value(), [this](const cpr::Response &response)
+        {
+            if (response.status_code == cpr::status::HTTP_OK) 
+            {
+                Global::Widget::reveal_toast("Iniciando proceso", Gtk::MessageType::INFO, 3000);
+                Global::Widget::v_main_stack->set_visible_child("login");
+                Global::Widget::v_main_title->set_text("Maxicajero");
+            }
+            else 
+                Global::Widget::reveal_toast("Error al procesar la solicitud", Gtk::MessageType::ERROR);
+        }
+    );
+    
 }
 
 void Sistema::on_show_map()

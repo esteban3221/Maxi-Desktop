@@ -65,8 +65,8 @@ void CUsuarios::on_show_map()
         {
             auto model = v_treeview->get_model();
             actualiza_data(model, Gio::ListStore<MUsuarios>::create());
-            Global::Widget::v_revealer->set_reveal_child();
-            Global::Widget::v_revealer_title->set_text("No tiene permisos para acceder a esta seccion");
+            
+            Global::Widget::reveal_toast("No tiene permisos para acceder a esta seccion", Gtk::MessageType::ERROR);
         }
         
     });
@@ -103,8 +103,8 @@ void CUsuarios::on_row_activated(guint id)
         }
         else
         {
-            Global::Widget::v_revealer->set_reveal_child();
-            Global::Widget::v_revealer_title->set_text("No tiene permisos para acceder a esta seccion");
+            
+            Global::Widget::reveal_toast("No tiene permisos para acceder a esta seccion", Gtk::MessageType::ERROR);
         }
         
     });
@@ -168,8 +168,7 @@ void CUsuarios::on_btn_edit_clicked()
     auto row = v_treeview->get_model()->get_selection()->get_minimum();
     if (row == -1)
     {
-        Global::Widget::v_revealer->set_reveal_child();
-        Global::Widget::v_revealer_title->set_text("Seleccione un usuario para editar");
+        Global::Widget::reveal_toast("Seleccione un usuario para editar", Gtk::MessageType::QUESTION);
         return;
     }
 
@@ -200,8 +199,8 @@ void CUsuarios::on_dialog_btn_edit_clicked()
 {
     if (v_entry_usuario->get_text().empty() || v_entry_contrasena->get_text().empty())
     {
-        Global::Widget::v_revealer->set_reveal_child();
-        Global::Widget::v_revealer_title->set_text("Los campos no pueden estar vacios");
+        
+        Global::Widget::reveal_toast("Los campos no pueden estar vacios", Gtk::MessageType::WARNING);
         return;
     }
 
@@ -223,14 +222,14 @@ void CUsuarios::on_dialog_btn_edit_clicked()
     {
         if (response.status_code == 200)
         {
-            Global::Widget::v_revealer->set_reveal_child();
-            Global::Widget::v_revealer_title->set_text("Usuario editado correctamente");
+            
+            Global::Widget::reveal_toast("Usuario editado correctamente");
             v_dialog->close();
         }
         else
         {
-            Global::Widget::v_revealer->set_reveal_child();
-            Global::Widget::v_revealer_title->set_text("No tiene permisos para acceder a esta seccion");
+            
+            Global::Widget::reveal_toast("No tiene permisos para acceder a esta seccion", Gtk::MessageType::ERROR);
         }
         
     });
@@ -245,8 +244,8 @@ void CUsuarios::on_dialog_btn_delete_clicked(int response)
         auto row = v_treeview->get_model()->get_selection()->get_minimum();
         if (row == -1)
         {
-            Global::Widget::v_revealer->set_reveal_child();
-            Global::Widget::v_revealer_title->set_text("Seleccione un usuario para eliminar");
+            
+            Global::Widget::reveal_toast("Seleccione un usuario para eliminar", Gtk::MessageType::WARNING);
             return;
         }
 
@@ -264,15 +263,15 @@ void CUsuarios::on_dialog_btn_delete_clicked(int response)
         {
             if (response.status_code == 200)
             {
-                Global::Widget::v_revealer->set_reveal_child();
-                Global::Widget::v_revealer_title->set_text("Usuario eliminado correctamente");
+                
+                Global::Widget::reveal_toast("Usuario eliminado correctamente");
                 on_show_map();
                 v_dialog->close();
             }
             else
             {
-                Global::Widget::v_revealer->set_reveal_child();
-                Global::Widget::v_revealer_title->set_text(response.text);
+                
+                Global::Widget::reveal_toast(response.text);
             }
             
         });
@@ -346,13 +345,13 @@ void CUsuarios::on_btn_guardar_roles_clicked()
     {
         if (response.status_code == 200)
         {
-            Global::Widget::v_revealer->set_reveal_child();
-            Global::Widget::v_revealer_title->set_text("Roles guardados correctamente");
+            
+            Global::Widget::reveal_toast("Roles guardados correctamente");
         }
         else
         {
-            Global::Widget::v_revealer->set_reveal_child();
-            Global::Widget::v_revealer_title->set_text("No tiene permisos para acceder a esta seccion");
+            
+            Global::Widget::reveal_toast("No tiene permisos para acceder a esta seccion", Gtk::MessageType::ERROR);
         }
         
     });
@@ -362,8 +361,8 @@ void CUsuarios::on_dialog_btn_add_clicked()
 {
     if (v_entry_usuario->get_text().empty() || v_entry_contrasena->get_text().empty())
     {
-        Global::Widget::v_revealer->set_reveal_child();
-        Global::Widget::v_revealer_title->set_text("Los campos no pueden estar vacios");
+        
+        Global::Widget::reveal_toast("Los campos no pueden estar vacios", Gtk::MessageType::WARNING);
         return;
     }
 
@@ -381,8 +380,7 @@ void CUsuarios::on_dialog_btn_add_clicked()
         }
         else
         {
-            Global::Widget::v_revealer->set_reveal_child();
-            Global::Widget::v_revealer_title->set_text("No tiene permisos para acceder a esta seccion");
+            Global::Widget::reveal_toast("No tiene permisos para acceder a esta seccion", Gtk::MessageType::ERROR);
         }
         
     });

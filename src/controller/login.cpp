@@ -33,14 +33,13 @@ void Login::on_btn_login_clicked()
         }
         else
         {
-            Global::Widget::v_revealer->set_reveal_child(true);
-            Global::Widget::v_revealer_title->set_text("Usuario o contraseña incorrecta");
+            Global::Widget::reveal_toast("Usuario o contraseña incorrecta",Gtk::MessageType::ERROR);
         }
     }
     catch (const std::exception &e)
     {
-        Global::Widget::v_revealer->set_reveal_child();
-        Global::Widget::v_revealer_title->set_text(e.what());
+        
+        Global::Widget::reveal_toast(e.what(),Gtk::MessageType::ERROR);
     }
 }
 void Login::on_show_map()

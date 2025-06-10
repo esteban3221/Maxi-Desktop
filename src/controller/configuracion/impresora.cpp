@@ -48,11 +48,11 @@ void Impresora::on_list_remoto_guardar(Gtk::ListBoxRow *)
 
     Global::Utility::consume_and_do(response, [this](const cpr::Response &response)
                                     {
-        Global::Widget::v_revealer->set_reveal_child();
+        
         if (response.status_code == 200)
-            Global::Widget::v_revealer_title->set_text("Configuracion de impresion guardada correctamente");
+            Global::Widget::reveal_toast("Configuracion de impresion guardada correctamente");
         else
-            Global::Widget::v_revealer_title->set_text("Error al guardar la configuracion de impresion"); });
+            Global::Widget::reveal_toast("Error al guardar la configuracion de impresion", Gtk::MessageType::ERROR); });
 }
 
 void Impresora::on_activalist_activate(Gtk::ListBoxRow *row)
@@ -97,8 +97,8 @@ void Impresora::on_list_test_printer(Gtk::ListBoxRow *row)
         m_refPrintFormOperation->run(Gtk::PrintOperation::Action::PRINT);
         m_refPrintFormOperation->signal_done().connect([this](Gtk::PrintOperation::Result result)
                                                        {
-            Global::Widget::v_revealer->set_reveal_child();
-            Global::Widget::v_revealer_title->set_text("Impresion realizada correctamente"); });
+            
+            Global::Widget::reveal_toast("Impresion realizada correctamente"); });
     }
     catch (const Gtk::PrintError &ex)
     {
@@ -432,15 +432,15 @@ namespace Global
                                       m_refPrintFormOperation->run(Gtk::PrintOperation::Action::PRINT, *Global::Widget::v_main_window);
                                       m_refPrintFormOperation->signal_done().connect([](Gtk::PrintOperation::Result result)
                                         {
-                                          Global::Widget::v_revealer->set_reveal_child();
-                                          Global::Widget::v_revealer_title->set_text("Impresion realizada correctamente"); 
+                                          
+                                          Global::Widget::reveal_toast("Impresion realizada correctamente"); 
                                         });
                                   }
                                   catch (const Gtk::PrintError &ex)
                                   {
                                       // See documentation for exact Gtk::PrintError error codes.
-                                      Global::Widget::v_revealer->set_reveal_child();
-                                          Global::Widget::v_revealer_title->set_text(ex.what()); 
+                                      
+                                          Global::Widget::reveal_toast(ex.what(), Gtk::MessageType::ERROR); 
                                       std::cerr << "An error occurred while trying to run a print operation:"
                                                 << ex.what() << std::endl;
                                   }

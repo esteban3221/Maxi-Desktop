@@ -5,10 +5,9 @@ Venta::Venta(/* args */)
     v_base_nip->v_btn_nip_enter->signal_clicked().connect(sigc::mem_fun(*this, &Venta::on_btn_enter_clicked));
     v_base_nip->v_ety_spin->set_text("");
     this->signal_map().connect(sigc::mem_fun(*this, &Venta::on_map_show));
-    v_ety_concepto.signal_activate().connect([this]()
-                                             { v_base_nip->v_ety_spin->grab_focus(); });
-    v_base_nip->v_ety_spin->signal_activate().connect([this]()
-                                                      { v_base_nip->v_btn_nip_enter->grab_focus(); });
+    v_ety_concepto.signal_activate().connect([this](){ v_base_nip->v_ety_spin->grab_focus(); });
+    Global::Utility::set_multiline_text(v_ety_concepto);
+    v_base_nip->v_ety_spin->signal_activate().connect([this](){ v_base_nip->v_btn_nip_enter->grab_focus(); });
 }
 
 Venta::~Venta()

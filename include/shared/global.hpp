@@ -33,10 +33,13 @@ namespace Global
         extern Gtk::Stack *v_main_stack;
         extern Gtk::Window *v_main_window;
         extern Gtk::Label *v_main_title;
+        extern Gtk::Button *v_button_conatiner;
 
         extern Gtk::Revealer *v_revealer;
         extern Gtk::Label *v_revealer_title;
         extern Gtk::ProgressBar *v_progress_bar;
+
+        extern void reveal_toast(const Glib::ustring &title, Gtk::MessageType type = Gtk::MessageType::INFO, int duration = 3000);
 
         namespace Impresora
         {
@@ -54,7 +57,7 @@ namespace Global
         #include <codecvt>
         extern std::string WStrToUTF8(const wchar_t* wstr);
         #endif
-        
+        extern void set_multiline_text(Gtk::Entry &entry);
     } // namespace Utility
 
     namespace EValidador
