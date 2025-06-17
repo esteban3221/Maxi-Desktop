@@ -182,7 +182,7 @@ void Refill::on_btn_transpaso()
     {
         if (response.status_code != 200) 
         {
-            Global::Widget::reveal_toast("Error al realizar el traspaso", Gtk::MessageType::ERROR);
+            Global::Widget::reveal_toast("Error al realizar el traspaso", Gtk::MessageType(3));
             return;
         }
         else
