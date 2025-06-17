@@ -180,14 +180,22 @@ void Refill::on_btn_transpaso()
     auto future = cpr::PostAsync(cpr::Url{Global::System::URL , "validador/transpaso"}, Global::Utility::header);
     Global::Utility::consume_and_do(future,[this](cpr::Response response)
     {
-        auto j = nlohmann::json::parse(response.text);
-        if (j.contains("ticket")) 
+        if (response.status_code != 200) 
         {
-            auto log = std::make_unique<Log>();
-            auto m_log = log->get_log(j["ticket"]);
-            auto ticket = m_log->get_item(0);
+            Global::Widget::reveal_toast("Error al realizar el traspaso", Gtk::MessageType::ERROR);
+            return;
+        }
+        else
+        {
+            auto j = nlohmann::json::parse(response.text);
+            if (j.contains("ticket")) 
+            {
+                auto log = std::make_unique<Log>();
+                auto m_log = log->get_log(j["ticket"]);
+                auto ticket = m_log->get_item(0);
 
-            Global::System::imprime_ticket(ticket, 0);
+                Global::System::imprime_ticket(ticket, 0);
+            }
         }
     });
 }
@@ -198,15 +206,19 @@ void Refill::on_btn_retirada()
     Global::Widget::reveal_toast("Retire el casette de billetes o cancele desde POS", Gtk::MessageType::WARNING);
     Global::Utility::consume_and_do(future,[this](cpr::Response response)
     {
-        auto j = nlohmann::json::parse(response.text);
-        if (j.contains("ticket")) 
+        if (response.status_code != 200) 
         {
-            auto log = std::make_unique<Log>();
-            auto m_log = log->get_log(j["ticket"]);
-            auto ticket = m_log->get_item(0);
+            auto j = nlohmann::json::parse(response.text);
+            if (j.contains("ticket")) 
+            {
+                auto log = std::make_unique<Log>();
+                auto m_log = log->get_log(j["ticket"]);
+                auto ticket = m_log->get_item(0);
 
-            Global::System::imprime_ticket(ticket, 0);
+                Global::System::imprime_ticket(ticket, 0);
+            }
         }
-        Global::Widget::reveal_toast("Retirada realizada con exito", Gtk::MessageType::INFO);
+
+        Global::Widget::v_revealer->set_reveal_child(false);
     });
 }
