@@ -89,7 +89,7 @@ namespace Global
         void set_multiline_text(Gtk::Entry &entry)
         {
             entry.property_truncate_multiline() = false;
-            entry.property_primary_icon_name() = "key_enter";
+            entry.property_primary_icon_name() = "insert-text-symbolic";
             entry.signal_icon_press().connect([&entry](Gtk::Entry::IconPosition position) {
                 if (position == Gtk::Entry::IconPosition::PRIMARY) {
                     auto text = entry.get_text();
