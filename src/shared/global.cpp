@@ -15,6 +15,7 @@ namespace Global
         Gtk::Revealer *v_revealer = nullptr;
         Gtk::Label *v_revealer_title = nullptr;
         Gtk::ProgressBar *v_progress_bar = nullptr;
+        Glib::RefPtr<Gio::SimpleActionGroup> m_refActionGroup;
 
         void reveal_toast(const Glib::ustring &title, Gtk::MessageType type, int duration )
         {
@@ -33,13 +34,13 @@ namespace Global
                 v_button_conatiner->set_css_classes({"pill", "destructive-action"});
             break;
             case Gtk::MessageType::OTHER:
-                v_button_conatiner->set_css_classes({"pill", "button"});
+                v_button_conatiner->set_css_classes({"button", "osd"});
             break;
             
             default:
                 break;
             }
-            v_revealer_title->set_text(title);
+            v_revealer_title->set_markup(title);
             v_revealer->set_reveal_child();
         }
 
@@ -88,16 +89,14 @@ namespace Global
         void set_multiline_text(Gtk::Entry &entry)
         {
             entry.property_truncate_multiline() = false;
-            entry.property_secondary_icon_name() = "keyboard-enter-symbolic";
-            entry.property_secondary_icon_tooltip_text() = "Presiona para añadir salto de línea";
+            entry.property_primary_icon_name() = "key_enter";
             entry.signal_icon_press().connect([&entry](Gtk::Entry::IconPosition position) {
-                if (position == Gtk::Entry::IconPosition::SECONDARY) {
-                    // Insert a newline character at the cursor position
+                if (position == Gtk::Entry::IconPosition::PRIMARY) {
                     auto text = entry.get_text();
                     auto cursor_pos = entry.get_position();
                     text.insert(cursor_pos, "\n");
                     entry.set_text(text);
-                    entry.set_position(cursor_pos + 1); // Move cursor after the newline
+                    entry.set_position(cursor_pos + 1);
                 }
             });
         }

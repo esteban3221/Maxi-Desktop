@@ -6,11 +6,13 @@ VPagoM::VPagoM(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBui
     for (size_t i = 0; i < 4; i++)
     {
         v_spin_coin[i] = m_builder->get_widget<Gtk::SpinButton>(Glib::ustring::compose("spin_coin_%1", i + 1));
+        v_lbl_coin[i] = m_builder->get_widget<Gtk::Label>(Glib::ustring::compose("lbl_coin_%1", i + 1));
         v_spin_coin[i]->set_adjustment(Gtk::Adjustment::create(0, 0, 100, 1, 10, 0));
     }
     for (size_t i = 0; i < 6; i++)
     {
         v_spin_bill[i] = m_builder->get_widget<Gtk::SpinButton>(Glib::ustring::compose("spin_bill_%1", i + 1));
+        v_lbl_bill[i] = m_builder->get_widget<Gtk::Label>(Glib::ustring::compose("lbl_bill_%1", i + 1));
         v_spin_bill[i]->set_adjustment(Gtk::Adjustment::create(0, 0, 100, 1, 10, 0));
     }
     v_btn_cobrar = m_builder->get_widget<Gtk::Button>("btn_cobrar");
@@ -23,7 +25,7 @@ VPagoM::~VPagoM()
 namespace View
 {
     const char *pagom_ui = R"(<?xml version='1.0' encoding='UTF-8'?>
-<!-- Created with Cambalache 0.95.0 -->
+<!-- Created with Cambalache 0.96.1 -->
 <interface>
   <!-- interface-name pago_m.ui -->
   <requires lib="gtk" version="4.12"/>
@@ -51,7 +53,7 @@ namespace View
               <object class="GtkBox">
                 <property name="homogeneous">True</property>
                 <child>
-                  <object class="GtkLabel">
+                  <object class="GtkLabel" id="lbl_bill_1">
                     <property name="label">$20</property>
                   </object>
                 </child>
@@ -66,7 +68,7 @@ namespace View
               <object class="GtkBox">
                 <property name="homogeneous">True</property>
                 <child>
-                  <object class="GtkLabel">
+                  <object class="GtkLabel" id="lbl_bill_2">
                     <property name="label">$50</property>
                   </object>
                 </child>
@@ -81,7 +83,7 @@ namespace View
               <object class="GtkBox">
                 <property name="homogeneous">True</property>
                 <child>
-                  <object class="GtkLabel">
+                  <object class="GtkLabel" id="lbl_bill_3">
                     <property name="label">$100</property>
                   </object>
                 </child>
@@ -96,7 +98,7 @@ namespace View
               <object class="GtkBox">
                 <property name="homogeneous">True</property>
                 <child>
-                  <object class="GtkLabel">
+                  <object class="GtkLabel" id="lbl_bill_4">
                     <property name="label">$200</property>
                   </object>
                 </child>
@@ -111,7 +113,7 @@ namespace View
               <object class="GtkBox">
                 <property name="homogeneous">True</property>
                 <child>
-                  <object class="GtkLabel">
+                  <object class="GtkLabel" id="lbl_bill_5">
                     <property name="label">$500</property>
                   </object>
                 </child>
@@ -126,7 +128,7 @@ namespace View
               <object class="GtkBox">
                 <property name="homogeneous">True</property>
                 <child>
-                  <object class="GtkLabel">
+                  <object class="GtkLabel" id="lbl_bill_6">
                     <property name="label">$1000</property>
                   </object>
                 </child>
@@ -156,7 +158,7 @@ namespace View
               <object class="GtkBox">
                 <property name="homogeneous">True</property>
                 <child>
-                  <object class="GtkLabel">
+                  <object class="GtkLabel" id="lbl_coin_1">
                     <property name="label">$1</property>
                   </object>
                 </child>
@@ -171,7 +173,7 @@ namespace View
               <object class="GtkBox">
                 <property name="homogeneous">True</property>
                 <child>
-                  <object class="GtkLabel">
+                  <object class="GtkLabel" id="lbl_coin_2">
                     <property name="label">$2</property>
                   </object>
                 </child>
@@ -186,7 +188,7 @@ namespace View
               <object class="GtkBox">
                 <property name="homogeneous">True</property>
                 <child>
-                  <object class="GtkLabel">
+                  <object class="GtkLabel" id="lbl_coin_3">
                     <property name="label">$5</property>
                   </object>
                 </child>
@@ -201,7 +203,7 @@ namespace View
               <object class="GtkBox">
                 <property name="homogeneous">True</property>
                 <child>
-                  <object class="GtkLabel">
+                  <object class="GtkLabel" id="lbl_coin_4">
                     <property name="label">$10</property>
                   </object>
                 </child>

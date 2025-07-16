@@ -149,7 +149,6 @@ void Impresora::init_impresoras_linux()
                     m_refSettings->set_printer(impresora_default);
                 }
                     
-
                 v_list_box_print->append(*printer);
             }
         }
@@ -248,7 +247,7 @@ void Impresora::init_remoto()
 {
     auto response = cpr::GetAsync(cpr::Url{Global::System::URL, "configuracion/get_informacion_impresora"},Global::Utility::header);
     Global::Utility::consume_and_do(response, [this](const cpr::Response &response)
-                                    {
+    {
         if (response.status_code == 200)
         {
             auto json = nlohmann::json::parse(response.text);
@@ -261,7 +260,8 @@ void Impresora::init_remoto()
             remoto.v_check_vizualizador[3]->set_active(json["rfc"].get<bool>());
             remoto.v_check_vizualizador[4]->set_active(json["vendedor"].get<bool>());
             remoto.v_check_vizualizador[5]->set_active(json["contacto"].get<bool>());
-        } });
+        } 
+    });
 }
 
 void Impresora::on_list_box_row_selected(Gtk::ListBoxRow *row)
@@ -379,31 +379,31 @@ namespace Global
                               << json["razon_social"].get<std::string>() << "\n\n";
 
                 if (db_->get_item(3)->m_valor == "1")
-                    ticket_config << "<span weight=\"bold\">Direccion:</span>" << json["direccion"].get<std::string>() << "\n"
+                    ticket_config << "Direccion:<span weight=\"bold\">" << json["direccion"].get<std::string>() << "</span>\n"
                                   << "--------------------------------\n";
 
                 if (db_->get_item(4)->m_valor == "1")
-                    ticket_config << "<span weight=\"bold\">RFC:</span> " << json["rfc"].get<std::string>() << "\n"
+                    ticket_config << "RFC:<span weight=\"bold\">" << json["rfc"].get<std::string>() << "</span>\n"
                                   << "--------------------------------\n";
 
                 if (db_->get_item(2)->m_valor == "1")
-                    ticket_config << "<span weight=\"bold\">Fecha:</span> " << Glib::DateTime::create_now_local().format("%Y-%m-%d %H:%M:%S") << "\n";
+                    ticket_config << "Fecha:<span weight=\"bold\">" << Glib::DateTime::create_now_local().format("%Y-%m-%d %H:%M:%S") << "</span>\n";
 
-                ticket_config << "<span weight=\"bold\">No. Ticket:</span> " << log->m_id << "\n\n";
+                ticket_config << "ID:<span weight=\"bold\">" << log->m_id << "</span>\n\n";
 
                 if (db_->get_item(5)->m_valor == "1")
                     ticket_config << "Le atendio: " << log->m_user << "\n\n"
                                   << "--------------------------------\n";
 
-                ticket_config << "<span weight=\"bold\">Total</span>:\t" << log->m_total << "\n";
-                ticket_config << "<span weight=\"bold\">Tipo de Pago</span>:\t" << "Efectivo\n"
+                ticket_config << "Total:\t<span weight=\"bold\">" << log->m_total << "</span>\n";
+                ticket_config << "Tipo de Pago:\t" << "Efectivo\n"
                               << "--------------------------------\n";
-                ticket_config << "<span weight=\"bold\">Ingreso</span>:\t" << log->m_ingreso << "\n";
-                ticket_config << "<span weight=\"bold\">Cambio</span>:\t" << log->m_cambio << "\n";
-                ticket_config << "<span weight=\"bold\">Faltante</span>:\t" << faltante << "\n";
-                
-                ticket_config << "-------------<span weight=\"bold\">STATUS</span>------------\n"
-                              << log->m_estatus << "\n"
+                ticket_config << "Ingreso:\t<span weight=\"bold\">" << log->m_ingreso << "</span>\n";
+                ticket_config << "Cambio:\t<span weight=\"bold\">" << log->m_cambio << "</span>\n";
+                ticket_config << "Faltante:\t<span weight=\"bold\">" << faltante << "</span>\n";
+
+                ticket_config << "-------------STATUS------------\n"
+                              << "<span weight=\"bold\">" << log->m_estatus << "</span>\n"
                               << "--------------------------------\n";
 
                 if (db_->get_item(6)->m_valor == "1")
@@ -414,36 +414,34 @@ namespace Global
                     ticket_config << "**<span weight=\"bold\">" << json["agradecimiento"].get<std::string>() << "</span>**\n"
                                   << "--------------------------------\n";
                 
-                                  auto m_refPrintFormOperation = PrintFormOperation::create();
-                                  auto m_refSettings = Gtk::PrintSettings::create();
-                                  auto m_refPageSetup = Gtk::PageSetup::create();
+                auto m_refPrintFormOperation = PrintFormOperation::create();
+                auto m_refSettings = Gtk::PrintSettings::create();
+                auto m_refPageSetup = Gtk::PageSetup::create();
 
-                                  m_refPrintFormOperation->set_markup(ticket_config.str());
+                m_refPrintFormOperation->set_markup(ticket_config.str());
                               
-                                  m_refPrintFormOperation->set_track_print_status();
-                                  m_refSettings->set_paper_height(80, Gtk::Unit::MM);
-                                  m_refSettings->set_paper_width(297, Gtk::Unit::MM);
+                m_refPrintFormOperation->set_track_print_status();
+
+                auto p_size = m_refSettings->get_paper_size();
+                p_size.set_size(297, 80, Gtk::Unit::MM);
                               
-                                  m_refPrintFormOperation->set_default_page_setup(m_refPageSetup);
-                                  m_refPrintFormOperation->set_print_settings(m_refSettings);
+                m_refPrintFormOperation->set_default_page_setup(m_refPageSetup);
+                m_refPrintFormOperation->set_print_settings(m_refSettings);
                               
-                                  try
-                                  {
-                                      m_refPrintFormOperation->run(Gtk::PrintOperation::Action::PRINT, *Global::Widget::v_main_window);
-                                      m_refPrintFormOperation->signal_done().connect([](Gtk::PrintOperation::Result result)
-                                        {
-                                          
-                                          Global::Widget::reveal_toast("Impresion realizada correctamente"); 
-                                        });
-                                  }
-                                  catch (const Gtk::PrintError &ex)
-                                  {
-                                      // See documentation for exact Gtk::PrintError error codes.
-                                      
-                                          Global::Widget::reveal_toast(ex.what(), (Gtk::MessageType)3); 
-                                      std::cerr << "An error occurred while trying to run a print operation:"
-                                                << ex.what() << std::endl;
-                                  }
+                try
+                {
+                    m_refPrintFormOperation->run(Gtk::PrintOperation::Action::PRINT, *Global::Widget::v_main_window);
+                    m_refPrintFormOperation->signal_done().connect([](Gtk::PrintOperation::Result result)
+                    {
+                        Global::Widget::reveal_toast("Impresion realizada correctamente");
+                    });
+                }
+                catch (const Gtk::PrintError &ex)
+                {
+                    Global::Widget::reveal_toast(ex.what(), (Gtk::MessageType)3);
+                    std::cerr << "An error occurred while trying to run a print operation:"
+                              << ex.what() << std::endl;
+                }
                 
             }
         }

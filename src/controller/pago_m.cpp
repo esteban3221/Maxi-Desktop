@@ -33,11 +33,13 @@ void PagoM::on_show_map()
             {
                 auto it = level_coin->get_item(i);
                 v_spin_coin[i]->set_adjustment(Gtk::Adjustment::create(0,0,it->m_cant_recy));
+                v_lbl_coin[i]->set_text(Glib::ustring::compose("$%1 | %2", it->m_denominacion, it->m_cant_recy));
             }
 
             for (size_t i = 0; i < 6; i++)
             {
                 auto it = level_bill->get_item(i);
+                v_lbl_bill[i]->set_text(Glib::ustring::compose("$%1 | %2", it->m_denominacion, it->m_cant_recy));
                 v_spin_bill[i]->set_adjustment(Gtk::Adjustment::create(0,0,it->m_cant_recy));
             }
         }
@@ -95,10 +97,6 @@ void PagoM::on_btn_cobrar_clicked()
                                             }
                                             else if (response.status_code == 200)
                                             {
-
-                                                
-                                                Global::Widget::reveal_toast("Pago Manual Realizado");
-
                                                 auto j = nlohmann::json::parse(response.text);
                                                 auto log = std::make_unique<Log>();
 
@@ -106,6 +104,15 @@ void PagoM::on_btn_cobrar_clicked()
                                                 auto ticket = m_log->get_item(0);
                                                 auto faltante = j["Cambio_faltante"].get<int>();
                                                 Global::System::imprime_ticket(ticket, faltante);
+                                                Global::Widget::reveal_toast(Glib::ustring::compose("<span weight=\"bold\">Pago Manual</span>\n\n"
+                                                                        "Total: $%1\n"
+                                                                        "Cambio: $%2\n"
+                                                                        "Ingreso: $%3\n"
+                                                                        "Faltante: $%4", 
+                                                                        ticket->m_total, 
+                                                                        ticket->m_cambio, 
+                                                                        ticket->m_ingreso, 
+                                                                        faltante).c_str(), Gtk::MessageType::OTHER);
 
                                             }
                                             else
@@ -126,4 +133,5 @@ void PagoM::on_btn_cobrar_clicked()
             v_dialog->set_secondary_text("El monto a vender debe ser mayor a 0");
             v_dialog->set_visible();
         }
+        Global::Widget::m_refActionGroup->lookup_action("cerrarsesion")->activate();
     }

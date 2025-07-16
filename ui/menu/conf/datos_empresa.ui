@@ -73,7 +73,6 @@
                   <object class="GtkEntry" id="ety_conf_rfc">
                     <property name="hexpand">true</property>
                     <property name="placeholder-text">Type here…</property>
-                    <property name="secondary-icon-name">alarm-centered-symbolic</property>
                   </object>
                 </child>
               </object>

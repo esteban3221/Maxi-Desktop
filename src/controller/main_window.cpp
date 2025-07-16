@@ -22,6 +22,8 @@ MainWindow::MainWindow(const Glib::RefPtr<Gtk::Application>& app)
 
     v_button.set_icon_name("window-close-symbolic");
     v_button.set_css_classes({"circular"});
+    v_button.set_halign(Gtk::Align::END);
+    v_button.set_valign(Gtk::Align::CENTER);
     Global::Widget::v_button_conatiner->set_css_classes({"pill","opaque"});
     Global::Widget::v_button_conatiner->set_opacity(0.9);
 
@@ -68,15 +70,15 @@ void MainWindow::on_button_clicked()
 }
 void MainWindow::acceleretors(const Glib::RefPtr<Gtk::Application>& app)
 {
-    m_refActionGroup = Gio::SimpleActionGroup::create();
+    Global::Widget::m_refActionGroup = Gio::SimpleActionGroup::create();
 
-    m_refActionGroup->add_action("quit", [this]() { this->close(); });
-    m_refActionGroup->add_action("about",  [this,&app]() { 
+    Global::Widget::m_refActionGroup->add_action("quit", [this]() { this->close(); });
+    Global::Widget::m_refActionGroup->add_action("about",  [this,&app]() { 
         about.set_transient_for(*this);
         about.set_program_name("Maxicajero Desktop");
         about.set_artists({"Maxicajero"});
         about.set_authors({"Maxicajero","Esteban Noé"});
-        about.set_version("1.12.1");
+        about.set_version("1.15.1");
         about.set_license_type(Gtk::License::BSD_3);
         about.set_copyright("© 2025 Maxicajero");
         about.set_comments("Aplicación de escritorio para el manejo de cajeros automáticos");
@@ -86,18 +88,18 @@ void MainWindow::acceleretors(const Glib::RefPtr<Gtk::Application>& app)
         about.set_hide_on_close(true);
         about.set_application(app);
         about.set_visible(true); });
-    
-    m_refActionGroup->add_action("cerrarsesion", [this]() 
-        { 
-            if (not Global::User::Current.empty())
-            {
-                cpr::PostAsync(cpr::Url{Global::System::URL + "sesion/logout"});
-                Global::Widget::v_main_stack->set_visible_child("login");
+
+    Global::Widget::m_refActionGroup->add_action("cerrarsesion", [this]()
+    {
+        if (not Global::User::Current.empty())
+        {
+            cpr::PostAsync(cpr::Url{Global::System::URL + "sesion/logout"});
+            Global::Widget::v_main_stack->set_visible_child("login");
                 Global::Widget::v_main_title->set_text("Maxicajero");
             }
         });
 
-    insert_action_group("app", m_refActionGroup);
+    insert_action_group("app", Global::Widget::m_refActionGroup);
 
     app->set_accel_for_action("app.quit", "<Primary>q");
     app->set_accel_for_action("app.cerrarsesion", "<Primary>d");

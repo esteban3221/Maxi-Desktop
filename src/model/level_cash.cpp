@@ -18,7 +18,9 @@ Glib::RefPtr<Gio::ListStore<MLevelCash>> LevelCash::get_level_cash(const nlohman
             i["Denominacion"].get<int>(),
             i["Almacenado"].get<int>(),
             i["Recyclador"].get<int>(),
+            i["Inmovilidad_Min"].get<int>(),
             i["Inmovilidad"].get<int>(),
+            i["Inmovilidad_Max"].get<int>(),
             0
         ));
     }

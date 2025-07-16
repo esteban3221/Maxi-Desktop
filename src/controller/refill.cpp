@@ -10,7 +10,6 @@ Refill::Refill(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBui
     init_data(v_tree_reciclador_monedas, m_list_coin);
 
     v_btn_incia->signal_clicked().connect(sigc::mem_fun(*this, &Refill::on_btn_iniciar));
-    v_btn_retirada->signal_clicked().connect(sigc::mem_fun(*this, &Refill::on_btn_retirada));
     v_btn_transpaso->signal_clicked().connect(sigc::mem_fun(*this, &Refill::on_btn_transpaso));
 
 }
@@ -83,8 +82,26 @@ void Refill::init_data(Gtk::ColumnView *vcolumn, const Glib::RefPtr<Gio::ListSto
     {
         auto factory = Gtk::SignalListItemFactory::create();
         factory->signal_setup().connect(sigc::mem_fun(*this, &Refill::on_setup_spin));
+        factory->signal_bind().connect(sigc::mem_fun(*this, &Refill::on_bind_inmo_min));
+        auto column = Gtk::ColumnViewColumn::create("Inmovilidad Minima", factory);
+        column->set_expand(true);
+        vcolumn->append_column(column);
+    }
+
+    {
+        auto factory = Gtk::SignalListItemFactory::create();
+        factory->signal_setup().connect(sigc::mem_fun(*this, &Refill::on_setup_spin));
         factory->signal_bind().connect(sigc::mem_fun(*this, &Refill::on_bind_inmo));
         auto column = Gtk::ColumnViewColumn::create("Inmovilidad", factory);
+        column->set_expand(true);
+        vcolumn->append_column(column);
+    }
+
+    {
+        auto factory = Gtk::SignalListItemFactory::create();
+        factory->signal_setup().connect(sigc::mem_fun(*this, &Refill::on_setup_spin));
+        factory->signal_bind().connect(sigc::mem_fun(*this, &Refill::on_bind_inmo_max));
+        auto column = Gtk::ColumnViewColumn::create("Inmovilidad Maxima", factory);
         column->set_expand(true);
         vcolumn->append_column(column);
     }
@@ -162,15 +179,23 @@ void Refill::on_btn_iniciar()
             auto log = std::make_unique<Log>();
             auto m_log = log->get_log(j["ticket"]);
             auto ticket = m_log->get_item(0);
-
             auto faltante = j["Cambio_faltante"].get<int>();
+
+            Global::Widget::reveal_toast(Glib::ustring::compose("<span weight=\"bold\">Refill</span>\n\n"
+                                                                        "Total: $%1\n"
+                                                                        "Cambio: $%2\n"
+                                                                        "Ingreso: $%3\n"
+                                                                        "Faltante: $%4\n", 
+                                                                        ticket->m_total, 
+                                                                        ticket->m_cambio, 
+                                                                        ticket->m_ingreso, 
+                                                                        faltante).c_str(), Gtk::MessageType::OTHER);
 
             Global::System::imprime_ticket(ticket, faltante);
 
             on_show_map();
             v_lbl_total_parcial_billetes->set_text(j["billetes"].get<std::string>());
             v_lbl_total_parcial_monedas->set_text(j["monedas"].get<std::string>());
-
         }
     });
 }
@@ -197,28 +222,6 @@ void Refill::on_btn_transpaso()
                 Global::System::imprime_ticket(ticket, 0);
             }
         }
-    });
-}
-
-void Refill::on_btn_retirada()
-{
-    auto future = cpr::PostAsync(cpr::Url{Global::System::URL + "validador/retirada"}, Global::Utility::header);
-    Global::Widget::reveal_toast("Retire el casette de billetes o cancele desde POS", Gtk::MessageType::WARNING);
-    Global::Utility::consume_and_do(future,[this](cpr::Response response)
-    {
-        if (response.status_code != 200) 
-        {
-            auto j = nlohmann::json::parse(response.text);
-            if (j.contains("ticket")) 
-            {
-                auto log = std::make_unique<Log>();
-                auto m_log = log->get_log(j["ticket"]);
-                auto ticket = m_log->get_item(0);
-
-                Global::System::imprime_ticket(ticket, 0);
-            }
-        }
-
-        Global::Widget::v_revealer->set_reveal_child(false);
+        Global::Widget::m_refActionGroup->lookup_action("cerrarsesion")->activate();
     });
 }

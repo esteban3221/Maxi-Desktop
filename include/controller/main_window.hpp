@@ -14,10 +14,6 @@ private:
     Gtk::Overlay v_overlay;
     Gtk::Button v_button;
     
-
-    Glib::RefPtr<Gio::SimpleActionGroup> m_refActionGroup;
-    Glib::RefPtr<Gio::SimpleAction> m_refActionRain;
-
     void on_button_clicked();
     void acceleretors(const Glib::RefPtr<Gtk::Application>& app);
 

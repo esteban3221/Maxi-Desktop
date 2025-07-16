@@ -22,16 +22,22 @@ void PagoA::on_btn_enter_clicked()
 
                 if (response.status_code == 200) {
                     auto j = nlohmann::json::parse(response.text);
-                    
-                    v_box_columns->v_ety_columns[0]->set_text(v_base_nip->v_ety_spin->get_text());
-                    v_box_columns->v_ety_columns[1]->set_text("0");
-                    v_box_columns->v_ety_columns[2]->set_text("0");
 
                     auto faltante = j["Cambio_faltante"].get<int>();
                     auto log = std::make_unique<Log>();
                     auto m_log = log->get_log(j["ticket"]);
                     auto ticket = m_log->get_item(0);
                     Global::System::imprime_ticket(ticket, faltante);
+
+                    Global::Widget::reveal_toast(Glib::ustring::compose("<span weight=\"bold\">Pago</span>\n\n"
+                                                                        "Total: $%1\n"
+                                                                        "Cambio: $%2\n"
+                                                                        "Ingreso: $%3\n"
+                                                                        "Faltante: $%4", 
+                                                                        ticket->m_total, 
+                                                                        ticket->m_cambio, 
+                                                                        ticket->m_ingreso, 
+                                                                        faltante).c_str(), Gtk::MessageType::OTHER);
 
                     if (faltante > 0) {
                         v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window, "Cambio Faltante", false, Gtk::MessageType::INFO, Gtk::ButtonsType::NONE));
@@ -43,7 +49,7 @@ void PagoA::on_btn_enter_clicked()
                     v_dialog->set_secondary_text(response.text);
                     v_dialog->set_visible();
                 }
-
+                Global::Widget::m_refActionGroup->lookup_action("cerrarsesion")->activate();
                 set_sensitive(true); });
 }
 

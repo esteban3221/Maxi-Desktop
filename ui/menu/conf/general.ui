@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- Created with Cambalache 0.96.0 -->
+<!-- Created with Cambalache 0.96.1 -->
 <interface>
   <!-- interface-name general.ui -->
   <requires lib="gtk" version="4.0"/>
@@ -96,6 +96,12 @@
     <child>
       <object class="GtkButton" id="btn_actualiza_pos">
         <property name="label">Actualiza Sistema POS</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkButton" id="btn_retirada">
+        <property name="css-classes">destructive-action</property>
+        <property name="label">Retirada Cassette</property>
       </object>
     </child>
   </object>

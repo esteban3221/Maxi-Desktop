@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- Created with Cambalache 0.95.0 -->
+<!-- Created with Cambalache 0.96.1 -->
 <interface>
   <!-- interface-name pago_m.ui -->
   <requires lib="gtk" version="4.12"/>
@@ -27,7 +27,7 @@
               <object class="GtkBox">
                 <property name="homogeneous">True</property>
                 <child>
-                  <object class="GtkLabel">
+                  <object class="GtkLabel" id="lbl_bill_1">
                     <property name="label">$20</property>
                   </object>
                 </child>
@@ -42,7 +42,7 @@
               <object class="GtkBox">
                 <property name="homogeneous">True</property>
                 <child>
-                  <object class="GtkLabel">
+                  <object class="GtkLabel" id="lbl_bill_2">
                     <property name="label">$50</property>
                   </object>
                 </child>
@@ -57,7 +57,7 @@
               <object class="GtkBox">
                 <property name="homogeneous">True</property>
                 <child>
-                  <object class="GtkLabel">
+                  <object class="GtkLabel" id="lbl_bill_3">
                     <property name="label">$100</property>
                   </object>
                 </child>
@@ -72,7 +72,7 @@
               <object class="GtkBox">
                 <property name="homogeneous">True</property>
                 <child>
-                  <object class="GtkLabel">
+                  <object class="GtkLabel" id="lbl_bill_4">
                     <property name="label">$200</property>
                   </object>
                 </child>
@@ -87,7 +87,7 @@
               <object class="GtkBox">
                 <property name="homogeneous">True</property>
                 <child>
-                  <object class="GtkLabel">
+                  <object class="GtkLabel" id="lbl_bill_5">
                     <property name="label">$500</property>
                   </object>
                 </child>
@@ -102,7 +102,7 @@
               <object class="GtkBox">
                 <property name="homogeneous">True</property>
                 <child>
-                  <object class="GtkLabel">
+                  <object class="GtkLabel" id="lbl_bill_6">
                     <property name="label">$1000</property>
                   </object>
                 </child>
@@ -132,7 +132,7 @@
               <object class="GtkBox">
                 <property name="homogeneous">True</property>
                 <child>
-                  <object class="GtkLabel">
+                  <object class="GtkLabel" id="lbl_coin_1">
                     <property name="label">$1</property>
                   </object>
                 </child>
@@ -147,7 +147,7 @@
               <object class="GtkBox">
                 <property name="homogeneous">True</property>
                 <child>
-                  <object class="GtkLabel">
+                  <object class="GtkLabel" id="lbl_coin_2">
                     <property name="label">$2</property>
                   </object>
                 </child>
@@ -162,7 +162,7 @@
               <object class="GtkBox">
                 <property name="homogeneous">True</property>
                 <child>
-                  <object class="GtkLabel">
+                  <object class="GtkLabel" id="lbl_coin_3">
                     <property name="label">$5</property>
                   </object>
                 </child>
@@ -177,7 +177,7 @@
               <object class="GtkBox">
                 <property name="homogeneous">True</property>
                 <child>
-                  <object class="GtkLabel">
+                  <object class="GtkLabel" id="lbl_coin_4">
                     <property name="label">$10</property>
                   </object>
                 </child>

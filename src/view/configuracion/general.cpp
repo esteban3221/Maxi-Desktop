@@ -6,6 +6,7 @@ VGeneral::VGeneral(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &re
     v_ety_mensaje_inicio = m_builder->get_widget<Gtk::Entry>("ety_mensaje_inicio");
     v_btn_reinicia_val = m_builder->get_widget<Gtk::Button>("btn_reinicia_val");
     v_btn_actualiza_pos = m_builder->get_widget<Gtk::Button>("btn_actualiza_pos");
+    v_btn_retirada = m_builder->get_widget<Gtk::Button>("btn_retirada");
 }
 
 VGeneral::~VGeneral()
@@ -19,7 +20,7 @@ namespace View
     namespace Conf
     {
         const char *general_ui = R"(<?xml version='1.0' encoding='UTF-8'?>
-<!-- Created with Cambalache 0.96.0 -->
+<!-- Created with Cambalache 0.96.1 -->
 <interface>
   <!-- interface-name general.ui -->
   <requires lib="gtk" version="4.0"/>
@@ -116,6 +117,12 @@ namespace View
     <child>
       <object class="GtkButton" id="btn_actualiza_pos">
         <property name="label">Actualiza Sistema POS</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkButton" id="btn_retirada">
+        <property name="css-classes">destructive-action</property>
+        <property name="label">Retirada Cassette</property>
       </object>
     </child>
   </object>

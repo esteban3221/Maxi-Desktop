@@ -13,7 +13,7 @@ private:
 
     void on_btn_iniciar();
     void on_btn_transpaso();
-    void on_btn_retirada();
+    
 public: 
     Refill(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuilder);
     ~Refill();

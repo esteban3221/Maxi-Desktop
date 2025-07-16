@@ -6,6 +6,7 @@ General::General(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refB
     v_ety_mensaje_inicio->signal_changed().connect(sigc::mem_fun(*this, &General::on_ety_change_mensaje_inicio));
     v_btn_reinicia_val->signal_clicked().connect(sigc::mem_fun(*this, &General::on_btn_reinicia_val_clicked));
     v_btn_actualiza_pos->signal_clicked().connect(sigc::mem_fun(*this, &General::on_btn_actualiza_pos_clicked));
+    v_btn_retirada->signal_clicked().connect(sigc::mem_fun(*this, &General::on_btn_retirada));
 }
 
 General::~General()
@@ -25,7 +26,28 @@ void General::on_ety_change_mensaje_inicio()
     auto db = std::make_unique<Configuracion>();
     db->update_conf(MConfiguracion::create(2, "Mensaje Inicio", v_ety_mensaje_inicio->get_text()));
 }
+void General::on_btn_retirada()
+{
+    auto future = cpr::PostAsync(cpr::Url{Global::System::URL + "validador/retirada"}, Global::Utility::header);
+    Global::Widget::reveal_toast("Retire el casette de billetes o cancele desde POS", Gtk::MessageType::WARNING);
+    Global::Utility::consume_and_do(future,[this](cpr::Response response)
+    {
+        if (response.status_code != 200) 
+        {
+            auto j = nlohmann::json::parse(response.text);
+            if (j.contains("ticket")) 
+            {
+                auto log = std::make_unique<Log>();
+                auto m_log = log->get_log(j["ticket"]);
+                auto ticket = m_log->get_item(0);
 
+                Global::System::imprime_ticket(ticket, 0);
+            }
+        }
+        Global::Widget::m_refActionGroup->lookup_action("cerrarsesion")->activate();
+        Global::Widget::v_revealer->set_reveal_child(false);
+    });
+}
 void General::on_btn_reinicia_val_clicked()
 {
     nlohmann::json json = {

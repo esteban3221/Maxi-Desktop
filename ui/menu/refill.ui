@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- Created with Cambalache 0.96.0 -->
+<!-- Created with Cambalache 0.96.1 -->
 <interface>
   <!-- interface-name refill.ui -->
   <requires lib="gtk" version="4.0"/>
@@ -236,12 +236,6 @@
         <child>
           <object class="GtkButton" id="btn_transpaso">
             <property name="label">Transpasar a Casette</property>
-          </object>
-        </child>
-        <child>
-          <object class="GtkButton" id="btn_retirada">
-            <property name="css-classes">destructive-action</property>
-            <property name="label">Retirada</property>
           </object>
         </child>
       </object>

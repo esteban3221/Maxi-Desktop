@@ -20,7 +20,6 @@ protected:
 
     Gtk::Button *v_btn_incia = nullptr;
     Gtk::Button *v_btn_transpaso = nullptr;
-    Gtk::Button *v_btn_retirada = nullptr;
 
     void on_setup_label(const Glib::RefPtr<Gtk::ListItem> &list_item);
     void on_setup_button(const Glib::RefPtr<Gtk::ListItem> &list_item);
@@ -29,7 +28,10 @@ protected:
     void on_bind_alm(const Glib::RefPtr<Gtk::ListItem> &list_item);
     void on_bind_recy(const Glib::RefPtr<Gtk::ListItem> &list_item);
     void on_bind_ingreso(const Glib::RefPtr<Gtk::ListItem> &list_item);
+    void on_bind_inmo_min(const Glib::RefPtr<Gtk::ListItem> &list_item);
+    
     void on_bind_inmo(const Glib::RefPtr<Gtk::ListItem> &list_item);
+    void on_bind_inmo_max(const Glib::RefPtr<Gtk::ListItem> &list_item);
     void on_bind_btn(const Glib::RefPtr<Gtk::ListItem> &list_item);
 
 public:

@@ -40,6 +40,7 @@ namespace Global
         extern Gtk::ProgressBar *v_progress_bar;
 
         extern void reveal_toast(const Glib::ustring &title, Gtk::MessageType type = Gtk::MessageType::INFO, int duration = 3000);
+        extern Glib::RefPtr<Gio::SimpleActionGroup> m_refActionGroup;
 
         namespace Impresora
         {
