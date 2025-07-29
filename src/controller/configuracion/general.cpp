@@ -7,6 +7,7 @@ General::General(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refB
     v_btn_reinicia_val->signal_clicked().connect(sigc::mem_fun(*this, &General::on_btn_reinicia_val_clicked));
     v_btn_actualiza_pos->signal_clicked().connect(sigc::mem_fun(*this, &General::on_btn_actualiza_pos_clicked));
     v_btn_retirada->signal_clicked().connect(sigc::mem_fun(*this, &General::on_btn_retirada));
+    v_btn_imagen->signal_clicked().connect(sigc::mem_fun(*this, &General::on_btn_imagen_pos_clicked));
 }
 
 General::~General()
@@ -105,13 +106,58 @@ void General::on_btn_actualiza_pos_clicked()
 
     v_dialog->show();
 }
+void General::on_btn_imagen_pos_clicked()
+{     
+    auto dialog = Gtk::FileDialog::create();
+    dialog->set_title("Seleccionar Imagen de POS");
+    dialog->set_modal(true);
+    auto filters = Gio::ListStore<Gtk::FileFilter>::create();
+
+    auto filter = Gtk::FileFilter::create();
+    filter->set_name("PNG Image");
+    filter->add_mime_type("image/png");
+    filters->append(filter);
+
+    dialog->set_filters(filters);
+    dialog->open(sigc::bind(sigc::mem_fun(*this, &General::on_file_dialog_image_finish), dialog));
+            
+}
+void General::on_file_dialog_image_finish(const Glib::RefPtr<Gio::AsyncResult> &result, const Glib::RefPtr<Gtk::FileDialog> &dialog)
+{
+    try
+    {
+        auto file = dialog->open_finish(result);
+        auto filename = file->get_path();
+        std::cout << "Image selected: " << filename << std::endl;
+
+        auto future = cpr::PostAsync(cpr::Url{Global::System::URL + "configuracion/sube_imagen_pos"},
+                                     Global::Utility::header,
+                                     cpr::Multipart{{"file", cpr::File(filename)}});
+
+        Global::Utility::consume_and_do(future, [this](cpr::Response response)
+        {
+            if (response.status_code == 200)
+                Global::Widget::reveal_toast("Exito");
+            else
+                Global::Widget::reveal_toast("Error al subir la imagen", (Gtk::MessageType)3 /*La macro de windows permea TODO LO QUE TENGA ERROR*/);
+            
+            std::cout << response.text << std::endl; 
+        });
+    }
+    catch (const Gtk::DialogError &err)
+    {
+        std::cout << "No file selected. " << err.what() << std::endl;
+    }
+    catch (const Glib::Error &err)
+    {
+        std::cout << "Unexpected exception. " << err.what() << std::endl;
+    }
+}
 void General::on_file_dialog_finish(const Glib::RefPtr<Gio::AsyncResult> &result, const Glib::RefPtr<Gtk::FileDialog> &dialog)
 {
     try
     {
         auto file = dialog->open_finish(result);
-
-        // Notice that this is a std::string, not a Glib::ustring.
         auto filename = file->get_path();
         std::cout << "File selected: " << filename << std::endl;
 
@@ -122,15 +168,12 @@ void General::on_file_dialog_finish(const Glib::RefPtr<Gio::AsyncResult> &result
         Global::Utility::consume_and_do(future, [this](cpr::Response response)
                                         {
             if (response.status_code == 200)
-            {
-                
                 Global::Widget::reveal_toast("Exito");
-            }
+            
             std::cout << response.text << std::endl; });
     }
     catch (const Gtk::DialogError &err)
     {
-        // Can be thrown by dialog->open_finish(result).
         std::cout << "No file selected. " << err.what() << std::endl;
     }
     catch (const Glib::Error &err)

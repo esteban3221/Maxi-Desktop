@@ -7,6 +7,7 @@ VGeneral::VGeneral(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &re
     v_btn_reinicia_val = m_builder->get_widget<Gtk::Button>("btn_reinicia_val");
     v_btn_actualiza_pos = m_builder->get_widget<Gtk::Button>("btn_actualiza_pos");
     v_btn_retirada = m_builder->get_widget<Gtk::Button>("btn_retirada");
+    v_btn_imagen = m_builder->get_widget<Gtk::Button>("btn_imagen");
 }
 
 VGeneral::~VGeneral()
@@ -31,10 +32,10 @@ namespace View
     <property name="margin-start">10</property>
     <property name="margin-top">10</property>
     <property name="orientation">vertical</property>
-    <property name="spacing">10</property>
+    <property name="spacing">5</property>
     <child>
       <object class="GtkLabel">
-        <property name="halign">start</property>
+        <property name="halign">center</property>
         <property name="label" translatable="yes">Configuración General</property>
         <style>
           <class name="title-1"/>
@@ -53,6 +54,7 @@ namespace View
     </child>
     <child>
       <object class="GtkBox">
+        <property name="valign">center</property>
         <child>
           <object class="GtkLabel">
             <property name="halign">start</property>
@@ -64,6 +66,25 @@ namespace View
           <object class="GtkEntry" id="ety_mensaje_inicio">
             <property name="halign">baseline-fill</property>
             <property name="hexpand">True</property>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkBox">
+        <property name="valign">center</property>
+        <child>
+          <object class="GtkLabel">
+            <property name="halign">start</property>
+            <property name="label">Subir Icono POS</property>
+            <property name="margin-end">10</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="btn_imagen">
+            <property name="focusable">False</property>
+            <property name="hexpand">True</property>
+            <property name="label">Seleccione Imagen</property>
           </object>
         </child>
       </object>

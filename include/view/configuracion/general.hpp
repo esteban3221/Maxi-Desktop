@@ -11,6 +11,7 @@ protected:
     Gtk::Button *v_btn_reinicia_val;
     Gtk::Button *v_btn_actualiza_pos;
     Gtk::Button *v_btn_retirada = nullptr;
+    Gtk::Button *v_btn_imagen = nullptr;
     
     std::unique_ptr<Gtk::MessageDialog> v_dialog;
 public:

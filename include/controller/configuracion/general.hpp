@@ -12,7 +12,9 @@ private:
     void on_btn_retirada();
 
     void on_btn_actualiza_pos_clicked();
+    void on_btn_imagen_pos_clicked();
     void on_file_dialog_finish(const Glib::RefPtr<Gio::AsyncResult>& result,const Glib::RefPtr<Gtk::FileDialog>& dialog);
+    void on_file_dialog_image_finish(const Glib::RefPtr<Gio::AsyncResult>& result,const Glib::RefPtr<Gtk::FileDialog>& dialog);
 public:
     General(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuilder);
     ~General();

@@ -14,7 +14,6 @@ CUsuarios::CUsuarios(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &
     for (auto &&i : v_chk_roles)
         i->signal_toggled().connect(sigc::mem_fun(*this, &CUsuarios::state_group_checkbox));
     
-    
     v_btn_guardar_roles->signal_clicked().connect(sigc::mem_fun(*this, &CUsuarios::on_btn_guardar_roles_clicked));
 }
 
