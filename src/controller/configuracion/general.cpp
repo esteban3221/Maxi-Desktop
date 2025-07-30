@@ -33,7 +33,7 @@ void General::on_btn_retirada()
     Global::Widget::reveal_toast("Retire el casette de billetes o cancele desde POS", Gtk::MessageType::WARNING);
     Global::Utility::consume_and_do(future,[this](cpr::Response response)
     {
-        if (response.status_code != 200) 
+        if (response.status_code == 200) 
         {
             auto j = nlohmann::json::parse(response.text);
             if (j.contains("ticket")) 
@@ -42,7 +42,7 @@ void General::on_btn_retirada()
                 auto m_log = log->get_log(j["ticket"]);
                 auto ticket = m_log->get_item(0);
 
-                Global::System::imprime_ticket(ticket, 0);
+                Global::System::imprime_ticket(ticket);
             }
         }
         Global::Widget::m_refActionGroup->lookup_action("cerrarsesion")->activate();

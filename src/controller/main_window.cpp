@@ -25,7 +25,7 @@ MainWindow::MainWindow(const Glib::RefPtr<Gtk::Application>& app)
     v_button.set_halign(Gtk::Align::END);
     v_button.set_valign(Gtk::Align::CENTER);
     Global::Widget::v_button_conatiner->set_css_classes({"pill","opaque"});
-    Global::Widget::v_button_conatiner->set_opacity(0.97);
+    Global::Widget::v_button_conatiner->set_opacity(0.9);
 
     v_box->append(*Global::Widget::v_revealer_title);
     v_box->append(v_button);

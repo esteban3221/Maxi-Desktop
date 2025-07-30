@@ -34,7 +34,7 @@ namespace Global
                 v_button_conatiner->set_css_classes({"pill", "destructive-action"});
             break;
             case Gtk::MessageType::OTHER:
-                v_button_conatiner->set_css_classes({"button", "osd"});
+                v_button_conatiner->set_css_classes({"button"});
             break;
             
             default:

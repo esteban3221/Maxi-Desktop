@@ -2,7 +2,8 @@
 
 Refill::Refill(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuilder) : VRefill(cobject, refBuilder)
 {
-    this->signal_map().connect(sigc::mem_fun(*this, &Refill::on_show_map));
+    // this->signal_map().connect(sigc::mem_fun(*this, &Refill::on_show_map));
+    poll_alerta_niveles();
 
     auto m_list_bill = Gio::ListStore<MLevelCash>::create();
     auto m_list_coin = Gio::ListStore<MLevelCash>::create();
@@ -16,6 +17,48 @@ Refill::Refill(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBui
 
 Refill::~Refill()
 {
+}
+
+void Refill::poll_alerta_niveles()
+{
+    std::thread([this]()
+    {
+        while (true)
+        {
+            if(Global::System::token.empty())
+                continue;
+            std::this_thread::sleep_for(std::chrono::seconds(5));
+            
+            auto future = cpr::GetAsync(cpr::Url{Global::System::URL, "validadores/get_dashboard"}, Global::Utility::header);
+            Global::Utility::consume_and_do(future,[this](cpr::Response response)
+            {
+                if (response.status_code == 200) 
+                {
+                    auto json = nlohmann::json::parse(response.text);
+
+                    for (auto &&i : json["bill"])
+                    {
+                        auto denominacion = i["Denominacion"].get<int>();
+
+                        auto nivel_actual = i["Recyclador"].get<int>();
+                        auto nivel_minimo = i["Inmovilidad_Min"].get<int>();
+                        auto nivel_maximo = i["Inmovilidad_Max"].get<int>();
+
+                        if(nivel_actual <= nivel_minimo)
+                        {
+                            Global::Widget::reveal_toast(Glib::ustring::compose("Nivel minimo alcanzado para billetes de $ %1", denominacion).c_str(), (Gtk::MessageType)3 /* Critico */);
+                        }
+                        else if(nivel_actual >= nivel_maximo)
+                        {
+                            Global::Widget::reveal_toast(Glib::ustring::compose("Nivel maximo alcanzado para billetes de $ %1", denominacion).c_str(), Gtk::MessageType::WARNING);
+                        }
+                        else
+                            Global::Widget::v_revealer->set_reveal_child(false);
+                    }
+                }
+            });
+        }
+    }).detach();
 }
 
 void Refill::on_show_map()
@@ -39,6 +82,8 @@ void Refill::on_show_map()
                 v_lbl_total->set_text(json["total"].get<std::string>());
                 v_lbl_total_billetes->set_text(json["total_billetes"].get<std::string>());
                 v_lbl_total_monedas->set_text(json["total_monedas"].get<std::string>());
+                v_lbl_total_parcial_billetes->set_text(json["total_billetes_recy"].get<std::string>());
+                v_lbl_total_parcial_monedas->set_text(json["total_monedas_recy"].get<std::string>());
             }
     });
     
@@ -196,6 +241,7 @@ void Refill::on_btn_iniciar()
             on_show_map();
             v_lbl_total_parcial_billetes->set_text(j["billetes"].get<std::string>());
             v_lbl_total_parcial_monedas->set_text(j["monedas"].get<std::string>());
+            Global::Widget::m_refActionGroup->lookup_action("cerrarsesion")->activate();
         }
     });
 }

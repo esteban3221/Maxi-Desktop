@@ -360,7 +360,6 @@ void CUsuarios::on_dialog_btn_add_clicked()
 {
     if (v_entry_usuario->get_text().empty() || v_entry_contrasena->get_text().empty())
     {
-        
         Global::Widget::reveal_toast("Los campos no pueden estar vacios", Gtk::MessageType::WARNING);
         return;
     }
@@ -373,14 +372,9 @@ void CUsuarios::on_dialog_btn_add_clicked()
     Global::Utility::consume_and_do(future, [this](const cpr::Response &response)
     {
         if (response.status_code == 200)
-        {
             on_show_map();
-            v_dialog->close();
-        }
         else
-        {
             Global::Widget::reveal_toast("No tiene permisos para acceder a esta seccion", (Gtk::MessageType)3);
-        }
-        
+        v_dialog->close();
     });
 }

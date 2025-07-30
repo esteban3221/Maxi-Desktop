@@ -95,6 +95,7 @@ namespace View
                               <object class="GtkListBoxRow">
                                 <property name="child">
                                   <object class="GtkImage" id="img_validador">
+                                    <property name="file">img/SMART_COIN_SYSTEM.png</property>
                                     <property name="icon-name">dialog-question-symbolic</property>
                                     <property name="margin-bottom">10</property>
                                     <property name="margin-end">10</property>
@@ -534,6 +535,7 @@ namespace View
                               <object class="GtkListBoxRow">
                                 <property name="child">
                                   <object class="GtkImage" id="img_validador_">
+                                    <property name="file">img/SMART_COIN_SYSTEM.png</property>
                                     <property name="icon-name">dialog-question-symbolic</property>
                                     <property name="margin-bottom">10</property>
                                     <property name="margin-end">10</property>
