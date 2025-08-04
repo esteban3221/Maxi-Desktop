@@ -8,7 +8,9 @@ class Venta : public VVenta
 private:
     void on_btn_enter_clicked();
     void on_map_show();
+
+    bool is_view_ingreso;
 public:
-    Venta(/* args */);
+    Venta(bool is_view_ingreso = false);
     ~Venta();
 };

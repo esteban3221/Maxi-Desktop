@@ -1,5 +1,4 @@
 #include "controller/pago_m.hpp"
-#include "pago_m.hpp"
 
 
 PagoM::PagoM(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuilder) : VPagoM(cobject, refBuilder)
@@ -19,6 +18,7 @@ PagoM::~PagoM()
 
 void PagoM::on_show_map()
 {
+    v_ety_concepto->set_text("");
     auto future = cpr::GetAsync(cpr::Url{Global::System::URL, "validadores/get_dashboard"}, Global::Utility::header);
     Global::Utility::consume_and_do(future,[this](cpr::Response response)
     {
@@ -82,7 +82,8 @@ void PagoM::on_btn_cobrar_clicked()
                                             v_spin_coin[1]->get_value_as_int(),
                                             v_spin_coin[2]->get_value_as_int(),
                                             v_spin_coin[3]->get_value_as_int()})},
-            {"total", total}};
+            {"total", total},
+            {"concepto", v_ety_concepto->get_text()}};
 
         auto future = cpr::PostAsync(cpr::Url{Global::System::URL + "accion/inicia_pago_manual"}, Global::Utility::header, cpr::Body{json.dump()});
 
@@ -123,8 +124,6 @@ void PagoM::on_btn_cobrar_clicked()
                                             }
 
                                             set_sensitive(true);
-
-                                            // Procesa la respuesta en el hilo de GTK
                                         });
 
         }else

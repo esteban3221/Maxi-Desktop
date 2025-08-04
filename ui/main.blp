@@ -1,0 +1,184 @@
+using Gtk 4.0;
+
+Box box_pago_m {
+  orientation: vertical;
+  spacing: 10;
+
+  Entry ety_concepto {
+    halign: center;
+    margin-top: 10;
+    margin-bottom: 20;
+    width-request: 500;
+    height-request: 50;
+    placeholder-text: _("Concepto");
+
+    styles [
+      "title-1",
+    ]
+  }
+
+  Box {
+    homogeneous: true;
+    spacing: 20;
+
+    Box {
+      orientation: vertical;
+      spacing: 15;
+
+      Label {
+        label: "Billetero";
+        margin-bottom: 20;
+
+        styles [
+          "title-2",
+        ]
+      }
+
+      Box {
+        homogeneous: true;
+
+        Label lbl_bill_1 {
+          label: "$20";
+        }
+
+        SpinButton spin_bill_1 {
+          halign: center;
+        }
+      }
+
+      Box {
+        homogeneous: true;
+
+        Label lbl_bill_2 {
+          label: "$50";
+        }
+
+        SpinButton spin_bill_2 {
+          halign: center;
+        }
+      }
+
+      Box {
+        homogeneous: true;
+
+        Label lbl_bill_3 {
+          label: "$100";
+        }
+
+        SpinButton spin_bill_3 {
+          halign: center;
+        }
+      }
+
+      Box {
+        homogeneous: true;
+
+        Label lbl_bill_4 {
+          label: "$200";
+        }
+
+        SpinButton spin_bill_4 {
+          halign: center;
+        }
+      }
+
+      Box {
+        homogeneous: true;
+
+        Label lbl_bill_5 {
+          label: "$500";
+        }
+
+        SpinButton spin_bill_5 {
+          halign: center;
+        }
+      }
+
+      Box {
+        homogeneous: true;
+
+        Label lbl_bill_6 {
+          label: "$1000";
+        }
+
+        SpinButton spin_bill_6 {
+          halign: center;
+        }
+      }
+    }
+
+    Box {
+      orientation: vertical;
+      spacing: 15;
+
+      Label {
+        label: "Monedas";
+        margin-bottom: 20;
+
+        styles [
+          "title-2",
+        ]
+      }
+
+      Box {
+        homogeneous: true;
+
+        Label lbl_coin_1 {
+          label: "$1";
+        }
+
+        SpinButton spin_coin_1 {
+          halign: center;
+        }
+      }
+
+      Box {
+        homogeneous: true;
+
+        Label lbl_coin_2 {
+          label: "$2";
+        }
+
+        SpinButton spin_coin_2 {
+          halign: center;
+        }
+      }
+
+      Box {
+        homogeneous: true;
+
+        Label lbl_coin_3 {
+          label: "$5";
+        }
+
+        SpinButton spin_coin_3 {
+          halign: center;
+        }
+      }
+
+      Box {
+        homogeneous: true;
+
+        Label lbl_coin_4 {
+          label: "$10";
+        }
+
+        SpinButton spin_coin_4 {
+          halign: center;
+        }
+      }
+    }
+  }
+
+  Button btn_cobrar {
+    halign: center;
+    hexpand: true;
+    label: "Cobrar $0";
+    valign: center;
+    vexpand: true;
+
+    styles [
+      "suggested-action",
+    ]
+  }
+}

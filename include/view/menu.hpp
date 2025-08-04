@@ -15,6 +15,7 @@ class VMenu : public Gtk::Box
 protected:
     Gtk::ListBox *v_list_box_menu;
     Gtk::Stack *v_stack_menu;
+    Gtk::Label *v_lbl_user;
 
 private:
     Glib::RefPtr<Gtk::Builder> m_builder;
@@ -26,5 +27,6 @@ public:
 
 namespace View
 {
-    extern const char *menu_ui;    
+    extern const char *menu_ui;  
+    extern const char *default_ui;  
 }// namespace View

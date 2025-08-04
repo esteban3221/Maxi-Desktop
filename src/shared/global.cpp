@@ -41,6 +41,7 @@ namespace Global
                 break;
             }
             v_revealer_title->set_markup(title);
+            v_revealer_title->set_css_classes({"title", "h4"});
             v_revealer->set_reveal_child();
         }
 

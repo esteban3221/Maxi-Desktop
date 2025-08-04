@@ -1,34 +1,4 @@
-#include "view/pago_m.hpp"
-
-VPagoM::VPagoM(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuilder) : Gtk::Box(cobject),
-                                                                                        m_builder(refBuilder)
-{
-    for (size_t i = 0; i < 4; i++)
-    {
-        v_spin_coin[i] = m_builder->get_widget<Gtk::SpinButton>(Glib::ustring::compose("spin_coin_%1", i + 1));
-        v_lbl_coin[i] = m_builder->get_widget<Gtk::Label>(Glib::ustring::compose("lbl_coin_%1", i + 1));
-        v_spin_coin[i]->set_adjustment(Gtk::Adjustment::create(0, 0, 100, 1, 10, 0));
-    }
-    for (size_t i = 0; i < 6; i++)
-    {
-        v_spin_bill[i] = m_builder->get_widget<Gtk::SpinButton>(Glib::ustring::compose("spin_bill_%1", i + 1));
-        v_lbl_bill[i] = m_builder->get_widget<Gtk::Label>(Glib::ustring::compose("lbl_bill_%1", i + 1));
-        v_spin_bill[i]->set_adjustment(Gtk::Adjustment::create(0, 0, 100, 1, 10, 0));
-    }
-    v_btn_cobrar = m_builder->get_widget<Gtk::Button>("btn_cobrar");
-    v_ety_concepto = m_builder->get_widget<Gtk::Entry>("ety_concepto");
-
-    Global::Utility::set_multiline_text(*v_ety_concepto);
-}
-
-VPagoM::~VPagoM()
-{
-}
-
-namespace View
-{
-    const char *pagom_ui = R"(
-    <?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk" version="4.0"/>
   <object class="GtkBox" id="box_pago_m">
@@ -246,5 +216,4 @@ namespace View
       </object>
     </child>
   </object>
-</interface>)";
-} // namespace View
+</interface>

@@ -12,6 +12,7 @@ protected:
     Gtk::Label *v_lbl_bill[6]{nullptr};
     Gtk::Label *v_lbl_coin[4]{nullptr};
     Gtk::Button *v_btn_cobrar = nullptr;
+    Gtk::Entry *v_ety_concepto = nullptr;
 
     std::unique_ptr<Gtk::MessageDialog> v_dialog;
 public:

@@ -1,6 +1,6 @@
 #include "controller/venta.hpp"
 
-Venta::Venta(/* args */)
+Venta::Venta(bool is_view_ingreso) : is_view_ingreso(is_view_ingreso)
 {
     v_base_nip->v_btn_nip_enter->signal_clicked().connect(sigc::mem_fun(*this, &Venta::on_btn_enter_clicked));
     v_base_nip->v_ety_spin->set_text("");
@@ -29,7 +29,7 @@ void Venta::on_btn_enter_clicked()
     v_base_nip->v_ety_spin->update();
 
     auto value = v_base_nip->v_ety_spin->get_value_as_int();
-    auto json = nlohmann::json{{"value", value}, {"concepto", v_ety_concepto.get_text()}};
+    auto json = nlohmann::json{{"value", value}, {"concepto", v_ety_concepto.get_text()}, {"is_view_ingreso", is_view_ingreso}};
     auto future = cpr::PostAsync(cpr::Url{Global::System::URL + "accion/inicia_venta"},Global::Utility::header, cpr::Body{json.dump()});
 
     Global::Utility::consume_and_do(future, [this](const cpr::Response &response)

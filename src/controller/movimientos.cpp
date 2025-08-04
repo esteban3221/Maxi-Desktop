@@ -22,7 +22,7 @@ Movimientos::~Movimientos()
 
 void Movimientos::init_datos()
 {
-    std::vector<Glib::ustring> tipos = {"Todo", "Venta", "Pago", "Pago Manual", "Refill"};
+    std::vector<Glib::ustring> tipos = {"Todo", "Venta", "Ingreso", "Pago", "Pago Manual", "Refill", "Retirada"};
     m_list_tipos = Gtk::StringList::create(tipos);
     v_dp_tipo->set_model(m_list_tipos);
 

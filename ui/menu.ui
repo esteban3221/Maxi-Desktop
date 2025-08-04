@@ -1,19 +1,17 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<!-- Created with Cambalache 0.96.1 -->
+<?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <!-- interface-name menu.ui -->
   <requires lib="gtk" version="4.0"/>
   <object class="GtkBox" id="box_menu">
     <child>
       <object class="GtkScrolledWindow" id="scrolled_window">
-        <property name="hscrollbar-policy">never</property>
-        <property name="propagate-natural-width">True</property>
+        <property name="hscrollbar-policy">2</property>
+        <property name="propagate-natural-width">true</property>
         <property name="vexpand">true</property>
         <child>
           <object class="GtkListBox" id="list_box_menu">
             <property name="activate-on-single-click">true</property>
-            <property name="selection-mode">single</property>
-            <property name="valign">start</property>
+            <property name="selection-mode">1</property>
+            <property name="valign">1</property>
             <child>
               <object class="GtkBox">
                 <property name="spacing">10</property>
@@ -24,7 +22,22 @@
                 </child>
                 <child>
                   <object class="GtkLabel">
-                    <property name="label">Registrar Eventos</property>
+                    <property name="label">Venta</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox">
+                <property name="spacing">10</property>
+                <child>
+                  <object class="GtkImage">
+                    <property name="icon-name">downloaded-symbolic</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="label">Ingreso</property>
                   </object>
                 </child>
               </object>
@@ -39,7 +52,7 @@
                 </child>
                 <child>
                   <object class="GtkLabel">
-                    <property name="label">Calendario</property>
+                    <property name="label">Pago Automatico</property>
                   </object>
                 </child>
               </object>
@@ -54,7 +67,7 @@
                 </child>
                 <child>
                   <object class="GtkLabel">
-                    <property name="label">Reportes</property>
+                    <property name="label">Pago manual</property>
                   </object>
                 </child>
               </object>
@@ -64,12 +77,12 @@
                 <property name="spacing">10</property>
                 <child>
                   <object class="GtkImage">
-                    <property name="icon-name">applications-utilities-symbolic</property>
+                    <property name="icon-name">emoji-symbols-symbolic</property>
                   </object>
                 </child>
                 <child>
                   <object class="GtkLabel">
-                    <property name="label">Alertas</property>
+                    <property name="label">Carga</property>
                   </object>
                 </child>
               </object>
@@ -79,7 +92,7 @@
                 <property name="spacing">10</property>
                 <child>
                   <object class="GtkImage">
-                    <property name="icon-name">applications-utilities-symbolic</property>
+                    <property name="icon-name">emoji-recent-symbolic</property>
                   </object>
                 </child>
                 <child>
@@ -112,18 +125,18 @@
       </object>
     </child>
     <child>
-      <object class="GtkSeparator"/>
+      <object class="GtkSeparator"></object>
     </child>
     <child>
       <object class="GtkBox">
-        <property name="orientation">vertical</property>
+        <property name="orientation">1</property>
         <child>
-          <object class="GtkProgressBar" id="progress"/>
+          <object class="GtkProgressBar" id="progress"></object>
         </child>
         <child>
           <object class="GtkStack" id="stack_menu">
             <property name="hexpand">true</property>
-            <property name="vexpand">True</property>
+            <property name="vexpand">true</property>
           </object>
         </child>
       </object>
