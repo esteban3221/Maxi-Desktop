@@ -12,6 +12,7 @@ protected:
     Gtk::Label *v_lbl_total_parcial_monedas,
         *v_lbl_total_parcial_billetes,
         *v_lbl_total,
+        *v_lbl_total_billetes_cass,
         *v_lbl_total_billetes,
         *v_lbl_total_monedas;
 

@@ -71,7 +71,8 @@ void PagoM::on_btn_cobrar_clicked()
     if (total > 0)
     {
 
-        auto json = nlohmann::json{
+        auto json = nlohmann::json
+        {
             {"bill", nlohmann::json::array({v_spin_bill[0]->get_value_as_int(),
                                             v_spin_bill[1]->get_value_as_int(),
                                             v_spin_bill[2]->get_value_as_int(),
@@ -83,20 +84,14 @@ void PagoM::on_btn_cobrar_clicked()
                                             v_spin_coin[2]->get_value_as_int(),
                                             v_spin_coin[3]->get_value_as_int()})},
             {"total", total},
-            {"concepto", v_ety_concepto->get_text()}};
+            {"concepto", v_ety_concepto->get_text()}
+        };
 
         auto future = cpr::PostAsync(cpr::Url{Global::System::URL + "accion/inicia_pago_manual"}, Global::Utility::header, cpr::Body{json.dump()});
-
+        
         Global::Utility::consume_and_do(future, [this](const cpr::Response &response)
                                         {
-                                            set_sensitive(false);
-                                            if (response.status_code == 500)
-                                            {
-                                                v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window,"Info",false,Gtk::MessageType::INFO, Gtk::ButtonsType::NONE));
-                                                v_dialog->set_secondary_text(response.text);
-                                                v_dialog->set_visible();
-                                            }
-                                            else if (response.status_code == 200)
+                                            if (response.status_code == 200)
                                             {
                                                 auto j = nlohmann::json::parse(response.text);
                                                 auto log = std::make_unique<Log>();
@@ -105,6 +100,7 @@ void PagoM::on_btn_cobrar_clicked()
                                                 auto ticket = m_log->get_item(0);
                                                 auto faltante = j["Cambio_faltante"].get<int>();
                                                 Global::System::imprime_ticket(ticket, faltante);
+                            
                                                 Global::Widget::reveal_toast(Glib::ustring::compose("<span weight=\"bold\">Pago Manual</span>\n\n"
                                                                         "Total: $%1\n"
                                                                         "Cambio: $%2\n"
@@ -113,8 +109,8 @@ void PagoM::on_btn_cobrar_clicked()
                                                                         ticket->m_total, 
                                                                         ticket->m_cambio, 
                                                                         ticket->m_ingreso, 
-                                                                        faltante).c_str(), Gtk::MessageType::OTHER);
-
+                                                                        faltante), Gtk::MessageType::OTHER);
+                                                
                                             }
                                             else
                                             {
@@ -122,8 +118,6 @@ void PagoM::on_btn_cobrar_clicked()
                                                 v_dialog->set_secondary_text(response.text);
                                                 v_dialog->set_visible();
                                             }
-
-                                            set_sensitive(true);
                                         });
 
         }else

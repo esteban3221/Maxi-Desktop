@@ -37,7 +37,7 @@ void PagoA::on_btn_enter_clicked()
                                                                         ticket->m_total, 
                                                                         ticket->m_cambio, 
                                                                         ticket->m_ingreso, 
-                                                                        faltante).c_str(), Gtk::MessageType::OTHER);
+                                                                        faltante), Gtk::MessageType::OTHER);
 
                     if (faltante > 0) {
                         v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window, "Cambio Faltante", false, Gtk::MessageType::INFO, Gtk::ButtonsType::NONE));

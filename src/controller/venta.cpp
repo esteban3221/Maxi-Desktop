@@ -43,7 +43,7 @@ void Venta::on_btn_enter_clicked()
                     auto ticket = m_log->get_item(0);
                     auto faltante = j["Cambio_faltante"].get<int>();
 
-                    Global::Widget::reveal_toast(Glib::ustring::compose("<span weight=\"bold\">Venta</span>\n\n"
+                    Global::Widget::reveal_toast(Glib::ustring::compose("<span weight=\"bold\"> $%5 </span>\n\n"
                                                                         "Total: $%1\n"
                                                                         "Cambio: $%2\n"
                                                                         "Ingreso: $%3\n"
@@ -51,7 +51,8 @@ void Venta::on_btn_enter_clicked()
                                                                         ticket->m_total, 
                                                                         ticket->m_cambio, 
                                                                         ticket->m_ingreso, 
-                                                                        faltante).c_str(), Gtk::MessageType::OTHER);
+                                                                        faltante,
+                                                                        is_view_ingreso ? "Ingreso" : "Venta"), Gtk::MessageType::OTHER);
 
                     Global::System::imprime_ticket(ticket, faltante);
 

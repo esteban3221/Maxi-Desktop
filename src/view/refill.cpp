@@ -8,6 +8,7 @@ VRefill::VRefill(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refB
 
 	v_lbl_total_parcial_monedas = m_builder->get_widget<Gtk::Label>("lblTotalMXN1");
 	v_lbl_total_parcial_billetes = m_builder->get_widget<Gtk::Label>("lblTotalMXN2");
+  v_lbl_total_billetes_cass = m_builder->get_widget<Gtk::Label>("lblTotalMXN2_");
 	v_lbl_total_monedas = m_builder->get_widget<Gtk::Label>("lblTotalMXN4");
 	v_lbl_total_billetes = m_builder->get_widget<Gtk::Label>("lblTotalMXN5");
 	v_lbl_total = m_builder->get_widget<Gtk::Label>("lblTotalMXN3");
@@ -133,13 +134,11 @@ VRefill::~VRefill()
 
 namespace View
 {
-	const char *refill_ui = R"(<?xml version='1.0' encoding='UTF-8'?>
-<!-- Created with Cambalache 0.96.1 -->
+	const char *refill_ui = R"(<?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <!-- interface-name refill.ui -->
   <requires lib="gtk" version="4.0"/>
   <object class="GtkBox" id="box_refill">
-    <property name="halign">fill</property>
+    <property name="halign">0</property>
     <property name="margin-bottom">15</property>
     <property name="margin-end">15</property>
     <property name="margin-start">15</property>
@@ -148,7 +147,7 @@ namespace View
     <child>
       <object class="GtkBox">
         <property name="homogeneous">true</property>
-        <property name="orientation">vertical</property>
+        <property name="orientation">1</property>
         <property name="spacing">20</property>
         <property name="vexpand">true</property>
         <child>
@@ -157,7 +156,7 @@ namespace View
               <object class="GtkBox">
                 <property name="margin-end">12</property>
                 <property name="margin-start">12</property>
-                <property name="orientation">vertical</property>
+                <property name="orientation">1</property>
                 <child>
                   <object class="GtkLabel">
                     <property name="label">Monedas</property>
@@ -184,14 +183,15 @@ namespace View
                     </child>
                     <child>
                       <object class="GtkBox">
-                        <property name="halign">end</property>
+                        <property name="halign">2</property>
                         <property name="hexpand-set">true</property>
-                        <property name="orientation">vertical</property>
+                        <property name="orientation">1</property>
                         <child>
                           <object class="GtkLabel">
-                            <property name="label">Total</property>
+                            <property name="label">Total
+Recyclador</property>
                             <style>
-                              <class name="title-2"/>
+                              <class name="title-4"/>
                             </style>
                           </object>
                         </child>
@@ -200,6 +200,7 @@ namespace View
                             <property name="label">0.00 MXN</property>
                             <style>
                               <class name="title-4"/>
+                              <class name="dim-label"/>
                             </style>
                           </object>
                         </child>
@@ -217,7 +218,7 @@ namespace View
               <object class="GtkBox">
                 <property name="margin-end">12</property>
                 <property name="margin-start">12</property>
-                <property name="orientation">vertical</property>
+                <property name="orientation">1</property>
                 <child>
                   <object class="GtkLabel">
                     <property name="label">Billetes</property>
@@ -243,21 +244,42 @@ namespace View
                     </child>
                     <child>
                       <object class="GtkBox">
-                        <property name="halign">end</property>
-                        <property name="orientation">vertical</property>
+                        <property name="halign">2</property>
+                        <property name="orientation">1</property>
                         <child>
                           <object class="GtkLabel">
-                            <property name="label">Total</property>
+                            <property name="label">Total
+Recyclador</property>
                             <style>
-                              <class name="title-2"/>
+                              <class name="title-4"/>
                             </style>
                           </object>
                         </child>
                         <child>
                           <object class="GtkLabel" id="lblTotalMXN2">
                             <property name="label">0.00 MXN</property>
+                            <property name="margin-bottom">10</property>
                             <style>
                               <class name="title-4"/>
+                              <class name="dim-label"/>
+                            </style>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="label">Total
+Casette      </property>
+                            <style>
+                              <class name="title-4"/>
+                            </style>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="lblTotalMXN2_">
+                            <property name="label">0.00 MXN</property>
+                            <style>
+                              <class name="title-4"/>
+                              <class name="dim-label"/>
                             </style>
                           </object>
                         </child>
@@ -273,7 +295,7 @@ namespace View
     </child>
     <child>
       <object class="GtkBox">
-        <property name="orientation">vertical</property>
+        <property name="orientation">1</property>
         <property name="spacing">20</property>
         <child>
           <object class="GtkFrame" id="frmTotal">
@@ -283,7 +305,7 @@ namespace View
                 <property name="margin-end">12</property>
                 <property name="margin-start">12</property>
                 <property name="margin-top">12</property>
-                <property name="orientation">vertical</property>
+                <property name="orientation">1</property>
                 <child>
                   <object class="GtkLabel">
                     <property name="label">Total</property>
@@ -312,7 +334,7 @@ namespace View
                 <property name="margin-end">12</property>
                 <property name="margin-start">12</property>
                 <property name="margin-top">12</property>
-                <property name="orientation">vertical</property>
+                <property name="orientation">1</property>
                 <child>
                   <object class="GtkLabel">
                     <property name="label">Total Monedas</property>
@@ -341,7 +363,7 @@ namespace View
                 <property name="margin-end">12</property>
                 <property name="margin-start">12</property>
                 <property name="margin-top">12</property>
-                <property name="orientation">vertical</property>
+                <property name="orientation">1</property>
                 <child>
                   <object class="GtkLabel">
                     <property name="label">Total Billetes</property>
@@ -376,6 +398,5 @@ namespace View
       </object>
     </child>
   </object>
-</interface>
-)";
+</interface>)";
 } // namespace View

@@ -2,7 +2,7 @@
 
 Refill::Refill(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuilder) : VRefill(cobject, refBuilder)
 {
-    // this->signal_map().connect(sigc::mem_fun(*this, &Refill::on_show_map));
+    this->signal_map().connect(sigc::mem_fun(*this, &Refill::on_show_map));
     poll_alerta_niveles();
 
     auto m_list_bill = Gio::ListStore<MLevelCash>::create();
@@ -44,16 +44,10 @@ void Refill::poll_alerta_niveles()
                         auto nivel_minimo = i["Inmovilidad_Min"].get<int>();
                         auto nivel_maximo = i["Inmovilidad_Max"].get<int>();
 
-                        if(nivel_actual <= nivel_minimo)
-                        {
+                        if(nivel_actual < nivel_minimo)
                             Global::Widget::reveal_toast(Glib::ustring::compose("Nivel minimo alcanzado para billetes de $ %1", denominacion).c_str(), (Gtk::MessageType)3 /* Critico */);
-                        }
-                        else if(nivel_actual >= nivel_maximo)
-                        {
+                        else if(nivel_actual > nivel_maximo)
                             Global::Widget::reveal_toast(Glib::ustring::compose("Nivel maximo alcanzado para billetes de $ %1", denominacion).c_str(), Gtk::MessageType::WARNING);
-                        }
-                        else
-                            Global::Widget::v_revealer->set_reveal_child(false);
                     }
                 }
             });
@@ -81,7 +75,8 @@ void Refill::on_show_map()
 
                 v_lbl_total->set_text(json["total"].get<std::string>());
                 v_lbl_total_billetes->set_text(json["total_billetes"].get<std::string>());
-                v_lbl_total_monedas->set_text(json["total_monedas"].get<std::string>());
+                v_lbl_total_monedas->set_text(json["total_monedas_recy"].get<std::string>());
+                v_lbl_total_billetes_cass->set_text(json["total_billetes_cass"].get<std::string>());
                 v_lbl_total_parcial_billetes->set_text(json["total_billetes_recy"].get<std::string>());
                 v_lbl_total_parcial_monedas->set_text(json["total_monedas_recy"].get<std::string>());
             }
@@ -234,7 +229,7 @@ void Refill::on_btn_iniciar()
                                                                         ticket->m_total, 
                                                                         ticket->m_cambio, 
                                                                         ticket->m_ingreso, 
-                                                                        faltante).c_str(), Gtk::MessageType::OTHER);
+                                                                        faltante), Gtk::MessageType::OTHER);
 
             Global::System::imprime_ticket(ticket, faltante);
 
