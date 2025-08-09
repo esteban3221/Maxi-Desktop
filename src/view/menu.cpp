@@ -72,7 +72,7 @@ namespace View
     </child>
     <child>
       <object class="GtkImage">
-        <property name="icon-name">selection-symbolic</property>
+        <property name="icon-name">sidebar-show-symbolic</property>
         <property name="pixel-size">200</property>
       </object>
     </child>
@@ -121,7 +121,7 @@ dim-label</property>
                 <property name="spacing">10</property>
                 <child>
                   <object class="GtkImage">
-                    <property name="icon-name">downloaded-symbolic</property>
+                    <property name="icon-name">insert-object-symbolic</property>
                   </object>
                 </child>
                 <child>
