@@ -12,7 +12,6 @@ Refill::Refill(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBui
 
     v_btn_incia->signal_clicked().connect(sigc::mem_fun(*this, &Refill::on_btn_iniciar));
     v_btn_transpaso->signal_clicked().connect(sigc::mem_fun(*this, &Refill::on_btn_transpaso));
-
 }
 
 Refill::~Refill()
@@ -35,31 +34,36 @@ void Refill::poll_alerta_niveles()
                 if (response.status_code == 200) 
                 {
                     auto json = nlohmann::json::parse(response.text);
-
-                    for (auto &&i : json["bill"])
-                    {
-                        auto denominacion = i["Denominacion"].get<int>();
-
-                        auto nivel_actual = i["Recyclador"].get<int>();
-                        auto nivel_minimo = i["Inmovilidad_Min"].get<int>();
-                        auto nivel_maximo = i["Inmovilidad_Max"].get<int>();
-
-                        if(nivel_actual < nivel_minimo)
-                            Global::Widget::reveal_toast(Glib::ustring::compose("Nivel minimo alcanzado para billetes de $ %1", denominacion).c_str(), (Gtk::MessageType)3 /* Critico */);
-                        else if(nivel_actual > nivel_maximo)
-                            Global::Widget::reveal_toast(Glib::ustring::compose("Nivel maximo alcanzado para billetes de $ %1", denominacion).c_str(), Gtk::MessageType::WARNING);
-                    }
+                    alerta_niveles(json["bill"]);
+                    alerta_niveles(json["coin"]);
                 }
             });
-        }
+        } 
     }).detach();
+}
+
+void Refill::alerta_niveles(const nlohmann::json &json)
+{
+    for (auto &&i : json)
+    {
+        auto denominacion = i["Denominacion"].get<int>();
+
+        auto nivel_actual = i["Recyclador"].get<int>();
+        auto nivel_minimo = i["Inmovilidad_Min"].get<int>();
+        auto nivel_maximo = i["Inmovilidad_Max"].get<int>();
+
+        if (nivel_actual < nivel_minimo)
+            Global::Widget::reveal_toast(Glib::ustring::compose("Nivel minimo alcanzado para la denominación de $ %1", denominacion).c_str(), (Gtk::MessageType)3 /* Critico */);
+        else if (nivel_actual > nivel_maximo)
+            Global::Widget::reveal_toast(Glib::ustring::compose("Nivel maximo alcanzado para la denominación de $ %1", denominacion).c_str(), Gtk::MessageType::WARNING);
+    }
 }
 
 void Refill::on_show_map()
 {
     auto future = cpr::GetAsync(cpr::Url{Global::System::URL, "validadores/get_dashboard"}, Global::Utility::header);
-    Global::Utility::consume_and_do(future,[this](cpr::Response response)
-    {
+    Global::Utility::consume_and_do(future, [this](cpr::Response response)
+                                    {
         if (response.status_code == 200) 
             {
                 auto level = std::make_unique<LevelCash>();
@@ -79,9 +83,7 @@ void Refill::on_show_map()
                 v_lbl_total_billetes_cass->set_text(json["total_billetes_cass"].get<std::string>());
                 v_lbl_total_parcial_billetes->set_text(json["total_billetes_recy"].get<std::string>());
                 v_lbl_total_parcial_monedas->set_text(json["total_monedas_recy"].get<std::string>());
-            }
-    });
-    
+            } });
 }
 
 void Refill::init_data(Gtk::ColumnView *vcolumn, const Glib::RefPtr<Gio::ListStore<MLevelCash>> &level)
@@ -100,7 +102,7 @@ void Refill::init_data(Gtk::ColumnView *vcolumn, const Glib::RefPtr<Gio::ListSto
         vcolumn->append_column(column);
     }
 
-    if(vcolumn == v_tree_reciclador_billetes)
+    if (vcolumn == v_tree_reciclador_billetes)
     {
         auto factory = Gtk::SignalListItemFactory::create();
         factory->signal_setup().connect(sigc::mem_fun(*this, &Refill::on_setup_label));
@@ -210,8 +212,8 @@ void Refill::safe_clear_column_view(Gtk::ColumnView *column_view)
 void Refill::on_btn_iniciar()
 {
     auto future = cpr::PostAsync(cpr::Url{Global::System::URL + "accion/inicia_refill"}, Global::Utility::header);
-    Global::Utility::consume_and_do(future,[this](cpr::Response response)
-    {
+    Global::Utility::consume_and_do(future, [this](cpr::Response response)
+                                    {
         if (response.status_code == 200) 
         {
             auto j = nlohmann::json::parse(response.text);
@@ -222,7 +224,7 @@ void Refill::on_btn_iniciar()
             auto faltante = j["Cambio_faltante"].get<int>();
 
             Global::Widget::reveal_toast(Glib::ustring::compose("<span weight=\"bold\">Refill</span>\n\n"
-                                                                        "Total: \t$%1\n"
+                                                                        "Total: \t\t$%1\n"
                                                                         "Cambio: \t$%2\n"
                                                                         "Ingreso: \t$%3\n"
                                                                         "Faltante: \t$%4\n", 
@@ -237,15 +239,14 @@ void Refill::on_btn_iniciar()
             v_lbl_total_parcial_billetes->set_text(j["billetes"].get<std::string>());
             v_lbl_total_parcial_monedas->set_text(j["monedas"].get<std::string>());
             Global::Widget::m_refActionGroup->lookup_action("cerrarsesion")->activate();
-        }
-    });
+        } });
 }
 
 void Refill::on_btn_transpaso()
-{   
-    auto future = cpr::PostAsync(cpr::Url{Global::System::URL , "validador/transpaso"}, Global::Utility::header);
-    Global::Utility::consume_and_do(future,[this](cpr::Response response)
-    {
+{
+    auto future = cpr::PostAsync(cpr::Url{Global::System::URL, "validador/transpaso"}, Global::Utility::header);
+    Global::Utility::consume_and_do(future, [this](cpr::Response response)
+                                    {
         if (response.status_code != 200) 
         {
             Global::Widget::reveal_toast("Error al realizar el traspaso", Gtk::MessageType(3));
@@ -263,6 +264,5 @@ void Refill::on_btn_transpaso()
                 Global::System::imprime_ticket(ticket, 0);
             }
         }
-        Global::Widget::m_refActionGroup->lookup_action("cerrarsesion")->activate();
-    });
+        Global::Widget::m_refActionGroup->lookup_action("cerrarsesion")->activate(); });
 }

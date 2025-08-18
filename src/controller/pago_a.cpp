@@ -30,7 +30,7 @@ void PagoA::on_btn_enter_clicked()
                     Global::System::imprime_ticket(ticket, faltante);
 
                     Global::Widget::reveal_toast(Glib::ustring::compose("<span weight=\"bold\">Pago</span>\n\n"
-                                                                        "Total: \t$%1\n"
+                                                                        "Total: \t\t$%1\n"
                                                                         "Cambio: \t$%2\n"
                                                                         "Ingreso: \t$%3\n"
                                                                         "Faltante: \t$%4", 

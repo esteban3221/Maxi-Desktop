@@ -102,7 +102,7 @@ void PagoM::on_btn_cobrar_clicked()
                                                 Global::System::imprime_ticket(ticket, faltante);
                             
                                                 Global::Widget::reveal_toast(Glib::ustring::compose("<span weight=\"bold\">Pago Manual</span>\n\n"
-                                                                        "Total: \t$%1\n"
+                                                                        "Total: \t\t$%1\n"
                                                                         "Cambio: \t$%2\n"
                                                                         "Ingreso: \t$%3\n"
                                                                         "Faltante: \t$%4", 
@@ -118,6 +118,7 @@ void PagoM::on_btn_cobrar_clicked()
                                                 v_dialog->set_secondary_text(response.text);
                                                 v_dialog->set_visible();
                                             }
+                                            Global::Widget::m_refActionGroup->lookup_action("cerrarsesion")->activate();
                                         });
 
         }else
@@ -126,5 +127,4 @@ void PagoM::on_btn_cobrar_clicked()
             v_dialog->set_secondary_text("El monto a vender debe ser mayor a 0");
             v_dialog->set_visible();
         }
-        Global::Widget::m_refActionGroup->lookup_action("cerrarsesion")->activate();
     }

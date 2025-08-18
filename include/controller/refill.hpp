@@ -15,6 +15,7 @@ private:
     void on_btn_transpaso();
 
     void poll_alerta_niveles();
+    void alerta_niveles(const nlohmann::json &json);
     
 public: 
     Refill(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuilder);
