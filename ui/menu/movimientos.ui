@@ -2,7 +2,7 @@
 <!-- Created with Cambalache 0.96.1 -->
 <interface>
   <!-- interface-name movimientos.ui -->
-  <requires lib="gtk" version="4.14"/>
+  <requires lib="gtk" version="4.0"/>
   <object class="GtkBox" id="box_movimientos">
     <property name="orientation">vertical</property>
     <property name="spacing">5</property>
@@ -13,6 +13,20 @@
           <object class="GtkButton" id="btn_printer">
             <property name="icon-name">document-print-symbolic</property>
             <property name="tooltip-text">Reimprimir Ticket</property>
+            <style>
+              <class name="suggested-action"/>
+            </style>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="btn_imprime_corte">
+            <property name="halign">start</property>
+            <property name="hexpand">true</property>
+            <property name="icon-name">notification-printer-symbolic</property>
+            <property name="tooltip-text">Imprime Corte</property>
+            <style>
+              <class name="warning"/>
+            </style>
           </object>
         </child>
         <child>
@@ -39,14 +53,14 @@
             <child>
               <object class="GtkSpinButton" id="spin_pag">
                 <property name="height-request">1</property>
-                <property name="numeric">True</property>
-                <property name="snap-to-ticks">True</property>
+                <property name="numeric">true</property>
+                <property name="snap-to-ticks">true</property>
               </object>
             </child>
             <child>
               <object class="GtkEntry" id="ety_pag">
                 <property name="css-classes">dim-label</property>
-                <property name="editable">False</property>
+                <property name="editable">false</property>
                 <property name="max-width-chars">5</property>
                 <property name="text">de 6</property>
               </object>
@@ -56,7 +70,7 @@
         <child>
           <object class="GtkButton" id="btn_aplica_filtro">
             <property name="halign">end</property>
-            <property name="hexpand">True</property>
+            <property name="hexpand">true</property>
             <property name="icon-name">object-select-symbolic</property>
             <property name="tooltip-text">Aplicar Filtro</property>
           </object>
@@ -64,7 +78,7 @@
         <child>
           <object class="GtkButton" id="btn_remueve_filtros">
             <property name="halign">end</property>
-            <property name="icon-name">clear_left</property>
+            <property name="icon-name">edit-delete-symbolic</property>
             <property name="tooltip-text">Eliminar Filtros</property>
           </object>
         </child>
@@ -74,11 +88,11 @@
       <object class="GtkScrolledWindow">
         <child>
           <object class="GtkColumnView" id="column_log">
-            <property name="enable-rubberband">True</property>
-            <property name="hexpand">True</property>
-            <property name="show-column-separators">True</property>
-            <property name="show-row-separators">True</property>
-            <property name="vexpand">True</property>
+            <property name="enable-rubberband">true</property>
+            <property name="hexpand">true</property>
+            <property name="show-column-separators">true</property>
+            <property name="show-row-separators">true</property>
+            <property name="vexpand">true</property>
           </object>
         </child>
       </object>

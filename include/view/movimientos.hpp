@@ -9,7 +9,7 @@ private:
     Glib::RefPtr<Gtk::Builder> m_builder;
 protected:
 
-    Gtk::Button *v_btn_printer, *v_btn_aplica_filtro, *v_btn_remueve_filtros;
+    Gtk::Button *v_btn_printer, *v_btn_aplica_filtro, *v_btn_remueve_filtros, *v_btn_imprime_corte;
     Gtk::DropDown *v_dp_tipo;
     Gtk::Entry *v_ety_ini,*v_ety_fin, *v_ety_pag;
     Gtk::SpinButton *v_spin_pag;

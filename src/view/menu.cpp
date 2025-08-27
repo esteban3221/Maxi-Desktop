@@ -40,6 +40,7 @@ VMenu::VMenu(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuild
   { 
     v_stack_menu->set_visible_child("0"); 
     v_lbl_user->set_text("Bienvenido " + Global::User::Current);
+    v_list_box_menu->set_sensitive();
     v_list_box_menu->unselect_all();
   });
 }
@@ -51,6 +52,7 @@ VMenu::~VMenu()
 void VMenu::on_menu_item_clicked(Gtk::ListBoxRow *row)
 {
 	v_stack_menu->set_visible_child(std::to_string(row->get_index()+1));
+  v_list_box_menu->set_sensitive(false);
 }
 
 namespace View

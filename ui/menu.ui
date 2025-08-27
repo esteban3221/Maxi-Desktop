@@ -1,17 +1,19 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.96.1 -->
 <interface>
+  <!-- interface-name menu.ui -->
   <requires lib="gtk" version="4.0"/>
   <object class="GtkBox" id="box_menu">
     <child>
       <object class="GtkScrolledWindow" id="scrolled_window">
-        <property name="hscrollbar-policy">2</property>
+        <property name="hscrollbar-policy">never</property>
         <property name="propagate-natural-width">true</property>
         <property name="vexpand">true</property>
         <child>
           <object class="GtkListBox" id="list_box_menu">
             <property name="activate-on-single-click">true</property>
-            <property name="selection-mode">1</property>
-            <property name="valign">1</property>
+            <property name="selection-mode">single</property>
+            <property name="valign">start</property>
             <child>
               <object class="GtkBox">
                 <property name="spacing">10</property>
@@ -125,13 +127,13 @@
       </object>
     </child>
     <child>
-      <object class="GtkSeparator"></object>
+      <object class="GtkSeparator"/>
     </child>
     <child>
       <object class="GtkBox">
-        <property name="orientation">1</property>
+        <property name="orientation">vertical</property>
         <child>
-          <object class="GtkProgressBar" id="progress"></object>
+          <object class="GtkProgressBar" id="progress"/>
         </child>
         <child>
           <object class="GtkStack" id="stack_menu">

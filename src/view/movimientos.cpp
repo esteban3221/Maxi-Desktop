@@ -3,6 +3,7 @@
 VMovimientos::VMovimientos(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuilder) : Gtk::Box(cobject), m_builder(refBuilder)
 {
     v_btn_printer = m_builder->get_widget<Gtk::Button>("btn_printer");
+    v_btn_imprime_corte = m_builder->get_widget<Gtk::Button>("btn_imprime_corte");
     v_btn_aplica_filtro = m_builder->get_widget<Gtk::Button>("btn_aplica_filtro");
     v_btn_remueve_filtros = m_builder->get_widget<Gtk::Button>("btn_remueve_filtros");
     v_dp_tipo = m_builder->get_widget<Gtk::DropDown>("dp_tipo");
@@ -99,10 +100,10 @@ void VMovimientos::on_bind_fecha(const Glib::RefPtr<Gtk::ListItem> &list_item)
 namespace View
 {
     const char *movimientos_ui = R"(<?xml version='1.0' encoding='UTF-8'?>
-<!-- Created with Cambalache 0.96.0 -->
+<!-- Created with Cambalache 0.96.1 -->
 <interface>
   <!-- interface-name movimientos.ui -->
-  <requires lib="gtk" version="4.14"/>
+  <requires lib="gtk" version="4.0"/>
   <object class="GtkBox" id="box_movimientos">
     <property name="orientation">vertical</property>
     <property name="spacing">5</property>
@@ -113,6 +114,20 @@ namespace View
           <object class="GtkButton" id="btn_printer">
             <property name="icon-name">document-print-symbolic</property>
             <property name="tooltip-text">Reimprimir Ticket</property>
+            <style>
+              <class name="suggested-action"/>
+            </style>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="btn_imprime_corte">
+            <property name="halign">start</property>
+            <property name="hexpand">true</property>
+            <property name="icon-name">notification-printer-symbolic</property>
+            <property name="tooltip-text">Imprime Corte</property>
+            <style>
+              <class name="warning"/>
+            </style>
           </object>
         </child>
         <child>
@@ -139,14 +154,14 @@ namespace View
             <child>
               <object class="GtkSpinButton" id="spin_pag">
                 <property name="height-request">1</property>
-                <property name="numeric">True</property>
-                <property name="snap-to-ticks">True</property>
+                <property name="numeric">true</property>
+                <property name="snap-to-ticks">true</property>
               </object>
             </child>
             <child>
               <object class="GtkEntry" id="ety_pag">
                 <property name="css-classes">dim-label</property>
-                <property name="editable">False</property>
+                <property name="editable">false</property>
                 <property name="max-width-chars">5</property>
                 <property name="text">de 6</property>
               </object>
@@ -156,7 +171,7 @@ namespace View
         <child>
           <object class="GtkButton" id="btn_aplica_filtro">
             <property name="halign">end</property>
-            <property name="hexpand">True</property>
+            <property name="hexpand">true</property>
             <property name="icon-name">object-select-symbolic</property>
             <property name="tooltip-text">Aplicar Filtro</property>
           </object>
@@ -174,11 +189,11 @@ namespace View
       <object class="GtkScrolledWindow">
         <child>
           <object class="GtkColumnView" id="column_log">
-            <property name="enable-rubberband">True</property>
-            <property name="hexpand">True</property>
-            <property name="show-column-separators">True</property>
-            <property name="show-row-separators">True</property>
-            <property name="vexpand">True</property>
+            <property name="enable-rubberband">true</property>
+            <property name="hexpand">true</property>
+            <property name="show-column-separators">true</property>
+            <property name="show-row-separators">true</property>
+            <property name="vexpand">true</property>
           </object>
         </child>
       </object>

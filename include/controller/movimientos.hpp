@@ -1,4 +1,5 @@
 #pragma once
+
 #include "view/movimientos.hpp"
 #include "model/log.hpp"
 #include "controller/configuracion/impresora.hpp"
@@ -13,8 +14,11 @@ private:
     Glib::RefPtr<Gtk::ColumnViewColumn> column_id;
     Glib::RefPtr<Gtk::SortListModel> sorter_model;
 
+    std::unique_ptr<Gtk::MessageDialog> v_dialog;
+
     void init_datos();
     void reimprime_tickets();
+    void imprime_corte();
 
     void actualiza_data(const Glib::RefPtr<Gtk::SelectionModel> &selection, const Glib::RefPtr<Gio::ListStore<MLog>> &log);
     void consume_data();

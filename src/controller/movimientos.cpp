@@ -1,5 +1,4 @@
 #include "controller/movimientos.hpp"
-#include "movimientos.hpp"
 
 Movimientos::Movimientos(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuilder) : VMovimientos(cobject, refBuilder)
 {
@@ -8,6 +7,7 @@ Movimientos::Movimientos(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builde
 
     signal_map().connect(sigc::mem_fun(*this, &Movimientos::consume_data));
     v_btn_aplica_filtro->signal_clicked().connect(sigc::mem_fun(*this, &Movimientos::consume_data));
+    v_btn_imprime_corte->signal_clicked().connect(sigc::mem_fun(*this, &Movimientos::imprime_corte));
     v_ety_ini->signal_icon_press().connect(sigc::mem_fun(*this, &Movimientos::muestra_calendario_inicio));
     v_ety_fin->signal_icon_press().connect(sigc::mem_fun(*this, &Movimientos::muestra_calendario_fin));
     v_calendario.signal_day_selected().connect(sigc::mem_fun(*this, &Movimientos::set_fecha));
@@ -18,6 +18,57 @@ Movimientos::Movimientos(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builde
 Movimientos::~Movimientos()
 {
     v_pop_calendario.unparent();
+}
+
+void Movimientos::imprime_corte()
+{
+    v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window, "Atención", false, Gtk::MessageType::QUESTION, Gtk::ButtonsType::OK_CANCEL, true));
+    v_dialog->set_secondary_text("¿Desea imprimir el corte de caja?");
+    v_dialog->signal_response().connect([this](int response)
+    {
+        if (Gtk::ResponseType::OK == response)
+        {
+
+            auto future = cpr::GetAsync(cpr::Url{Global::System::URL + "log/corte_caja"}, Global::Utility::header);
+            Global::Utility::consume_and_do(future, [this](const cpr::Response &response)
+            {
+                if (response.status_code == 200)
+                {
+                    auto j = nlohmann::json::parse(response.text);
+
+                    size_t total = 0,
+                           ingresos = 0,
+                           cambios = 0;
+                    
+                    Glib::ustring detalles;
+
+                    for (auto &&i : j["log"])
+                    {
+                        detalles += "----------------------------------------\n";
+                        detalles += "ID: " + std::to_string(i["id"].get<int>()) + " - ";
+                        detalles += i["tipo"].get<std::string>() + "\n";
+                        detalles += "Fecha: " +  Glib::DateTime::create_from_iso8601(i["fecha"].get<std::string>()).format("%F %H:%M:%S") + "\n";
+                        detalles += "Ingreso: $" + std::to_string(i["ingreso"].get<int>()) + "\n";
+                        detalles += "Cambio: $" + std::to_string(i["cambio"].get<int>()) + "\n";
+                        detalles += "Total: $" + std::to_string(i["total"].get<int>()) + "\n";
+                        detalles += "Estatus: " + i["estatus"].get<std::string>() + "\n";
+
+                        total += i["total"].get<size_t>();
+                        ingresos += i["ingreso"].get<size_t>();
+                        cambios += i["cambio"].get<size_t>();
+                    }
+
+                    detalles += "----------------------------------------\n";
+                    auto ti_log = MLog::create(0,Global::User::Current,"Corte de Caja", ingresos, cambios, total, detalles, Glib::DateTime::create_now_local());
+
+                    Global::System::imprime_ticket(ti_log);
+                }
+            });
+        }
+        v_dialog->close(); 
+    });
+
+    v_dialog->show();
 }
 
 void Movimientos::init_datos()
@@ -165,7 +216,7 @@ void Movimientos::consume_data()
     auto f_fin = v_ety_fin->get_text();
     auto pag = v_spin_pag->get_value_as_int();
 
-    pag == 1 ? pag = 0 : pag-- * 100;
+    pag = pag == 1 ? 0 : pag-- * 100;
 
     auto json = nlohmann::json{
         {"tipo", tipo},
@@ -217,7 +268,10 @@ void Movimientos::muestra_calendario_fin(Gtk::Entry::IconPosition icon_pos)
 
 void Movimientos::set_fecha()
 {
-    ((Gtk::Entry *)v_pop_calendario.get_parent())->set_text(v_calendario.get_date().format("%F"));
+    if(v_pop_calendario.get_parent() == v_ety_fin)
+        ((Gtk::Entry *)v_pop_calendario.get_parent())->set_text(v_calendario.get_date().add_hours(23).add_minutes(59).add_seconds(59).format_iso8601());
+    else
+        ((Gtk::Entry *)v_pop_calendario.get_parent())->set_text(v_calendario.get_date().format_iso8601());
 }
 
 void Movimientos::borra_filtro()
