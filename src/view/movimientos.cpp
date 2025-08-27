@@ -123,7 +123,7 @@ namespace View
           <object class="GtkButton" id="btn_imprime_corte">
             <property name="halign">start</property>
             <property name="hexpand">true</property>
-            <property name="icon-name">notification-printer-symbolic</property>
+            <property name="icon-name">printer-network-symbolic</property>
             <property name="tooltip-text">Imprime Corte</property>
             <style>
               <class name="warning"/>
