@@ -10,6 +10,7 @@ private:
 
 protected:
     Gtk::MenuButton *v_menu_status, *v_menu_titlebar;
+    Gtk::Button *v_btn_regresar;
     Gtk::Popover *v_popover_titlebar;
     Gtk::Entry *v_ety_servidor;
     Gtk::ListBox *v_list_ip;

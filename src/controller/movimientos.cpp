@@ -22,14 +22,18 @@ Movimientos::~Movimientos()
 
 void Movimientos::imprime_corte()
 {
+    auto id_tipo = v_dp_tipo->get_selected();
+    auto tipo = m_list_tipos->get_string(id_tipo);
+
     v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window, "Atención", false, Gtk::MessageType::QUESTION, Gtk::ButtonsType::OK_CANCEL, true));
-    v_dialog->set_secondary_text("¿Desea imprimir el corte de caja?");
-    v_dialog->signal_response().connect([this](int response)
+    v_dialog->set_secondary_text("¿Desea imprimir el tipo de movimiento \"" + tipo + "\" en el corte de caja?");
+    v_dialog->signal_response().connect([this,tipo](int response)
     {
         if (Gtk::ResponseType::OK == response)
         {
+            auto json = nlohmann::json{{"tipo", tipo}};
 
-            auto future = cpr::GetAsync(cpr::Url{Global::System::URL + "log/corte_caja"}, Global::Utility::header);
+            auto future = cpr::GetAsync(cpr::Url{Global::System::URL + "log/corte_caja"}, Global::Utility::header, cpr::Body{json.dump()});
             Global::Utility::consume_and_do(future, [this](const cpr::Response &response)
             {
                 if (response.status_code == 200)

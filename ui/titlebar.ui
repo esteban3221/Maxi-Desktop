@@ -15,11 +15,24 @@
       </object>
     </child>
     <child type="end">
-      <object class="GtkMenuButton" id="menu_titlebar">
-        <property name="icon-name">open-menu-symbolic</property>
-        <property name="menu-model">window_menu</property>
-        <property name="primary">true</property>
-        <property name="tooltip-text" translatable="yes">Main Menu</property>
+      <object class="GtkBox">
+        <child>
+          <object class="GtkButton" id="btn_regresar">
+            <property name="icon-name">go-previous-symbolic</property>
+            <property name="tooltip-markup">Cerrar Sesion &lt;Crtl + d&gt;</property>
+          </object>
+        </child>
+        <child type="end">
+          <object class="GtkMenuButton" id="menu_titlebar">
+            <property name="icon-name">open-menu-symbolic</property>
+            <property name="menu-model">window_menu</property>
+            <property name="primary">true</property>
+            <property name="tooltip-text" translatable="yes">Main Menu</property>
+          </object>
+        </child>
+        <style>
+          <class name="linked"/>
+        </style>
       </object>
     </child>
   </object>

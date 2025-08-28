@@ -6,10 +6,16 @@ TitleBar::TitleBar(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &re
     init_list_ip();
     async.dispatcher.connect(sigc::mem_fun(async, &Global::Async::on_dispatcher_emit));
     v_ety_servidor->signal_activate().connect(sigc::mem_fun(*this, &TitleBar::on_ety_servidor_activate));
+    v_btn_regresar->signal_clicked().connect(sigc::mem_fun(*this, &TitleBar::on_btn_regresar_clicked));
 }
 
 TitleBar::~TitleBar()
 {
+}
+
+void TitleBar::on_btn_regresar_clicked(void)
+{
+     Global::Widget::m_refActionGroup->lookup_action("cerrarsesion")->activate();
 }
 
 void TitleBar::init_list_ip(void)

@@ -8,6 +8,7 @@ private:
     void init_list_ip(void);
     bool poll_ip(void);
     void on_ety_servidor_activate(void);
+    void on_btn_regresar_clicked(void);
 
     Global::Async async;
 
