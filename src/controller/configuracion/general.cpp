@@ -168,7 +168,7 @@ void General::on_folder_dialog_finish(const Glib::RefPtr<Gio::AsyncResult>& resu
         auto folder_path = folder->get_path();
         std::cout << "Folder selected: " << folder_path << std::endl;
 
-        std::string zip_path = "/tmp/carrousel.zip";
+        std::string zip_path = "carrousel.zip";
         if (comprimir_carpeta(folder_path, zip_path))
         {
             auto future = cpr::PostAsync(cpr::Url{Global::System::URL + "configuracion/sube_carpeta_pos"},
