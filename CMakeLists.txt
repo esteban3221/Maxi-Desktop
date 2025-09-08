@@ -12,6 +12,8 @@ endif()
 
 find_package(PkgConfig REQUIRED)
 find_package(cpr REQUIRED)
+find_package(ZLIB REQUIRED)
+pkg_check_modules(MZIP minizip REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(nlohmann_json 3.11.3 REQUIRED)
 pkg_check_modules(GTKMM gtkmm-4.0)
@@ -19,6 +21,7 @@ find_package(SQLite3 REQUIRED)
 
 include_directories(
     ${GTKMM_INCLUDE_DIRS}
+    ${MZIP_LIBDIR}
 )
 
 set(SOURCES
@@ -111,6 +114,9 @@ target_link_libraries(Maxicajero
                         Sqlite-cpp
                         nlohmann_json::nlohmann_json 
                         ${GTKMM_LIBRARIES} 
+                        ${ZLIB_LIBRARIES}
+                        ${MINIZIP_LIBRARY}
+                        ${MZIP_LIBRARIES}
                         cpr::cpr
 )
 target_include_directories(Maxicajero PRIVATE ${GTKMM_INCLUDE_DIRS})

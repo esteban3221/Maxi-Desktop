@@ -8,6 +8,8 @@ VGeneral::VGeneral(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &re
     v_btn_actualiza_pos = m_builder->get_widget<Gtk::Button>("btn_actualiza_pos");
     v_btn_retirada = m_builder->get_widget<Gtk::Button>("btn_retirada");
     v_btn_imagen = m_builder->get_widget<Gtk::Button>("btn_imagen");
+    v_btn_imagen_2 = m_builder->get_widget<Gtk::Button>("btn_imagen_2");
+    v_btn_desactiva_carrousel = m_builder->get_widget<Gtk::Button>("btn_desactiva_carrousel");
 }
 
 VGeneral::~VGeneral()
@@ -32,7 +34,6 @@ namespace View
     <property name="margin-start">10</property>
     <property name="margin-top">10</property>
     <property name="orientation">vertical</property>
-    <property name="spacing">5</property>
     <child>
       <object class="GtkLabel">
         <property name="halign">center</property>
@@ -60,6 +61,7 @@ namespace View
             <property name="halign">start</property>
             <property name="label">Mensaje de Inicio</property>
             <property name="margin-end">10</property>
+            <property name="width-request">160</property>
           </object>
         </child>
         <child>
@@ -78,6 +80,7 @@ namespace View
             <property name="halign">start</property>
             <property name="label">Subir Icono POS</property>
             <property name="margin-end">10</property>
+            <property name="width-request">160</property>
           </object>
         </child>
         <child>
@@ -87,6 +90,35 @@ namespace View
             <property name="label">Seleccione Imagen</property>
           </object>
         </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkBox">
+        <property name="valign">center</property>
+        <child>
+          <object class="GtkLabel">
+            <property name="halign">start</property>
+            <property name="label">Subir Carpeta Carrousel</property>
+            <property name="margin-end">10</property>
+            <property name="width-request">160</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="btn_imagen_2">
+            <property name="focusable">False</property>
+            <property name="hexpand">True</property>
+            <property name="label">Selecciona Carpeta</property>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkButton" id="btn_desactiva_carrousel">
+        <property name="label">Desactivar Carrousel</property>
+        <property name="valign">center</property>
+        <style>
+          <class name="warning"/>
+        </style>
       </object>
     </child>
     <child>
@@ -132,22 +164,27 @@ namespace View
     </child>
     <child>
       <object class="GtkButton" id="btn_reinicia_val">
+        <property name="halign">baseline</property>
         <property name="label">Reiniciar Validadores</property>
+        <property name="valign">center</property>
       </object>
     </child>
     <child>
       <object class="GtkButton" id="btn_actualiza_pos">
         <property name="label">Actualiza Sistema POS</property>
+        <property name="valign">center</property>
       </object>
     </child>
     <child>
       <object class="GtkButton" id="btn_retirada">
         <property name="css-classes">destructive-action</property>
         <property name="label">Retirada Cassette</property>
+        <property name="valign">center</property>
       </object>
     </child>
   </object>
 </interface>
+
 )";
     } // namespace Conf
 } // namespace View

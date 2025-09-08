@@ -12,6 +12,8 @@ protected:
     Gtk::Button *v_btn_actualiza_pos;
     Gtk::Button *v_btn_retirada = nullptr;
     Gtk::Button *v_btn_imagen = nullptr;
+    Gtk::Button *v_btn_imagen_2 = nullptr;
+    Gtk::Button *v_btn_desactiva_carrousel = nullptr;
     
     std::unique_ptr<Gtk::MessageDialog> v_dialog;
 public:
