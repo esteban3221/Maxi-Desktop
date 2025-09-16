@@ -398,9 +398,9 @@ namespace Global
                 ticket_config << "Total:\t<span weight=\"bold\">" << log->m_total << "</span>\n";
                 ticket_config << "Tipo de Pago:\t" << "Efectivo\n"
                               << "--------------------------------\n";
-                ticket_config << "Ingreso:\t<span weight=\"bold\">" << log->m_ingreso << "</span>\n";
-                ticket_config << "Cambio:\t<span weight=\"bold\">" << log->m_cambio << "</span>\n";
-                ticket_config << "Faltante:\t<span weight=\"bold\">" << faltante << "</span>\n";
+                ticket_config << "Ingreso:\t" << log->m_ingreso << "\n";
+                ticket_config << "Cambio:\t" << log->m_cambio << "\n";
+                ticket_config << "Faltante:\t" << faltante << "\n";
 
                 ticket_config << "-------------STATUS------------\n"
                               << "<span weight=\"bold\">" << log->m_estatus << "</span>\n"

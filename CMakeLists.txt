@@ -48,9 +48,10 @@ set(SOURCES
     src/view/retirada.cpp 
     src/view/refill.cpp 
     src/view/pago_m.cpp 
-    src/view/pago_a.cpp 
+    src/view/pago_a.cpp
     src/view/movimientos.cpp 
     src/view/configuracion.cpp
+    src/view/cambio.cpp
 
     src/view/configuracion/general.cpp
     src/view/configuracion/sistema.cpp
@@ -65,9 +66,12 @@ set(SOURCES
     src/controller/movimientos.cpp 
     src/controller/pago_a.cpp 
     src/controller/pago_m.cpp 
+    src/controller/cambio_a.cpp 
+    src/controller/cambio_m.cpp 
     src/controller/refill.cpp 
     src/controller/retirada.cpp 
     src/controller/venta.cpp
+    src/controller/cambio.cpp
 
     src/controller/configuracion/general.cpp
     src/controller/configuracion/sistema.cpp

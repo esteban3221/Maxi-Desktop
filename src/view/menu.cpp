@@ -26,15 +26,19 @@ VMenu::VMenu(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuild
 	auto pago_m = Gtk::Builder::get_widget_derived<PagoM>(builder, "box_pago_m");
 	v_stack_menu->add(*pago_m, "4");
 
+  builder = Gtk::Builder::create_from_string(View::ui_cambio);
+  auto cambio = Gtk::Builder::get_widget_derived<Cambio>(builder, "box");
+  v_stack_menu->add(*cambio, "5");
+
 	builder = Gtk::Builder::create_from_string(View::refill_ui);
 	auto refill = Gtk::Builder::get_widget_derived<Refill>(builder, "box_refill");
-	v_stack_menu->add(*refill, "5");
+	v_stack_menu->add(*refill, "6");
 
 	builder = Gtk::Builder::create_from_string(View::movimientos_ui);
 	auto movimientos = Gtk::Builder::get_widget_derived<Movimientos>(builder, "box_movimientos");
-	v_stack_menu->add(*movimientos, "6");
+	v_stack_menu->add(*movimientos, "7");
 
-	v_stack_menu->add(*Gtk::manage(new VConfiguracion()), "7");
+	v_stack_menu->add(*Gtk::manage(new VConfiguracion()), "8");
 
 	signal_map().connect([this]()
   { 
@@ -89,20 +93,22 @@ dim-label</property>
 </interface>
 )";
 
-	const char *menu_ui = R"(<?xml version="1.0" encoding="UTF-8"?>
+	const char *menu_ui = R"(<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.96.1 -->
 <interface>
+  <!-- interface-name menu.ui -->
   <requires lib="gtk" version="4.0"/>
   <object class="GtkBox" id="box_menu">
     <child>
       <object class="GtkScrolledWindow" id="scrolled_window">
-        <property name="hscrollbar-policy">2</property>
+        <property name="hscrollbar-policy">never</property>
         <property name="propagate-natural-width">true</property>
         <property name="vexpand">true</property>
         <child>
           <object class="GtkListBox" id="list_box_menu">
             <property name="activate-on-single-click">true</property>
-            <property name="selection-mode">1</property>
-            <property name="valign">1</property>
+            <property name="selection-mode">single</property>
+            <property name="valign">start</property>
             <child>
               <object class="GtkBox">
                 <property name="spacing">10</property>
@@ -123,7 +129,7 @@ dim-label</property>
                 <property name="spacing">10</property>
                 <child>
                   <object class="GtkImage">
-                    <property name="icon-name">insert-object-symbolic</property>
+                    <property name="icon-name">downloaded-symbolic</property>
                   </object>
                 </child>
                 <child>
@@ -158,7 +164,37 @@ dim-label</property>
                 </child>
                 <child>
                   <object class="GtkLabel">
-                    <property name="label">Pago manual</property>
+                    <property name="label">Pago Manual</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox">
+                <property name="spacing">10</property>
+                <child>
+                  <object class="GtkImage">
+                    <property name="icon-name">go-jump-symbolic</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="label">Cambio</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox">
+                <property name="spacing">10</property>
+                <child>
+                  <object class="GtkImage">
+                    <property name="icon-name">preferences-other-symbolic</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="label">Configuracion</property>
                   </object>
                 </child>
               </object>
@@ -216,13 +252,13 @@ dim-label</property>
       </object>
     </child>
     <child>
-      <object class="GtkSeparator"></object>
+      <object class="GtkSeparator"/>
     </child>
     <child>
       <object class="GtkBox">
-        <property name="orientation">1</property>
+        <property name="orientation">vertical</property>
         <child>
-          <object class="GtkProgressBar" id="progress"></object>
+          <object class="GtkProgressBar" id="progress"/>
         </child>
         <child>
           <object class="GtkStack" id="stack_menu">

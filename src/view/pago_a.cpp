@@ -7,6 +7,14 @@ VPago::VPago()
     builder = Gtk::Builder::create_from_string(View::box_colums_ui);
 
     set_orientation(Gtk::Orientation::VERTICAL);
+    v_ety_concepto.set_margin_top(10);
+    v_ety_concepto.set_placeholder_text("Concepto");
+    v_ety_concepto.set_css_classes({"title-1"});
+    v_ety_concepto.set_margin_start(100);
+    v_ety_concepto.set_margin_end(100);
+    v_ety_concepto.set_size_request(-1,100);
+    Global::Utility::set_multiline_text(v_ety_concepto);
+    append(v_ety_concepto);
     append(*v_base_nip);
 }
 

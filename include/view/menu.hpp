@@ -7,6 +7,7 @@
 #include "controller/pago_m.hpp"
 #include "controller/refill.hpp"
 #include "controller/movimientos.hpp"
+#include "controller/cambio.hpp"
 
 #include "view/configuracion.hpp"
 

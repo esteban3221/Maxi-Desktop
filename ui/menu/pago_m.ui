@@ -197,7 +197,7 @@
         <property name="halign">center</property>
         <property name="hexpand">True</property>
         <property name="label">Cobrar $0</property>
-        <property name="valign">center</property>
+        <property name="valign">baseline-center</property>
         <property name="vexpand">True</property>
         <style>
           <class name="suggested-action"/>
