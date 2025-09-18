@@ -189,21 +189,6 @@ dim-label</property>
                 <property name="spacing">10</property>
                 <child>
                   <object class="GtkImage">
-                    <property name="icon-name">preferences-other-symbolic</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkLabel">
-                    <property name="label">Configuracion</property>
-                  </object>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkBox">
-                <property name="spacing">10</property>
-                <child>
-                  <object class="GtkImage">
                     <property name="icon-name">emoji-symbols-symbolic</property>
                   </object>
                 </child>
@@ -269,5 +254,6 @@ dim-label</property>
       </object>
     </child>
   </object>
-</interface>)";
+</interface>
+)";
 } // namespace View

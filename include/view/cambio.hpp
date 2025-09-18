@@ -8,7 +8,6 @@ class VCambio : public Gtk::Box
 private:
     Glib::RefPtr<Gtk::Builder> m_builder;
 protected:
-    Gtk::Entry *v_ety_concepto = nullptr;
     Gtk::Switch *v_switch_select = nullptr;
     Gtk::Stack *v_stack_selector = nullptr;
 

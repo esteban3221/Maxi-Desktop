@@ -3,7 +3,6 @@
 VCambio::VCambio(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuilder)
 : Gtk::Box(cobject), m_builder(refBuilder)
 {
-    v_ety_concepto = m_builder->get_widget<Gtk::Entry>("ety_concepto");
     v_switch_select = m_builder->get_widget<Gtk::Switch>("switch_select");
     v_stack_selector = m_builder->get_widget<Gtk::Stack>("stack_selector");
 
@@ -30,11 +29,6 @@ namespace View
     <property name="margin-top">10</property>
     <property name="orientation">vertical</property>
     <property name="spacing">10</property>
-    <child>
-      <object class="GtkEntry" id="ety_concepto">
-        <property name="valign">center</property>
-      </object>
-    </child>
     <child>
       <object class="GtkBox">
         <property name="halign">baseline-center</property>

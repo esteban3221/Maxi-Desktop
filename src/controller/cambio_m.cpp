@@ -3,6 +3,8 @@
 CambioM::CambioM(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuilder)
     : VPagoM(cobject, refBuilder)
 {
+
+    // View
     v_btn_cobrar->set_label("Iniciar");
     v_btn_aceptar.set_label("Dar Cambio");
     v_btn_cancelar.set_label("Cancelar");
@@ -15,6 +17,12 @@ CambioM::CambioM(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refB
     v_box_botones.append(v_btn_aceptar);
     v_box_botones.append(v_btn_cancelar);
     append(v_box_botones);
+
+    //Controller
+    this->signal_map().connect(sigc::mem_fun(*this, &CambioM::on_show_map));
+    v_btn_cobrar->signal_clicked().connect(sigc::mem_fun(*this, &CambioM::on_btn_cobrar_clicked));
+    v_btn_aceptar.signal_clicked().connect(sigc::mem_fun(*this, &CambioM::on_btn_aceptar_clicked));
+    v_btn_cancelar.signal_clicked().connect(sigc::mem_fun(*this, &CambioM::on_btn_cancelar_clicked));
 }
 
 void CambioM::on_show_map()
