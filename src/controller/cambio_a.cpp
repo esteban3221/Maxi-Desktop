@@ -29,6 +29,8 @@ CambioA::CambioA(/* args */)
     set_margin_start(20);
     set_margin_end(20);
     set_spacing(10);
+
+    v_btn_empezar.signal_clicked().connect(sigc::mem_fun(*this, &CambioA::on_btn_empezar_clicked));
 }
 
 CambioA::~CambioA()
@@ -37,7 +39,11 @@ CambioA::~CambioA()
 
 void CambioA::on_btn_empezar_clicked()
 {
-    auto future = cpr::PostAsync(cpr::Url{Global::System::URL + "accion/inicia_venta"}, Global::Utility::header);
+    set_sensitive(false);
+    nlohmann::json json = {
+        {"concepto", v_ety_concepto.get_text()}};
+
+    auto future = cpr::PostAsync(cpr::Url{Global::System::URL + "accion/inicia_cambio"}, Global::Utility::header, cpr::Body{json.dump()});
 
     Global::Utility::consume_and_do(future, [this](const cpr::Response &response)
                                     {

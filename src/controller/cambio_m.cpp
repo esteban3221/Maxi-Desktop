@@ -23,6 +23,11 @@ CambioM::CambioM(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refB
     v_btn_cobrar->signal_clicked().connect(sigc::mem_fun(*this, &CambioM::on_btn_cobrar_clicked));
     v_btn_aceptar.signal_clicked().connect(sigc::mem_fun(*this, &CambioM::on_btn_aceptar_clicked));
     v_btn_cancelar.signal_clicked().connect(sigc::mem_fun(*this, &CambioM::on_btn_cancelar_clicked));
+
+    for (auto &&i : v_spin_coin)
+        i->signal_value_changed().connect(sigc::mem_fun(*this, &CambioM::on_spin_value_changed));
+    for (auto &&i : v_spin_bill)
+        i->signal_value_changed().connect(sigc::mem_fun(*this, &CambioM::on_spin_value_changed));
 }
 
 void CambioM::on_show_map()
@@ -65,19 +70,22 @@ void CambioM::on_spin_value_changed()
     for (size_t i = 0; i < 6; i++)
         total += bills.at(i) * v_spin_bill[i]->get_value_as_int();
 
-    v_btn_cobrar->set_label(Glib::ustring::compose("Cambio $ %1", total));
+    v_btn_aceptar.set_label(Glib::ustring::compose("Cambio $ %1", total));
 }
 
 void CambioM::on_btn_cobrar_clicked()
 {
-    auto future = cpr::PostAsync(cpr::Url{Global::System::URL + "accion/inicia_cambio_manual"}, Global::Utility::header);
+    v_btn_cobrar->set_sensitive(false);
+    v_btn_cobrar->set_label("Espere...");
+    nlohmann::json json = {{"concepto", v_ety_concepto->get_text()}};
+    auto future = cpr::PostAsync(cpr::Url{Global::System::URL + "accion/inicia_cambio_manual"}, Global::Utility::header, cpr::Body{json.dump()});
 
     Global::Utility::consume_and_do(future, [this](const cpr::Response &response)
                                     {
                                         if (response.status_code == 200)
                                         {
                                             auto j = nlohmann::json::parse(response.text);                            
-                                            ingreso = j["ingreso"].get<int>();
+                                            ingreso = j["ingresado"].get<int>();
                                             int pos_coin = j["pos_coin"].get<int>();
                                             int pos_bill = j["pos_bill"].get<int>();
 
