@@ -83,26 +83,20 @@ void Movimientos::init_datos()
 
     auto model_list = Gio::ListStore<MLog>::create();
 
-    auto size_expression = Gtk::ClosureExpression<Glib::ustring::size_type>::create(
-        [](const Glib::RefPtr<Glib::ObjectBase> &item) -> Glib::ustring::size_type
-        {
-            const auto col = std::dynamic_pointer_cast<MLog>(item);
-            return col ? col->m_user.size() : 0;
-        });
-
-    m_LengthSorter = Gtk::NumericSorter<Glib::ustring::size_type>::create(size_expression);
-    m_LengthSorter->set_sort_order(Gtk::SortType::ASCENDING);
-
-    auto sorter_model = Gtk::SortListModel::create(model_list, m_LengthSorter);
-    auto selection = Gtk::SingleSelection::create(sorter_model);
-
+    // ✅ Sorter por ID (orden descendente por defecto)
     auto uint_expression = Gtk::ClosureExpression<unsigned int>::create(
         [](const Glib::RefPtr<Glib::ObjectBase> &item) -> unsigned int
         {
             const auto col = std::dynamic_pointer_cast<MLog>(item);
             return col ? col->m_id : 0;
         });
+    
     m_IdSorter = Gtk::NumericSorter<unsigned int>::create(uint_expression);
+    m_IdSorter->set_sort_order(Gtk::SortType::DESCENDING);  
+
+    auto sorter_model = Gtk::SortListModel::create(model_list, m_IdSorter);
+    auto selection = Gtk::SingleSelection::create(sorter_model);
+    
     v_column_log->set_model(selection);
 
     {
@@ -207,7 +201,7 @@ void Movimientos::actualiza_data(const Glib::RefPtr<Gtk::SelectionModel> &select
     {
         list_store->append(log->get_item(i));
     }
-    column_id->set_sorter(m_IdSorter);
+    //column_id->set_sorter(m_IdSorter);
 }
 
 void Movimientos::consume_data()
