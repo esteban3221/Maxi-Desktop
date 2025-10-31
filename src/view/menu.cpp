@@ -129,7 +129,7 @@ dim-label</property>
                 <property name="spacing">10</property>
                 <child>
                   <object class="GtkImage">
-                    <property name="icon-name">downloaded-symbolic</property>
+                    <property name="icon-name">applications-utilities-symbolic</property>
                   </object>
                 </child>
                 <child>
