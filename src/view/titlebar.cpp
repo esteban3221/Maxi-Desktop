@@ -73,7 +73,7 @@ namespace View
         <child>
           <object class="GtkButton" id="btn_regresar">
             <property name="icon-name">go-previous-symbolic</property>
-            <property name="tooltip-markup">Cerrar Sesion &lt;Crtl + d&gt;</property>
+            <property name="tooltip-markup">Cerrar Sesion (Crtl d)</property>
           </object>
         </child>
         <child type="end">
@@ -107,6 +107,10 @@ namespace View
       <item>
         <attribute name="action">app.quit</attribute>
         <attribute name="label" translatable="yes">Quit App</attribute>
+      </item>
+      <item>
+        <attribute name="action">app.volcadolog</attribute>
+        <attribute name="label">Volcar datos de Aplicación</attribute>
       </item>
     </section>
   </menu>
