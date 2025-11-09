@@ -28,6 +28,10 @@ public:
 #include <string>
 #include <iostream>
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 class MailTo {
 public:
     static bool enviar(const std::string& to, 
@@ -35,56 +39,53 @@ public:
                       const std::string& body = "") {
         
         std::string url = construirURL(to, subject, body);
-        std::string comando = construirComando(url);
         
-        if (comando.empty()) {
-            std::cerr << "Error: No se pudo determinar cómo abrir el mailto" << std::endl;
-            return false;
-        }
-        
-        std::cout << "Abriendo: " << url << std::endl;
-        
-        int resultado = system(comando.c_str());
-        
-        if (resultado != 0) {
-            std::cerr << "Error ejecutando el comando" << std::endl;
-            return false;
-        }
-        
-        return true;
+        #ifdef _WIN32
+            return abrirEnWindows(url);
+        #else
+            return abrirEnUnix(url);
+        #endif
     }
 
 private:
     static std::string construirURL(const std::string& to, 
                                    const std::string& subject, 
                                    const std::string& body) {
-        std::string url = "mailto:" + codificarURL(to);
+        std::string url = "mailto:" + to;  // No codificar el email aquí
         
         if (!subject.empty() || !body.empty()) {
             url += "?";
         }
         
         if (!subject.empty()) {
-            url += "subject=" + codificarURL(subject);
+            url += "subject=" + codificarParametro(subject);
         }
         
         if (!body.empty()) {
             if (!subject.empty()) {
                 url += "&";
             }
-            url += "body=" + codificarURL(body);
+            url += "body=" + codificarParametro(body);
         }
         
         return url;
     }
     
-    static std::string codificarURL(const std::string& texto) {
+    static std::string codificarParametro(const std::string& texto) {
         std::string encoded;
         for (char c : texto) {
             if (c == ' ') {
                 encoded += "%20";
             } else if (c == '\n') {
-                encoded += "%0A";  // Nueva línea en URL
+                encoded += "%0A";
+            } else if (c == '&') {
+                encoded += "%26";
+            } else if (c == '=') {
+                encoded += "%3D";
+            } else if (c == '?') {
+                encoded += "%3F";
+            } else if (c == '%') {
+                encoded += "%25";
             } else {
                 encoded += c;
             }
@@ -92,15 +93,35 @@ private:
         return encoded;
     }
     
-    static std::string construirComando(const std::string& url) {
-        #ifdef __linux__
-            return "xdg-open \"" + url + "\"";
-        #elif __APPLE__
-            return "open \"" + url + "\"";
-        #elif _WIN32
-            return "start \"" + url + "\"";
-        #else
-            return "xdg-open \"" + url + "\"";
-        #endif
+    #ifdef _WIN32
+    static bool abrirEnWindows(const std::string& url) {
+        std::cout << "URL generada: " << url << std::endl;
+        
+        // Método 1: Usar ShellExecute (recomendado)
+        HINSTANCE result = ShellExecuteA(
+            NULL,
+            "open",
+            url.c_str(),
+            NULL,
+            NULL,
+            SW_SHOWNORMAL
+        );
+        
+        if ((intptr_t)result > 32) {
+            return true;
+        }
+        
+        // Método 2: Fallback con comando escapado correctamente
+        std::string comando = "rundll32.exe url.dll,FileProtocolHandler \"" + url + "\"";
+        std::cout << "Ejecutando comando: " << comando << std::endl;
+        
+        return system(comando.c_str()) == 0;
+    }
+    #endif
+    
+    static bool abrirEnUnix(const std::string& url) {
+        std::string comando = "xdg-open \"" + url + "\"";
+        std::cout << "Ejecutando: " << comando << std::endl;
+        return system(comando.c_str()) == 0;
     }
 };
