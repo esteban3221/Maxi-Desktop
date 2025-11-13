@@ -32,7 +32,7 @@ void VRefill::on_setup_button(const Glib::RefPtr<Gtk::ListItem> &list_item)
 
 void VRefill::on_setup_spin(const Glib::RefPtr<Gtk::ListItem> &list_item)
 {
-	auto spin = Gtk::make_managed<Gtk::SpinButton>(Gtk::Adjustment::create(0, 0, 100, 1, 10), 1.0, 0);
+	auto spin = Gtk::make_managed<Gtk::SpinButton>(Gtk::Adjustment::create(0, 0, 500, 1, 10), 1.0, 0);
 	spin->set_halign(Gtk::Align::FILL);
 	list_item->set_child(*spin);
 }

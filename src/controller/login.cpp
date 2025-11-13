@@ -45,6 +45,7 @@ void Login::on_btn_login_clicked()
 void Login::on_show_map()
 {
     v_ety_passwd->delete_text(0,v_ety_passwd->get_text().size());
+    v_ety_passwd->grab_focus();
 
     auto db = std::make_unique<Configuracion>();
     auto data = db->get_conf_data(2,2);
