@@ -214,7 +214,7 @@ void Movimientos::consume_data()
     auto f_fin = v_ety_fin->get_text();
     auto pag = v_spin_pag->get_value_as_int();
 
-    pag = pag == 1 ? 0 : pag-- * 100;
+    pag = pag == 1 ? 0 : pag-1 * 100;
 
     auto json = nlohmann::json{
         {"tipo", tipo},
