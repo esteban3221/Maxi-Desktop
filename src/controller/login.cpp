@@ -14,6 +14,9 @@ Login::~Login()
 
 void Login::on_btn_login_clicked()
 {
+    // solo para ver los cambios
+    // Global::Widget::v_main_stack->set_visible_child("menu");
+    
     try
     {
         auto header = cpr::Header{{"Content-Type", "application/x-www-form-urlencoded"}};

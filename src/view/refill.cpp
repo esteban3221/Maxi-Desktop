@@ -74,7 +74,7 @@ void VRefill::on_bind_inmo(const Glib::RefPtr<Gtk::ListItem> &list_item)
 	auto col = std::dynamic_pointer_cast<MLevelCash>(list_item->get_item());
 	auto spin = dynamic_cast<Gtk::SpinButton *>(list_item->get_child());
 
-	spin->set_adjustment(Gtk::Adjustment::create(col->m_nivel_inmo, 0, 100));
+	spin->set_adjustment(Gtk::Adjustment::create(col->m_nivel_inmo, 0, 999));
 	spin->signal_changed().connect([this, col, spin](){ col->m_nivel_inmo = spin->get_value_as_int(); });
 	spin->signal_value_changed().connect([this, col, spin](){ col->m_nivel_inmo = spin->get_value_as_int(); });
 }
@@ -84,7 +84,7 @@ void VRefill::on_bind_inmo_min(const Glib::RefPtr<Gtk::ListItem> &list_item)
 	auto col = std::dynamic_pointer_cast<MLevelCash>(list_item->get_item());
 	auto spin = dynamic_cast<Gtk::SpinButton *>(list_item->get_child());
 
-	spin->set_adjustment(Gtk::Adjustment::create(col->m_nivel_inmo_min, 0, 100));
+	spin->set_adjustment(Gtk::Adjustment::create(col->m_nivel_inmo_min, 0, 999));
 	spin->signal_changed().connect([this, col, spin](){ col->m_nivel_inmo_min = spin->get_value_as_int(); });
 	spin->signal_value_changed().connect([this, col, spin](){ col->m_nivel_inmo_min = spin->get_value_as_int(); });
 }
@@ -94,7 +94,7 @@ void VRefill::on_bind_inmo_max(const Glib::RefPtr<Gtk::ListItem> &list_item)
 	auto col = std::dynamic_pointer_cast<MLevelCash>(list_item->get_item());
 	auto spin = dynamic_cast<Gtk::SpinButton *>(list_item->get_child());
 
-	spin->set_adjustment(Gtk::Adjustment::create(col->m_nivel_inmo_max, 0, 100));
+	spin->set_adjustment(Gtk::Adjustment::create(col->m_nivel_inmo_max, 0, 999));
 	spin->signal_changed().connect([this, col, spin](){ col->m_nivel_inmo_max = spin->get_value_as_int(); });
 	spin->signal_value_changed().connect([this, col, spin](){ col->m_nivel_inmo_max = spin->get_value_as_int(); });
 }
