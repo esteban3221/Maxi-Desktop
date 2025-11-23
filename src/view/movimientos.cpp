@@ -46,7 +46,7 @@ void VMovimientos::on_bind_usuario(const Glib::RefPtr<Gtk::ListItem> &list_item)
     auto col = std::dynamic_pointer_cast<MLog>(list_item->get_item());
     auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
 
-    label->set_text(Glib::ustring::format(col->m_user));
+    label->set_markup(col->m_user);
 }
 
 void VMovimientos::on_bind_tipo(const Glib::RefPtr<Gtk::ListItem> &list_item)
@@ -86,7 +86,7 @@ void VMovimientos::on_bind_estatus(const Glib::RefPtr<Gtk::ListItem> &list_item)
     auto col = std::dynamic_pointer_cast<MLog>(list_item->get_item());
     auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
 
-    label->set_text(Glib::ustring::format(col->m_estatus));
+    label->set_markup(col->m_estatus);
 }
 
 void VMovimientos::on_bind_fecha(const Glib::RefPtr<Gtk::ListItem> &list_item)
@@ -94,7 +94,7 @@ void VMovimientos::on_bind_fecha(const Glib::RefPtr<Gtk::ListItem> &list_item)
     auto col = std::dynamic_pointer_cast<MLog>(list_item->get_item());
     auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
 
-    label->set_text(Glib::ustring::format(col->m_fecha.format("%A, %d de %B de %Y - Hora: %H:%M")));
+    label->set_text(col->m_fecha.format("%A, %d de %B de %Y - Hora: %H:%M"));
 }
 
 namespace View
