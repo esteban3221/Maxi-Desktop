@@ -237,7 +237,7 @@ namespace View
       <object class="GtkButton" id="btn_cobrar">
         <property name="halign">3</property>
         <property name="hexpand">true</property>
-        <property name="label">Cobrar $0</property>
+        <property name="label">Pagar $0</property>
         <property name="valign">3</property>
         <property name="vexpand">true</property>
         <style>

@@ -21,6 +21,7 @@ private:
     void on_file_dialog_finish(const Glib::RefPtr<Gio::AsyncResult>& result,const Glib::RefPtr<Gtk::FileDialog>& dialog);
     void on_file_dialog_image_finish(const Glib::RefPtr<Gio::AsyncResult>& result,const Glib::RefPtr<Gtk::FileDialog>& dialog);
     void on_folder_dialog_finish(const Glib::RefPtr<Gio::AsyncResult>& result, const Glib::RefPtr<Gtk::FileDialog>& dialog);
+    void on_chk_mostrar_notificaciones_toggled();
     bool comprimir_carpeta(const std::string& carpeta_origen, const std::string& archivo_zip);
     bool agregar_archivo_a_zip(zipFile zf, const std::string& ruta_archivo, const std::string& nombre_en_zip);
 public:

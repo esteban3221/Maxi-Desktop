@@ -10,6 +10,7 @@ General::General(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refB
     v_btn_imagen->signal_clicked().connect(sigc::mem_fun(*this, &General::on_btn_imagen_pos_clicked));
     v_btn_imagen_2->signal_clicked().connect(sigc::mem_fun(*this, &General::on_btn_imagen_2_clicked));
     v_btn_desactiva_carrousel->signal_clicked().connect(sigc::mem_fun(*this, &General::on_btn_desactiva_carrousel_clicked));
+    v_chk_mostrar_notificaciones->signal_toggled().connect(sigc::mem_fun(*this, &General::on_chk_mostrar_notificaciones_toggled));
 }
 
 General::~General()
@@ -125,9 +126,17 @@ bool General::agregar_archivo_a_zip(zipFile zf, const std::string &ruta_archivo,
 void General::on_show_mapping()
 {
     auto db = std::make_unique<Configuracion>();
-    auto data = db->get_conf_data(2, 2);
+    auto data = db->get_conf_data(1, 2);
 
-    v_ety_mensaje_inicio->set_text(data->get_item(0)->m_valor);
+    v_chk_mostrar_notificaciones->set_active(data->get_item(0)->m_valor == "1");
+    v_ety_mensaje_inicio->set_text(data->get_item(1)->m_valor);
+}
+
+void General::on_chk_mostrar_notificaciones_toggled()
+{
+    auto db = std::make_unique<Configuracion>();
+    std::string valor = v_chk_mostrar_notificaciones->get_active() ? "1" : "0";
+    db->update_conf(MConfiguracion::create(1, "Mostrar Notificaciones", valor));
 }
 
 void General::on_ety_change_mensaje_inicio()

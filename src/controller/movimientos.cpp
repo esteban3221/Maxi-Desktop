@@ -270,8 +270,8 @@ void Movimientos::set_fecha()
         ((Gtk::Entry *)v_pop_calendario.get_parent())->set_text(v_calendario.get_date().add_hours(23).add_minutes(59).add_seconds(59).format_iso8601());
     else
     {
-        ((Gtk::Entry *)v_pop_calendario.get_parent())->set_text(v_calendario.get_date().add_hours(23).add_minutes(59).add_seconds(59).format_iso8601());
-        ((Gtk::Entry *)v_pop_calendario.get_parent())->set_text(v_calendario.get_date().format_iso8601());
+        v_ety_fin->set_text(v_calendario.get_date().add_hours(23).add_minutes(59).add_seconds(59).format_iso8601());
+        v_ety_ini->set_text(v_calendario.get_date().format_iso8601());
     }
 }
 

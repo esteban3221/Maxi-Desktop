@@ -56,7 +56,7 @@ void PagoM::on_spin_value_changed()
     for (size_t i = 0; i < 6; i++)
         total += bills.at(i) * v_spin_bill[i]->get_value_as_int();
 
-    v_btn_cobrar->set_label(Glib::ustring::compose("Cobrar $ %1", total));
+    v_btn_cobrar->set_label(Glib::ustring::compose("Pagar $ %1", total));
 }
 
 void PagoM::on_btn_cobrar_clicked()

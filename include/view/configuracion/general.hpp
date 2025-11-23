@@ -14,6 +14,7 @@ protected:
     Gtk::Button *v_btn_imagen = nullptr;
     Gtk::Button *v_btn_imagen_2 = nullptr;
     Gtk::Button *v_btn_desactiva_carrousel = nullptr;
+    Gtk::CheckButton *v_chk_mostrar_notificaciones;
     
     std::unique_ptr<Gtk::MessageDialog> v_dialog;
 public:
