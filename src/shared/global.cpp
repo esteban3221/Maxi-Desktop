@@ -57,8 +57,9 @@ namespace Global
         #ifdef __WIN32__
         std::string WStrToUTF8(const wchar_t* wstr)
         {
-            std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-            std::string utf8_str = converter.to_bytes(wstr);
+            int size_needed = WideCharToMultiByte(CP_UTF8, 0, wstr, -1, NULL, 0, NULL, NULL);
+            std::string utf8_str(size_needed - 1, 0);
+            WideCharToMultiByte(CP_UTF8, 0, wstr, -1, &utf8_str[0], size_needed, NULL, NULL);
             return utf8_str;
         }
         #endif
