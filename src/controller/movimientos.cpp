@@ -77,7 +77,7 @@ void Movimientos::imprime_corte()
 
 void Movimientos::init_datos()
 {
-    std::vector<Glib::ustring> tipos = {"Todo", "Venta", "Ingreso", "Pago", "Pago Manual", "Refill", "Retirada"};
+    std::vector<Glib::ustring> tipos = {"Todo", "Venta", "Ingreso", "Pago", "Pago Manual", "Refill", "Transpaso" ,"Retirada de Casette"};
     m_list_tipos = Gtk::StringList::create(tipos);
     v_dp_tipo->set_model(m_list_tipos);
 
@@ -199,6 +199,8 @@ void Movimientos::actualiza_data(const Glib::RefPtr<Gtk::SelectionModel> &select
 
     for (size_t i = 0; i < log->get_n_items(); i++)
     {
+        if (log->get_item(i)->m_user.empty())
+            log->get_item(i)->m_user = "<span weight=\"bold\">Usuario Eliminado</span>";
         list_store->append(log->get_item(i));
     }
     //column_id->set_sorter(m_IdSorter);

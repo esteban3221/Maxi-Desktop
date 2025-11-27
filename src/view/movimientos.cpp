@@ -54,7 +54,7 @@ void VMovimientos::on_bind_tipo(const Glib::RefPtr<Gtk::ListItem> &list_item)
     auto col = std::dynamic_pointer_cast<MLog>(list_item->get_item());
     auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
 
-    label->set_text(Glib::ustring::format(col->m_tipo));
+    label->set_markup(col->m_tipo);
 }
 
 void VMovimientos::on_bind_ingreso(const Glib::RefPtr<Gtk::ListItem> &list_item)

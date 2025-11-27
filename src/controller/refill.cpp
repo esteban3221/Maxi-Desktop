@@ -24,9 +24,14 @@ void Refill::poll_alerta_niveles()
     {
         while (true)
         {
+            std::this_thread::sleep_for(std::chrono::seconds(5));
+            auto db = std::make_unique<Configuracion>();
+            auto data = db->get_conf_data(1,1);
+            if (data->get_item(0)->m_valor == "1")
+                continue;
+
             if(Global::System::token.empty())
                 continue;
-            std::this_thread::sleep_for(std::chrono::seconds(5));
             
             auto future = cpr::GetAsync(cpr::Url{Global::System::URL, "validadores/get_dashboard"}, Global::Utility::header);
             Global::Utility::consume_and_do(future,[this](cpr::Response response)

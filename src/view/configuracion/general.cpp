@@ -11,8 +11,6 @@ VGeneral::VGeneral(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &re
     v_btn_imagen_2 = m_builder->get_widget<Gtk::Button>("btn_imagen_2");
     v_btn_desactiva_carrousel = m_builder->get_widget<Gtk::Button>("btn_desactiva_carrousel");
     v_chk_mostrar_notificaciones = m_builder->get_widget<Gtk::CheckButton>("chk_mostrar_notificaciones");
-
-    v_btn_retirada->set_visible(false);
 }
 
 VGeneral::~VGeneral()

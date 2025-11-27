@@ -15,6 +15,7 @@ VRefill::VRefill(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refB
 
 	v_btn_incia = m_builder->get_widget<Gtk::Button>("btn_iniciar");
 	v_btn_transpaso = m_builder->get_widget<Gtk::Button>("btn_transpaso");
+  v_btn_transpaso->set_visible(false);
 }
 
 void VRefill::on_setup_label(const Glib::RefPtr<Gtk::ListItem> &list_item)
