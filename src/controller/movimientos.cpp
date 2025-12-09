@@ -24,14 +24,20 @@ void Movimientos::imprime_corte()
 {
     auto id_tipo = v_dp_tipo->get_selected();
     auto tipo = m_list_tipos->get_string(id_tipo);
+    auto f_ini = v_ety_ini->get_text();
+    auto f_fin = v_ety_fin->get_text();
+
+    auto fecha = f_ini.empty() || f_fin.empty() ? "Todo el dia" : "Desde " + Glib::DateTime::create_from_iso8601(f_ini).format("%F") + " hasta " + Glib::DateTime::create_from_iso8601(f_fin).format("%F");
 
     v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window, "Atención", false, Gtk::MessageType::QUESTION, Gtk::ButtonsType::OK_CANCEL, true));
-    v_dialog->set_secondary_text("¿Desea imprimir el tipo de movimiento \"" + tipo + "\" en el corte de caja?");
-    v_dialog->signal_response().connect([this,tipo](int response)
-    {
+    v_dialog->set_secondary_text("¿Desea imprimir el tipo de movimiento \"" + tipo + "\" y " + fecha + " en el corte de caja?");
+    v_dialog->signal_response().connect([this, tipo](int response)
+                                        {
         if (Gtk::ResponseType::OK == response)
         {
-            auto json = nlohmann::json{{"tipo", tipo}};
+            auto json = nlohmann::json{{"tipo", tipo},
+                                       {"f_ini", v_ety_ini->get_text()},
+                                       {"f_fin", v_ety_fin->get_text()}};
 
             auto future = cpr::GetAsync(cpr::Url{Global::System::URL + "log/corte_caja"}, Global::Utility::header, cpr::Body{json.dump()});
             Global::Utility::consume_and_do(future, [this](const cpr::Response &response)
@@ -69,15 +75,14 @@ void Movimientos::imprime_corte()
                 }
             });
         }
-        v_dialog->close(); 
-    });
+        v_dialog->close(); });
 
     v_dialog->show();
 }
 
 void Movimientos::init_datos()
 {
-    std::vector<Glib::ustring> tipos = {"Todo", "Venta", "Ingreso", "Pago", "Pago Manual", "Refill", "Transpaso" ,"Retirada de Casette"};
+    std::vector<Glib::ustring> tipos = {"Todo", "Venta", "Ingreso", "Pago", "Pago Manual", "Refill", "Transpaso", "Retirada de Casette"};
     m_list_tipos = Gtk::StringList::create(tipos);
     v_dp_tipo->set_model(m_list_tipos);
 
@@ -90,13 +95,13 @@ void Movimientos::init_datos()
             const auto col = std::dynamic_pointer_cast<MLog>(item);
             return col ? col->m_id : 0;
         });
-    
+
     m_IdSorter = Gtk::NumericSorter<unsigned int>::create(uint_expression);
-    m_IdSorter->set_sort_order(Gtk::SortType::DESCENDING);  
+    m_IdSorter->set_sort_order(Gtk::SortType::DESCENDING);
 
     auto sorter_model = Gtk::SortListModel::create(model_list, m_IdSorter);
     auto selection = Gtk::SingleSelection::create(sorter_model);
-    
+
     v_column_log->set_model(selection);
 
     {
@@ -203,7 +208,7 @@ void Movimientos::actualiza_data(const Glib::RefPtr<Gtk::SelectionModel> &select
             log->get_item(i)->m_user = "<span weight=\"bold\">Usuario Eliminado</span>";
         list_store->append(log->get_item(i));
     }
-    //column_id->set_sorter(m_IdSorter);
+    // column_id->set_sorter(m_IdSorter);
 }
 
 void Movimientos::consume_data()
@@ -216,7 +221,7 @@ void Movimientos::consume_data()
     auto f_fin = v_ety_fin->get_text();
     auto pag = v_spin_pag->get_value_as_int();
 
-    pag = pag == 1 ? 0 : pag-1 * 100;
+    pag = pag == 1 ? 0 : pag - 1 * 100;
 
     auto json = nlohmann::json{
         {"tipo", tipo},
@@ -225,9 +230,9 @@ void Movimientos::consume_data()
         {"pag", pag}};
 
     auto future = cpr::PostAsync(cpr::Url{Global::System::URL + "log/movimientos"}, Global::Utility::header, cpr::Body{json.dump()});
-    
+
     Global::Utility::consume_and_do(future, [this](const cpr::Response &response)
-    {
+                                    {
         if (response.status_code == 200)
         {
             auto j = nlohmann::json::parse(response.text);
@@ -248,8 +253,7 @@ void Movimientos::consume_data()
         {
             auto model = v_column_log->get_model();
             actualiza_data(model, Gio::ListStore<MLog>::create());
-        }
-    });
+        } });
 }
 
 void Movimientos::muestra_calendario_inicio(Gtk::Entry::IconPosition icon_pos)
@@ -268,7 +272,7 @@ void Movimientos::muestra_calendario_fin(Gtk::Entry::IconPosition icon_pos)
 
 void Movimientos::set_fecha()
 {
-    if(v_pop_calendario.get_parent() == v_ety_fin)
+    if (v_pop_calendario.get_parent() == v_ety_fin)
         ((Gtk::Entry *)v_pop_calendario.get_parent())->set_text(v_calendario.get_date().add_hours(23).add_minutes(59).add_seconds(59).format_iso8601());
     else
     {
