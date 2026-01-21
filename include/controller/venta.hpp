@@ -10,6 +10,7 @@ private:
     void on_map_show();
 
     bool is_view_ingreso;
+    void on_btn_cancelar_clicked();
 public:
     Venta(bool is_view_ingreso = false);
     ~Venta();

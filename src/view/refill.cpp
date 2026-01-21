@@ -15,7 +15,9 @@ VRefill::VRefill(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refB
 
 	v_btn_incia = m_builder->get_widget<Gtk::Button>("btn_iniciar");
 	v_btn_transpaso = m_builder->get_widget<Gtk::Button>("btn_transpaso");
+  v_btn_detener = m_builder->get_widget<Gtk::Button>("btn_detener");
   v_btn_transpaso->set_visible(false);
+  v_btn_detener->set_visible(false);
 }
 
 void VRefill::on_setup_label(const Glib::RefPtr<Gtk::ListItem> &list_item)
@@ -63,6 +65,15 @@ void VRefill::on_bind_recy(const Glib::RefPtr<Gtk::ListItem> &list_item)
 }
 
 void VRefill::on_bind_ingreso(const Glib::RefPtr<Gtk::ListItem> &list_item)
+{
+	auto col = std::dynamic_pointer_cast<MLevelCash>(list_item->get_item());
+	auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
+
+  ///@todo por ahora solo muestra el ingreso por denominacion, despues cambiar para que muestre el ingreso total
+	label->set_text(Glib::ustring::format(col->m_ingreso * col->m_denominacion));
+}
+
+void VRefill::on_bind_ingreso_total(const Glib::RefPtr<Gtk::ListItem> &list_item)
 {
 	auto col = std::dynamic_pointer_cast<MLevelCash>(list_item->get_item());
 	auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
@@ -135,11 +146,13 @@ VRefill::~VRefill()
 
 namespace View
 {
-	const char *refill_ui = R"(<?xml version="1.0" encoding="UTF-8"?>
+	const char *refill_ui = R"(<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.96.3 -->
 <interface>
+  <!-- interface-name refill.ui -->
   <requires lib="gtk" version="4.0"/>
   <object class="GtkBox" id="box_refill">
-    <property name="halign">0</property>
+    <property name="halign">fill</property>
     <property name="margin-bottom">15</property>
     <property name="margin-end">15</property>
     <property name="margin-start">15</property>
@@ -148,7 +161,7 @@ namespace View
     <child>
       <object class="GtkBox">
         <property name="homogeneous">true</property>
-        <property name="orientation">1</property>
+        <property name="orientation">vertical</property>
         <property name="spacing">20</property>
         <property name="vexpand">true</property>
         <child>
@@ -157,7 +170,7 @@ namespace View
               <object class="GtkBox">
                 <property name="margin-end">12</property>
                 <property name="margin-start">12</property>
-                <property name="orientation">1</property>
+                <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkLabel">
                     <property name="label">Monedas</property>
@@ -175,24 +188,29 @@ namespace View
                     <child>
                       <object class="GtkColumnView" id="treeRecicladorMonedas">
                         <property name="enable-rubberband">true</property>
+                        <property name="hadjustment">
+                          <object class="GtkAdjustment"/>
+                        </property>
                         <property name="hexpand">true</property>
                         <property name="hexpand-set">true</property>
                         <property name="show-column-separators">true</property>
+                        <property name="vadjustment">
+                          <object class="GtkAdjustment"/>
+                        </property>
                         <property name="vexpand">true</property>
                         <property name="vexpand-set">true</property>
                       </object>
                     </child>
                     <child>
                       <object class="GtkBox">
-                        <property name="halign">2</property>
+                        <property name="halign">end</property>
                         <property name="hexpand-set">true</property>
-                        <property name="orientation">1</property>
+                        <property name="orientation">vertical</property>
                         <child>
                           <object class="GtkLabel">
-                            <property name="label">Total
-Recyclador</property>
+                            <property name="label">Total Recyclador</property>
                             <style>
-                              <class name="title-4"/>
+                              <class name="title-2"/>
                             </style>
                           </object>
                         </child>
@@ -201,7 +219,6 @@ Recyclador</property>
                             <property name="label">0.00 MXN</property>
                             <style>
                               <class name="title-4"/>
-                              <class name="dim-label"/>
                             </style>
                           </object>
                         </child>
@@ -219,7 +236,7 @@ Recyclador</property>
               <object class="GtkBox">
                 <property name="margin-end">12</property>
                 <property name="margin-start">12</property>
-                <property name="orientation">1</property>
+                <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkLabel">
                     <property name="label">Billetes</property>
@@ -236,51 +253,38 @@ Recyclador</property>
                     <child>
                       <object class="GtkColumnView" id="treeRecicladorBilletes">
                         <property name="enable-rubberband">true</property>
+                        <property name="hadjustment">
+                          <object class="GtkAdjustment"/>
+                        </property>
                         <property name="hexpand">true</property>
                         <property name="hexpand-set">true</property>
                         <property name="show-column-separators">true</property>
+                        <property name="vadjustment">
+                          <object class="GtkAdjustment"/>
+                        </property>
                         <property name="vexpand">true</property>
                         <property name="vexpand-set">true</property>
                       </object>
                     </child>
                     <child>
                       <object class="GtkBox">
-                        <property name="halign">2</property>
-                        <property name="orientation">1</property>
+                        <property name="halign">end</property>
+                        <property name="orientation">vertical</property>
                         <child>
                           <object class="GtkLabel">
-                            <property name="label">Total
-Recyclador</property>
+                            <property name="justify">fill</property>
+                            <property name="label">Total Recycaldor</property>
+                            <property name="natural-wrap-mode">word</property>
                             <style>
-                              <class name="title-4"/>
+                              <class name="title-2"/>
                             </style>
                           </object>
                         </child>
                         <child>
                           <object class="GtkLabel" id="lblTotalMXN2">
                             <property name="label">0.00 MXN</property>
-                            <property name="margin-bottom">10</property>
                             <style>
                               <class name="title-4"/>
-                              <class name="dim-label"/>
-                            </style>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkLabel">
-                            <property name="label">Total
-Casette      </property>
-                            <style>
-                              <class name="title-4"/>
-                            </style>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="lblTotalMXN2_">
-                            <property name="label">0.00 MXN</property>
-                            <style>
-                              <class name="title-4"/>
-                              <class name="dim-label"/>
                             </style>
                           </object>
                         </child>
@@ -296,7 +300,7 @@ Casette      </property>
     </child>
     <child>
       <object class="GtkBox">
-        <property name="orientation">1</property>
+        <property name="orientation">vertical</property>
         <property name="spacing">20</property>
         <child>
           <object class="GtkFrame" id="frmTotal">
@@ -306,7 +310,7 @@ Casette      </property>
                 <property name="margin-end">12</property>
                 <property name="margin-start">12</property>
                 <property name="margin-top">12</property>
-                <property name="orientation">1</property>
+                <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkLabel">
                     <property name="label">Total</property>
@@ -335,7 +339,7 @@ Casette      </property>
                 <property name="margin-end">12</property>
                 <property name="margin-start">12</property>
                 <property name="margin-top">12</property>
-                <property name="orientation">1</property>
+                <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkLabel">
                     <property name="label">Total Monedas</property>
@@ -364,7 +368,7 @@ Casette      </property>
                 <property name="margin-end">12</property>
                 <property name="margin-start">12</property>
                 <property name="margin-top">12</property>
-                <property name="orientation">1</property>
+                <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkLabel">
                     <property name="label">Total Billetes</property>
@@ -389,15 +393,31 @@ Casette      </property>
           <object class="GtkButton" id="btn_iniciar">
             <property name="css-classes">suggested-action</property>
             <property name="label" translatable="yes">Iniciar Refill / Carga</property>
+            <style>
+              <class name="pill"/>
+            </style>
           </object>
         </child>
         <child>
           <object class="GtkButton" id="btn_transpaso">
             <property name="label">Transpasar a Casette</property>
+            <style>
+              <class name="pill"/>
+            </style>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="btn_detener">
+            <property name="label">Detener</property>
+            <style>
+              <class name="destructive-action"/>
+              <class name="pill"/>
+            </style>
           </object>
         </child>
       </object>
     </child>
   </object>
-</interface>)";
+</interface>
+)";
 } // namespace View

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- Created with Cambalache 0.96.1 -->
+<!-- Created with Cambalache 0.96.3 -->
 <interface>
   <!-- interface-name refill.ui -->
   <requires lib="gtk" version="4.0"/>
@@ -40,9 +40,15 @@
                     <child>
                       <object class="GtkColumnView" id="treeRecicladorMonedas">
                         <property name="enable-rubberband">true</property>
+                        <property name="hadjustment">
+                          <object class="GtkAdjustment"/>
+                        </property>
                         <property name="hexpand">true</property>
                         <property name="hexpand-set">true</property>
                         <property name="show-column-separators">true</property>
+                        <property name="vadjustment">
+                          <object class="GtkAdjustment"/>
+                        </property>
                         <property name="vexpand">true</property>
                         <property name="vexpand-set">true</property>
                       </object>
@@ -99,9 +105,15 @@
                     <child>
                       <object class="GtkColumnView" id="treeRecicladorBilletes">
                         <property name="enable-rubberband">true</property>
+                        <property name="hadjustment">
+                          <object class="GtkAdjustment"/>
+                        </property>
                         <property name="hexpand">true</property>
                         <property name="hexpand-set">true</property>
                         <property name="show-column-separators">true</property>
+                        <property name="vadjustment">
+                          <object class="GtkAdjustment"/>
+                        </property>
                         <property name="vexpand">true</property>
                         <property name="vexpand-set">true</property>
                       </object>
@@ -233,11 +245,26 @@
           <object class="GtkButton" id="btn_iniciar">
             <property name="css-classes">suggested-action</property>
             <property name="label" translatable="yes">Iniciar Refill / Carga</property>
+            <style>
+              <class name="pill"/>
+            </style>
           </object>
         </child>
         <child>
           <object class="GtkButton" id="btn_transpaso">
             <property name="label">Transpasar a Casette</property>
+            <style>
+              <class name="pill"/>
+            </style>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="btn_detener">
+            <property name="label">Detener</property>
+            <style>
+              <class name="destructive-action"/>
+              <class name="pill"/>
+            </style>
           </object>
         </child>
       </object>

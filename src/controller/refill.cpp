@@ -66,29 +66,37 @@ void Refill::alerta_niveles(const nlohmann::json &json)
 
 void Refill::on_show_map()
 {
+    v_mon_col_ingreso->set_visible(false);
+    v_mon_col_ingreso_total->set_visible(false);
+    v_bill_col_ingreso->set_visible(false);
+    v_bill_col_ingreso_total->set_visible(false);
+
+    v_btn_detener->set_visible(false);
+    v_btn_incia->set_visible(true);
+
     auto future = cpr::GetAsync(cpr::Url{Global::System::URL, "validadores/get_dashboard"}, Global::Utility::header);
     Global::Utility::consume_and_do(future, [this](cpr::Response response)
-                                    {
+    {
         if (response.status_code == 200) 
-            {
-                auto level = std::make_unique<LevelCash>();
-                auto json = nlohmann::json::parse(response.text);
-                auto level_coin = level->get_level_cash(json["coin"]);
-                auto level_bill = level->get_level_cash(json["bill"]);
-                
-                auto model_bill = v_tree_reciclador_billetes->get_model();
-                actualiza_data(model_bill,level_bill);
+        {
+            auto level = std::make_unique<LevelCash>();
+            auto json = nlohmann::json::parse(response.text);
+            auto level_coin = level->get_level_cash(json["coin"]);
+            auto level_bill = level->get_level_cash(json["bill"]);
+            
+            auto model_bill = v_tree_reciclador_billetes->get_model();
+            actualiza_data(model_bill,level_bill);
+            auto model_coin = v_tree_reciclador_monedas->get_model();
+            actualiza_data(model_coin,level_coin);
 
-                auto model_coin = v_tree_reciclador_monedas->get_model();
-                actualiza_data(model_coin,level_coin);
-
-                v_lbl_total->set_text(json["total"].get<std::string>());
-                v_lbl_total_billetes->set_text(json["total_billetes"].get<std::string>());
-                v_lbl_total_monedas->set_text(json["total_monedas_recy"].get<std::string>());
-                v_lbl_total_billetes_cass->set_text(json["total_billetes_cass"].get<std::string>());
-                v_lbl_total_parcial_billetes->set_text(json["total_billetes_recy"].get<std::string>());
-                v_lbl_total_parcial_monedas->set_text(json["total_monedas_recy"].get<std::string>());
-            } });
+            v_lbl_total->set_text(json["total"].get<std::string>());
+            v_lbl_total_billetes->set_text(json["total_billetes"].get<std::string>());
+            v_lbl_total_monedas->set_text(json["total_monedas_recy"].get<std::string>());
+            v_lbl_total_billetes_cass->set_text(json["total_billetes_cass"].get<std::string>());
+            v_lbl_total_parcial_billetes->set_text(json["total_billetes_recy"].get<std::string>());
+            v_lbl_total_parcial_monedas->set_text(json["total_monedas_recy"].get<std::string>());
+        } 
+    });
 }
 
 void Refill::init_data(Gtk::ColumnView *vcolumn, const Glib::RefPtr<Gio::ListStore<MLevelCash>> &level)
@@ -161,13 +169,26 @@ void Refill::init_data(Gtk::ColumnView *vcolumn, const Glib::RefPtr<Gio::ListSto
         vcolumn->append_column(column);
     }
 
-    // {
-    //     auto factory = Gtk::SignalListItemFactory::create();
-    //     factory->signal_setup().connect(sigc::mem_fun(*this, &Refill::on_setup_label));
-    //     factory->signal_bind().connect(sigc::mem_fun(*this, &Refill::on_bind_ingreso));
-    //     auto column = Gtk::ColumnViewColumn::create("Ingreso", factory);
-    //     vcolumn->append_column(column);
-    // }
+    {
+        auto factory = Gtk::SignalListItemFactory::create();
+        factory->signal_setup().connect(sigc::mem_fun(*this, &Refill::on_setup_label));
+        factory->signal_bind().connect(sigc::mem_fun(*this, &Refill::on_bind_ingreso));
+        auto column = Gtk::ColumnViewColumn::create("Ingreso", factory);
+        vcolumn == v_tree_reciclador_billetes ? (v_bill_col_ingreso = column) : (v_mon_col_ingreso = column);
+        column->set_visible(false);
+        vcolumn->append_column(column);
+    }
+
+    {
+        auto factory = Gtk::SignalListItemFactory::create();
+        factory->signal_setup().connect(sigc::mem_fun(*this, &Refill::on_setup_label));
+        factory->signal_bind().connect(sigc::mem_fun(*this, &Refill::on_bind_ingreso_total));
+        auto column = Gtk::ColumnViewColumn::create("Total", factory);
+        vcolumn == v_tree_reciclador_billetes ? (v_bill_col_ingreso_total = column) : (v_mon_col_ingreso_total = column);
+        column->set_visible(false);
+        vcolumn->append_column(column);
+    }
+
 }
 
 void Refill::actualiza_data(const Glib::RefPtr<Gtk::SelectionModel> &selection, const Glib::RefPtr<Gio::ListStore<MLevelCash>> &level)
@@ -216,9 +237,17 @@ void Refill::safe_clear_column_view(Gtk::ColumnView *column_view)
 
 void Refill::on_btn_iniciar()
 {
+    v_mon_col_ingreso->set_visible(true);
+    v_mon_col_ingreso_total->set_visible(true);
+    v_bill_col_ingreso->set_visible(true);
+    v_bill_col_ingreso_total->set_visible(true);
+
+    v_btn_detener->set_visible(true);
+    v_btn_incia->set_visible(false);
+
     auto future = cpr::PostAsync(cpr::Url{Global::System::URL + "accion/inicia_refill"}, Global::Utility::header);
     Global::Utility::consume_and_do(future, [this](cpr::Response response)
-                                    {
+    {
         if (response.status_code == 200) 
         {
             auto j = nlohmann::json::parse(response.text);
@@ -244,7 +273,8 @@ void Refill::on_btn_iniciar()
             v_lbl_total_parcial_billetes->set_text(j["billetes"].get<std::string>());
             v_lbl_total_parcial_monedas->set_text(j["monedas"].get<std::string>());
             Global::Widget::m_refActionGroup->lookup_action("cerrarsesion")->activate();
-        } });
+        } 
+    });
 }
 
 void Refill::on_btn_transpaso()

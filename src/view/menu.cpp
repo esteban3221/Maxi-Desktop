@@ -18,7 +18,7 @@ VMenu::VMenu(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuild
 
   v_stack_menu->add(*default_view, "0");
 
-	v_stack_menu->add(*Gtk::manage(new Venta()), "1");
+	v_stack_menu->add(*Gtk::manage(new Venta(false)), "1");
   v_stack_menu->add(*Gtk::manage(new Venta(true)), "2");
 	v_stack_menu->add(*Gtk::manage(new PagoA()), "3");
 

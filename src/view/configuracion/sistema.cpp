@@ -35,7 +35,7 @@ namespace View
     namespace Conf
     {
         const char *sistema_ui = R"(<?xml version='1.0' encoding='UTF-8'?>
-<!-- Created with Cambalache 0.96.0 -->
+<!-- Created with Cambalache 0.96.3 -->
 <interface>
   <!-- interface-name detalle_sistema.ui -->
   <requires lib="gtk" version="4.0"/>
@@ -48,11 +48,18 @@ namespace View
     <property name="spacing">20</property>
     <child>
       <object class="GtkPaned">
-        <property name="orientation">vertical</property>
+        <property name="position">515</property>
         <child>
           <object class="GtkBox">
+            <property name="accessible-role">widget</property>
+            <property name="halign">baseline-fill</property>
+            <property name="margin-bottom">10</property>
+            <property name="margin-end">10</property>
+            <property name="margin-start">10</property>
+            <property name="margin-top">10</property>
             <property name="orientation">vertical</property>
             <property name="spacing">15</property>
+            <property name="width-request">500</property>
             <child>
               <object class="GtkLabel">
                 <property name="halign">start</property>
@@ -95,8 +102,7 @@ namespace View
                               <object class="GtkListBoxRow">
                                 <property name="child">
                                   <object class="GtkImage" id="img_validador">
-                                    <property name="file">img/SMART_COIN_SYSTEM.png</property>
-                                    <property name="icon-name">dialog-question-symbolic</property>
+                                    <property name="file">/home/esteban/Imágenes/img/SMART_COIN_SYSTEM.png</property>
                                     <property name="margin-bottom">10</property>
                                     <property name="margin-end">10</property>
                                     <property name="margin-start">10</property>
@@ -535,7 +541,6 @@ namespace View
                               <object class="GtkListBoxRow">
                                 <property name="child">
                                   <object class="GtkImage" id="img_validador_">
-                                    <property name="file">img/SMART_COIN_SYSTEM.png</property>
                                     <property name="icon-name">dialog-question-symbolic</property>
                                     <property name="margin-bottom">10</property>
                                     <property name="margin-end">10</property>
@@ -957,6 +962,10 @@ namespace View
         </child>
         <child>
           <object class="GtkBox">
+            <property name="margin-bottom">10</property>
+            <property name="margin-end">10</property>
+            <property name="margin-start">10</property>
+            <property name="margin-top">10</property>
             <property name="orientation">vertical</property>
             <property name="spacing">20</property>
             <child>

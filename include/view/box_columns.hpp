@@ -12,6 +12,8 @@ public:
 
     Gtk::Label *v_lbl_columns[3]{nullptr};
     Gtk::Entry *v_ety_columns[3]{nullptr};
+
+    Gtk::Button *v_btn_cancelar{nullptr};
 };
 
 namespace View

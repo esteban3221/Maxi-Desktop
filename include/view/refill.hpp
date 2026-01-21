@@ -19,8 +19,18 @@ protected:
     Gtk::ColumnView *v_tree_reciclador_monedas = nullptr;
     Gtk::ColumnView *v_tree_reciclador_billetes = nullptr;
 
+    // me dio hueva iterar los 2 ultimas columnas de monedas y billetes, asi que las hice aparte
+
+    Glib::RefPtr<Gtk::ColumnViewColumn> v_mon_col_ingreso = nullptr;
+    Glib::RefPtr<Gtk::ColumnViewColumn> v_mon_col_ingreso_total = nullptr;
+
+    Glib::RefPtr<Gtk::ColumnViewColumn> v_bill_col_ingreso = nullptr;
+    Glib::RefPtr<Gtk::ColumnViewColumn> v_bill_col_ingreso_total = nullptr;
+
     Gtk::Button *v_btn_incia = nullptr;
     Gtk::Button *v_btn_transpaso = nullptr;
+    Gtk::Button *v_btn_detener = nullptr;
+
 
     void on_setup_label(const Glib::RefPtr<Gtk::ListItem> &list_item);
     void on_setup_button(const Glib::RefPtr<Gtk::ListItem> &list_item);
@@ -29,6 +39,7 @@ protected:
     void on_bind_alm(const Glib::RefPtr<Gtk::ListItem> &list_item);
     void on_bind_recy(const Glib::RefPtr<Gtk::ListItem> &list_item);
     void on_bind_ingreso(const Glib::RefPtr<Gtk::ListItem> &list_item);
+    void on_bind_ingreso_total(const Glib::RefPtr<Gtk::ListItem> &list_item);
     void on_bind_inmo_min(const Glib::RefPtr<Gtk::ListItem> &list_item);
     
     void on_bind_inmo(const Glib::RefPtr<Gtk::ListItem> &list_item);
