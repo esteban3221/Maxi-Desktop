@@ -12,6 +12,7 @@ private:
     void safe_clear_column_view(Gtk::ColumnView* column_view);
 
     void on_btn_iniciar();
+    void on_btn_detener();
     void on_btn_transpaso();
 
     void poll_alerta_niveles();

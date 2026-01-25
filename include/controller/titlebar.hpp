@@ -1,5 +1,6 @@
 #pragma once
 #include "view/titlebar.hpp"
+#include "ws_client.hpp"
 #include "global.hpp"
 
 class TitleBar : public VTitlebar
@@ -11,6 +12,7 @@ private:
     void on_btn_regresar_clicked(void);
 
     Global::Async async;
+    IXWSClient ws;
 
 public:
     TitleBar(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuilder);

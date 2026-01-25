@@ -1,90 +1,75 @@
-// ws_client.hpp
+// ixws_client.hpp
 #pragma once
 
-#include <websocketpp/config/asio_no_tls_client.hpp>
-#include <websocketpp/client.hpp>
-#include <websocketpp/common/thread.hpp>
+#include <ixwebsocket/IXWebSocket.h>
+#include <ixwebsocket/IXNetSystem.h>
 #include <nlohmann/json.hpp>
-#include <iostream>
 #include <string>
 #include <functional>
+#include <iostream>
 
-typedef websocketpp::client<websocketpp::config::asio_client> client;
-
-class WSClient {
+class IXWSClient {
 public:
-    WSClient() {
-        m_client.init_asio();
-        m_client.clear_access_channels(websocketpp::log::alevel::all);  // Silencia logs si quieres
-        // m_client.set_access_channels(websocketpp::log::alevel::connect | websocketpp::log::alevel::disconnect | websocketpp::log::alevel::control);
+    IXWSClient() {
+        ix::initNetSystem();  // Inicializa red (una vez)
     }
 
-    ~WSClient() {
-        close();
+    ~IXWSClient() {
+        ws.disableAutomaticReconnection();
+        ws.stop();
     }
 
-    void connect(const std::string& uri,
-                 std::function<void()> on_open_callback = nullptr,
-                 std::function<void(const std::string&)> on_message_callback = nullptr,
-                 std::function<void(websocketpp::close::status::value, const std::string&)> on_close_callback = nullptr) {
+    void connect(const std::string& url,
+                 std::function<void()> on_open = nullptr,
+                 std::function<void(const std::string&)> on_message = nullptr,
+                 std::function<void(const std::string&)> on_error = nullptr,
+                 std::function<void(int, const std::string&)> on_close = nullptr) {
 
-        on_open_cb = on_open_callback;
-        on_message_cb = on_message_callback;
-        on_close_cb = on_close_callback;
+        ws.setUrl(url);
+        ws.setPingInterval(30);  // heartbeat cada 30s
+        ws.setOnMessageCallback([this, on_open, on_message, on_error, on_close](
+            const ix::WebSocketMessagePtr& msg) {
 
-        websocketpp::lib::error_code ec;
-        client::connection_ptr con = m_client.get_connection(uri, ec);
-        if (ec) {
-            std::cerr << "Error al obtener conexión: " << ec.message() << std::endl;
-            return;
-        }
+            switch (msg->type) {
+                case ix::WebSocketMessageType::Open:
+                    std::cout << "[IXWS] Conexión abierta!" << std::endl;
+                    if (on_open) on_open();
+                    break;
 
-        m_hdl = con->get_handle();
+                case ix::WebSocketMessageType::Message:
+                    if (on_message && msg->binary == false) {  // text
+                        std::cout << "[IXWS] Mensaje: " << msg->str << std::endl;
+                        on_message(msg->str);
+                    }
+                    break;
 
-        m_client.set_open_handler([this](websocketpp::connection_hdl) {
-            if (on_open_cb) on_open_cb();
-        });
+                case ix::WebSocketMessageType::Error:
+                    std::cout << "[IXWS] Error: " << std::string(msg->errorInfo.reason) << std::endl;
+                    if (on_error) on_error(std::string(msg->errorInfo.reason));
+                    break;
 
-        m_client.set_message_handler([this](websocketpp::connection_hdl, client::message_ptr msg) {
-            if (on_message_cb && msg->get_opcode() == websocketpp::frame::opcode::text) {
-                on_message_cb(msg->get_payload());
+                case ix::WebSocketMessageType::Close:
+                    std::cout << "[IXWS] Cerrado: " << msg->closeInfo.reason << " (code " << msg->closeInfo.code << ")" << std::endl;
+                    if (on_close) on_close(msg->closeInfo.code, msg->closeInfo.reason);
+                    break;
+
+                default:
+                    break;
             }
         });
 
-        m_client.set_close_handler([this](websocketpp::connection_hdl) {
-            if (on_close_cb) on_close_cb(websocketpp::close::status::normal, "Closed");
-        });
-
-        m_client.connect(con);
-
-        // Thread para correr el io_context (asíncrono)
-        m_thread = websocketpp::lib::make_shared<websocketpp::lib::thread>(&client::run, &m_client);
+        ws.start();
     }
 
     void send(const std::string& payload) {
-        websocketpp::lib::error_code ec;
-        m_client.send(m_hdl, payload, websocketpp::frame::opcode::text, ec);
-        if (ec) {
-            std::cerr << "Error al enviar: " << ec.message() << std::endl;
-        }
+        ws.send(payload);
+        std::cout << "[IXWS] Enviado: " << payload << std::endl;
     }
 
     void close() {
-        websocketpp::lib::error_code ec;
-        m_client.close(m_hdl, websocketpp::close::status::normal, "", ec);
-        if (ec) std::cerr << "Error al cerrar: " << ec.message() << std::endl;
-
-        if (m_thread && m_thread->joinable()) {
-            m_thread->join();
-        }
+        ws.stop();
     }
 
 private:
-    client m_client;
-    websocketpp::connection_hdl m_hdl;
-    websocketpp::lib::shared_ptr<websocketpp::lib::thread> m_thread;
-
-    std::function<void()> on_open_cb;
-    std::function<void(const std::string&)> on_message_cb;
-    std::function<void(websocketpp::close::status::value, const std::string&)> on_close_cb;
+    ix::WebSocket ws;
 };

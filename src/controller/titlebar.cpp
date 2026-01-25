@@ -11,6 +11,7 @@ TitleBar::TitleBar(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &re
 
 TitleBar::~TitleBar()
 {
+    ws.close();
 }
 
 void TitleBar::on_btn_regresar_clicked(void)
@@ -23,15 +24,31 @@ void TitleBar::init_list_ip(void)
     auto list_ip = std::make_unique<ListIp>();
     auto list_store = list_ip->get_all_ip();
 
+    ///@todo: recordar la ultima ip usada y seleccionarla al iniciar la app
     for (size_t i = 0; i < list_store->get_n_items(); i++)
     {
         v_list_ip->prepend(*Gtk::manage(new ListItem(list_store->get_item(i))));
         Global::System::IP = list_store->get_item(i)->m_ip;
 
         Global::System::URL = "http://" + Global::System::IP + ":44333/";
+        Global::System::WS = Global::System::IP + ":44333";
     }
-
-    std::thread([this]() { while (poll_ip())  std::this_thread::sleep_for(std::chrono::seconds(5)); }).detach();
+    auto uri_ws = "ws://" + Global::System::WS + "/ws/sesion";
+    ws.connect(uri_ws,
+    [this]() {
+        std::cout << "¡Conectado al WebSocket!" << std::endl;
+        ws.send("Hola desde el cliente GTKMM");  // Prueba enviar algo
+    },
+    [this](const std::string& msg) {
+        std::cout << "Mensaje recibido del servidor: " << msg << std::endl;
+    },
+    [](const std::string& err) {
+        std::cout << "Error en WS: " << err << std::endl;
+    },
+    [](int code, const std::string& reason) {
+        std::cout << "Cerrado: " << reason << " (code " << code << ")" << std::endl;
+    }
+);
 }
 
 bool TitleBar::poll_ip(void)

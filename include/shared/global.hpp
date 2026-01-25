@@ -47,7 +47,7 @@ namespace Global
             extern bool state_vizualizacion[6] ,is_activo;
         } // namespace Impresora
         
-    } // namespace Widget
+    } // namespace WidgetSimpleApp
 
     namespace Utility
     {
@@ -75,6 +75,7 @@ namespace Global
     namespace System
     {
         extern Glib::ustring IP;
+        extern std::string WS;
         extern std::string URL;
         extern std::string token;
     } // namespace System

@@ -12,10 +12,36 @@ Refill::Refill(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBui
 
     v_btn_incia->signal_clicked().connect(sigc::mem_fun(*this, &Refill::on_btn_iniciar));
     v_btn_transpaso->signal_clicked().connect(sigc::mem_fun(*this, &Refill::on_btn_transpaso));
+    v_btn_detener->signal_clicked().connect(sigc::mem_fun(*this, &Refill::on_btn_detener));
 }
 
 Refill::~Refill()
 {
+}
+
+void Refill::on_btn_detener()
+{
+    v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window, "Refill", false, Gtk::MessageType::QUESTION, Gtk::ButtonsType::YES_NO, true));
+    v_dialog->set_secondary_text("¿Está seguro de detener el proceso de Refill?");
+    v_dialog->signal_response().connect([this](int response_id)
+    {
+        if (response_id == Gtk::ResponseType::YES)
+        {
+            auto future = cpr::GetAsync(cpr::Url{Global::System::URL + "accion/deten_refill"}, Global::Utility::header);
+            Global::Utility::consume_and_do(future, [this](const cpr::Response &response)
+            {
+                if (response.status_code == 200) 
+                    Global::Widget::reveal_toast("Refill detenido", Gtk::MessageType::OTHER);
+                else 
+                    Global::Widget::reveal_toast(Glib::ustring::compose("Error al detener el Refill: %1", response.text), (Gtk::MessageType)3);
+                
+                set_sensitive(true); 
+            });
+        }
+        v_dialog->close();
+    });
+    // v_dialog->set_hide_on_close();
+    v_dialog->set_visible();
 }
 
 void Refill::poll_alerta_niveles()

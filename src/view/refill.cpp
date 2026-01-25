@@ -202,6 +202,9 @@ namespace View
                       </object>
                     </child>
                     <child>
+                      <object class="GtkSeparator"/>
+                    </child>
+                    <child>
                       <object class="GtkBox">
                         <property name="halign">end</property>
                         <property name="hexpand-set">true</property>
@@ -267,25 +270,62 @@ namespace View
                       </object>
                     </child>
                     <child>
+                      <object class="GtkSeparator"/>
+                    </child>
+                    <child>
                       <object class="GtkBox">
-                        <property name="halign">end</property>
                         <property name="orientation">vertical</property>
+                        <property name="spacing">10</property>
                         <child>
-                          <object class="GtkLabel">
-                            <property name="justify">fill</property>
-                            <property name="label">Total Recycaldor</property>
-                            <property name="natural-wrap-mode">word</property>
-                            <style>
-                              <class name="title-2"/>
-                            </style>
+                          <object class="GtkBox">
+                            <property name="halign">end</property>
+                            <property name="orientation">vertical</property>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="justify">fill</property>
+                                <property name="label">Total Recycaldor</property>
+                                <property name="natural-wrap-mode">word</property>
+                                <style>
+                                  <class name="title-2"/>
+                                </style>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="lblTotalMXN2">
+                                <property name="label">0.00 MXN</property>
+                                <style>
+                                  <class name="title-4"/>
+                                </style>
+                              </object>
+                            </child>
                           </object>
                         </child>
                         <child>
-                          <object class="GtkLabel" id="lblTotalMXN2">
-                            <property name="label">0.00 MXN</property>
-                            <style>
-                              <class name="title-4"/>
-                            </style>
+                          <object class="GtkBox">
+                            <property name="orientation">vertical</property>
+                            <child>
+                              <object class="GtkBox">
+                                <property name="orientation">vertical</property>
+                                <child>
+                                  <object class="GtkLabel">
+                                    <property name="justify">fill</property>
+                                    <property name="label">Total Casette</property>
+                                    <property name="natural-wrap-mode">word</property>
+                                    <style>
+                                      <class name="title-2"/>
+                                    </style>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel" id="lblTotalMXN2_">
+                                    <property name="label">0.00 MXN</property>
+                                    <style>
+                                      <class name="title-4"/>
+                                    </style>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
                           </object>
                         </child>
                       </object>

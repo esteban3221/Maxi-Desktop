@@ -108,6 +108,7 @@ namespace Global
     namespace System
     {
         Glib::ustring IP = "";
+        std::string WS = "";
         std::string URL{"http://" + IP + ":44333/"};
         std::string token = "";
     } // namespace System
