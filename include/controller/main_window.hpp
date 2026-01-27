@@ -2,6 +2,7 @@
 #include <gtkmm.h>
 #include <iostream>
 #include "global.hpp"
+#include "configuracion/version.hpp"
 
 #include "view/menu.hpp"
 

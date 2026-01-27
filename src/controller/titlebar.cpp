@@ -31,56 +31,71 @@ void TitleBar::init_list_ip(void)
         Global::System::IP = list_store->get_item(i)->m_ip;
 
         Global::System::URL = "http://" + Global::System::IP + ":44333/";
-        Global::System::WS = Global::System::IP + ":44333";
+        Global::System::WS = "ws://" + Global::System::IP + ":44333";
     }
-    auto uri_ws = "ws://" + Global::System::WS + "/ws/sesion";
-    ws.connect(uri_ws,
-    [this]() {
-        std::cout << "¡Conectado al WebSocket!" << std::endl;
-        ws.send("Hola desde el cliente GTKMM");  // Prueba enviar algo
+
+    ws.connect(Global::System::WS + "/ws/heartbeat", [this]() 
+    {
+        g_debug("Conectado al WebSocket");
+        
+        auto json = nlohmann::json::object();
+        json["version"] = Maxicajero::Version::getVersion();
+        #ifdef __linux__
+        json["plataform"] = "linux";
+        #elif _WIN32
+        json["plataform"] = "windows";
+        #elif __ANDROID__
+        json["plataform"] = "android";
+        #elif __APPLE__
+        json["plataform"] = "macos";
+        #else
+        json["plataform"] = "unknown";
+        #endif
+
+        ws.send(json.dump());
     },
-    [this](const std::string& msg) {
-        std::cout << "Mensaje recibido del servidor: " << msg << std::endl;
+    [this](const std::string& msg) 
+    {
+        auto json = nlohmann::json::parse(msg);
+        if (json["status"].get<std::string>() == "compatible")
+        {
+            Maxicajero::VersionUtils::Version clientVer = Maxicajero::VersionUtils::Version::fromString(Maxicajero::Version::getVersion());
+            Maxicajero::VersionUtils::Version serverVer = Maxicajero::VersionUtils::Version::fromString(json["local_server_version"].get<std::string>());
+
+            if (!Maxicajero::VersionUtils::CompatibilityChecker::isCompatible(clientVer, serverVer, Maxicajero::VersionUtils::CompatibilityChecker::Policy::BACKWARD))
+            {
+                Global::Widget::reveal_toast("Versión cliente (" + clientVer.toString() + ") incompatible con el servidor (" + serverVer.toString() + ")", (Gtk::MessageType)3, 10000);
+                Global::System::URL.clear();
+                v_menu_status->set_label("Desconectado");
+                v_menu_status->set_css_classes({"destructive-action"});
+                ws.close();
+                return;
+            }
+
+            g_info("Versión compatible con el servidor.");
+            v_menu_status->set_label("Conectado");
+            v_menu_status->set_css_classes({"suggested-action"});
+            Global::Widget::v_revealer->set_reveal_child(false);
+        }
+        else
+        {
+            Global::Widget::reveal_toast("Versión incompatible con el servidor", (Gtk::MessageType)3, 10000);
+            Global::System::URL.clear();
+            v_menu_status->set_label("Desconectado");
+            v_menu_status->set_css_classes({"destructive-action"});
+            ws.close();
+        }
     },
-    [](const std::string& err) {
-        std::cout << "Error en WS: " << err << std::endl;
+
+    [this](const std::string& err) {
+        v_menu_status->set_label("Desconectado");
+        v_menu_status->set_css_classes({"destructive-action"});
+        Global::Widget::reveal_toast(err, (Gtk::MessageType)3, 5000);
     },
     [](int code, const std::string& reason) {
         std::cout << "Cerrado: " << reason << " (code " << code << ")" << std::endl;
     }
 );
-}
-
-bool TitleBar::poll_ip(void)
-{
-    auto r = cpr::Post(cpr::Url{Global::System::URL, "test_coneccion"});
-    std::string r_title = Global::Widget::v_revealer_title->get_text();
-
-    if (r.status_code == cpr::status::HTTP_OK)
-    {
-        async.dispatch_to_gui([this,r_title](){
-            v_menu_status->set_label("Conectado");
-            v_menu_status->set_css_classes({"suggested-action"});
-            if(r_title == "Desconexión con el servidor")
-                Global::Widget::v_revealer->set_reveal_child(false);
-        });
-        
-    }
-    else
-    {
-        async.dispatch_to_gui([this](){
-            v_menu_status->set_label("Desconectado");
-            v_menu_status->set_css_classes({"destructive-action"});
-            Global::Widget::v_main_title->set_text("Maxicajero");
-            Global::Widget::v_main_stack->set_visible_child("login");
-
-            Global::System::token = "";
-            Global::Widget::reveal_toast("Desconexión con el servidor", (Gtk::MessageType)3, 5000);
-            
-        });
-    }
-
-    return true;
 }
 
 void TitleBar::on_ety_servidor_activate(void)

@@ -93,10 +93,10 @@ void MainWindow::acceleretors(const Glib::RefPtr<Gtk::Application>& app)
     Global::Widget::m_refActionGroup->add_action("about",  [this,&app]() 
     { 
         about.set_transient_for(*this);
-        about.set_program_name("Maxicajero Desktop");
+        about.set_program_name("Maxicajero Desktop Client");
         about.set_artists({"Maxicajero"});
         about.set_authors({"Maxicajero","Esteban Noé"});
-        about.set_version("1.19.0");
+        about.set_version(Maxicajero::Version::getVersion());
         about.set_license_type(Gtk::License::BSD_3);
         about.set_copyright("© 2025 Maxicajero");
         about.set_comments("Aplicación de escritorio para el manejo de cajeros automáticos");
