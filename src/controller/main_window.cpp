@@ -93,7 +93,7 @@ void MainWindow::acceleretors(const Glib::RefPtr<Gtk::Application>& app)
     Global::Widget::m_refActionGroup->add_action("about",  [this,&app]() 
     { 
         about.set_transient_for(*this);
-        about.set_program_name("Maxicajero Desktop Client");
+        about.set_program_name(Maxicajero::Version::NAME);
         about.set_artists({"Maxicajero"});
         about.set_authors({"Maxicajero","Esteban Noé"});
         about.set_version(Maxicajero::Version::getVersion());

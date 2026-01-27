@@ -34,6 +34,9 @@ void TitleBar::init_list_ip(void)
         Global::System::WS = "ws://" + Global::System::IP + ":44333";
     }
 
+    if(Global::System::IP.empty())
+        return;
+
     ws.connect(Global::System::WS + "/ws/heartbeat", [this]() 
     {
         g_debug("Conectado al WebSocket");
@@ -56,41 +59,48 @@ void TitleBar::init_list_ip(void)
     },
     [this](const std::string& msg) 
     {
+        
         auto json = nlohmann::json::parse(msg);
+        
         if (json["status"].get<std::string>() == "compatible")
         {
             Maxicajero::VersionUtils::Version clientVer = Maxicajero::VersionUtils::Version::fromString(Maxicajero::Version::getVersion());
             Maxicajero::VersionUtils::Version serverVer = Maxicajero::VersionUtils::Version::fromString(json["local_server_version"].get<std::string>());
 
-            if (!Maxicajero::VersionUtils::CompatibilityChecker::isCompatible(clientVer, serverVer, Maxicajero::VersionUtils::CompatibilityChecker::Policy::BACKWARD))
-            {
-                Global::Widget::reveal_toast("Versión cliente (" + clientVer.toString() + ") incompatible con el servidor (" + serverVer.toString() + ")", (Gtk::MessageType)3, 10000);
+            Glib::signal_idle().connect_once([this, clientVer, serverVer]() {
+                if (!Maxicajero::VersionUtils::CompatibilityChecker::isCompatible(clientVer, serverVer, Maxicajero::VersionUtils::CompatibilityChecker::Policy::BACKWARD))
+                {
+                    Global::Widget::reveal_toast("Versión cliente (" + clientVer.toString() + ") incompatible con el servidor (" + serverVer.toString() + ")", (Gtk::MessageType)3, 10000);
+                    Global::System::URL.clear();
+                    v_menu_status->set_label("Desconectado");
+                    v_menu_status->set_css_classes({"destructive-action"});
+                    ws.close();
+                    return;
+                }
+
+                g_info("Versión compatible con el servidor.");
+                v_menu_status->set_label("Conectado");
+                v_menu_status->set_css_classes({"suggested-action"});
+                Global::Widget::v_revealer->set_reveal_child(false);
+            });
+        }
+        else
+        {
+            Glib::signal_idle().connect_once([this]() {
+                Global::Widget::reveal_toast("Versión incompatible con el servidor", (Gtk::MessageType)3, 10000);
                 Global::System::URL.clear();
                 v_menu_status->set_label("Desconectado");
                 v_menu_status->set_css_classes({"destructive-action"});
                 ws.close();
-                return;
-            }
-
-            g_info("Versión compatible con el servidor.");
-            v_menu_status->set_label("Conectado");
-            v_menu_status->set_css_classes({"suggested-action"});
-            Global::Widget::v_revealer->set_reveal_child(false);
-        }
-        else
-        {
-            Global::Widget::reveal_toast("Versión incompatible con el servidor", (Gtk::MessageType)3, 10000);
-            Global::System::URL.clear();
-            v_menu_status->set_label("Desconectado");
-            v_menu_status->set_css_classes({"destructive-action"});
-            ws.close();
+            });
         }
     },
-
     [this](const std::string& err) {
-        v_menu_status->set_label("Desconectado");
-        v_menu_status->set_css_classes({"destructive-action"});
-        Global::Widget::reveal_toast(err, (Gtk::MessageType)3, 5000);
+        Glib::signal_idle().connect_once([this, err]() {
+            v_menu_status->set_label("Desconectado");
+            v_menu_status->set_css_classes({"destructive-action"});
+            Global::Widget::reveal_toast(err, (Gtk::MessageType)3, 5000);
+        });
     },
     [](int code, const std::string& reason) {
         std::cout << "Cerrado: " << reason << " (code " << code << ")" << std::endl;

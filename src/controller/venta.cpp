@@ -56,13 +56,27 @@ void Venta::on_btn_enter_clicked()
     v_ety_concepto.set_sensitive(false);
     v_base_nip->v_ety_spin->update();
 
+    ws.connect(Global::System::WS +"/ws/venta",[this]() 
+    {
+        enviar_datos_venta();
+    },
+    [this](const std::string& msg) {
+        manejar_respuesta_servidor(msg);
+    },
+    [this](const std::string& err) {
+        Global::Widget::reveal_toast(Glib::ustring::compose("Error de conexión: %1", err), (Gtk::MessageType)3, 5000);
+    },
+    [this](int code, const std::string& reason) {
+        g_info("Conexión cerrada: %s (código %d)", reason.c_str(), code);
+    }
+    );
+
     auto value = v_base_nip->v_ety_spin->get_value_as_int();
     auto json = nlohmann::json{
         {"value", value},
         {"concepto", v_ety_concepto.get_text()},
         {"is_view_ingreso", is_view_ingreso}};
     auto future = cpr::PostAsync(cpr::Url{Global::System::URL + "accion/inicia_venta"}, Global::Utility::header, cpr::Body{json.dump()});
-
     Global::Utility::consume_and_do(future, [this](const cpr::Response &response)
                                     {
                 if (response.status_code == 200) 
@@ -112,3 +126,46 @@ void Venta::on_map_show()
     v_base_nip->set_sensitive(true);
     v_ety_concepto.set_sensitive(true);
 }
+
+
+// WBSocket methods
+
+void Venta::enviar_datos_venta()
+{
+    auto json = nlohmann::json
+    {
+        {"action", "consulta"}
+    };
+    ws.send(json.dump());
+}
+
+void Venta::manejar_respuesta_servidor(const std::string& respuesta)
+{
+    try {
+        auto json = nlohmann::json::parse(respuesta);
+        std::string status = json["status"].get<std::string>();
+
+        if (status == "idle" || status == "Proceso terminado") {
+            Glib::signal_idle().connect_once([this]() {
+                ws.close();
+                g_info("WebSocket cerrado desde hilo principal");
+            });
+            return; 
+        }
+
+        Glib::signal_idle().connect_once([this, json]() {
+            if (json.contains("total")) {
+                v_box_columns->v_ety_columns[0]->set_text(Glib::ustring::compose("$ %1", json["total"].get<int>()));
+                v_box_columns->v_ety_columns[1]->set_text(Glib::ustring::compose("$ %1", json["ingreso"].get<int>()));
+                v_box_columns->v_ety_columns[2]->set_text(Glib::ustring::compose("$ %1", json["cambio"].get<int>()));
+            }
+        });
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(200));
+        enviar_datos_venta();
+
+    } catch (const std::exception& e) {
+        g_warning("Error respuesta WS: %s", e.what());
+    }
+}
+

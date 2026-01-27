@@ -21,7 +21,6 @@ Glib::RefPtr<Gio::ListStore<MListIp>> ListIp::get_all_ip()
     {
         m_list->append(MListIp::create(std::stoi(contenedor_data->at("id")[i]), contenedor_data->at("ip")[i]));
     }
-
     
     return m_list;
 }
