@@ -1,6 +1,7 @@
 #pragma once
 #include "view/refill.hpp"
 #include "controller/configuracion/impresora.hpp"
+#include "ws_client.hpp"
 
 
 class Refill : public VRefill
@@ -18,6 +19,12 @@ private:
     void poll_alerta_niveles();
     void alerta_niveles(const nlohmann::json &json);
     
+    //wbsocket
+    IXWSClient ws;
+    
+    void enviar_datos();
+    void manejar_respuesta_servidor(const std::string& respuesta);
+
 public: 
     Refill(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuilder);
     ~Refill();

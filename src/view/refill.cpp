@@ -69,8 +69,7 @@ void VRefill::on_bind_ingreso(const Glib::RefPtr<Gtk::ListItem> &list_item)
 	auto col = std::dynamic_pointer_cast<MLevelCash>(list_item->get_item());
 	auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
 
-  ///@todo por ahora solo muestra el ingreso por denominacion, despues cambiar para que muestre el ingreso total
-	label->set_text(Glib::ustring::format(col->m_ingreso * col->m_denominacion));
+	label->set_text(Glib::ustring::format(col->m_ingreso));
 }
 
 void VRefill::on_bind_ingreso_total(const Glib::RefPtr<Gtk::ListItem> &list_item)
@@ -78,7 +77,7 @@ void VRefill::on_bind_ingreso_total(const Glib::RefPtr<Gtk::ListItem> &list_item
 	auto col = std::dynamic_pointer_cast<MLevelCash>(list_item->get_item());
 	auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
 
-	label->set_text(Glib::ustring::format(col->m_ingreso));
+	label->set_text(Glib::ustring::format(col->m_ingreso * col->m_denominacion));
 }
 
 void VRefill::on_bind_inmo(const Glib::RefPtr<Gtk::ListItem> &list_item)

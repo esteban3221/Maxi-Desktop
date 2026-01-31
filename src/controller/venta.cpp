@@ -22,16 +22,10 @@ void Venta::on_btn_cancelar_clicked()
     {
         if (response_id == Gtk::ResponseType::OK)
         {
-            auto future = cpr::GetAsync(cpr::Url{Global::System::URL + "accion/detiene_venta"}, Global::Utility::header);
-            Global::Utility::consume_and_do(future, [this](const cpr::Response &response)
-            {
-                if (response.status_code == 200) 
-                    Global::Widget::reveal_toast(Glib::ustring::compose("<span weight=\"bold\"> %1 Cancelada </span>", is_view_ingreso ? "Ingreso" : "Venta"), Gtk::MessageType::OTHER);
-                else 
-                    Global::Widget::reveal_toast(Glib::ustring::compose("Error al cancelar la %1: %2", is_view_ingreso ? "ingreso" : "venta", response.text), (Gtk::MessageType)3);
+            ws.send(nlohmann::json{{"action", "detener"}}.dump());
+            Global::Widget::reveal_toast(Glib::ustring::compose("<span weight=\"bold\"> %1 Cancelada </span>", is_view_ingreso ? "Ingreso" : "Venta"), Gtk::MessageType::OTHER);
                 
-                set_sensitive(true); 
-            });
+            set_sensitive(true); 
         }
         v_dialog->close();
     });
