@@ -25,8 +25,7 @@ endif()
 find_package(PkgConfig REQUIRED)
 find_package(cpr REQUIRED)
 find_package(ZLIB REQUIRED)
-find_path(IXWEBSOCKET_INCLUDE_DIR ixwebsocket/IXWebSocket.h)
-find_library(IXWEBSOCKET_LIBRARY ixwebsocket)
+find_package(ixwebsocket REQUIRED)
 pkg_check_modules(MZIP minizip REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(nlohmann_json 3.11.3 REQUIRED)
@@ -120,6 +119,12 @@ add_subdirectory(lib/Sqlit3-cpp-lib/)
 
 if(WIN32)
 add_executable(Maxicajero ${SOURCES}  ${APP_ICON_RESOURCE})
+target_link_libraries(Maxicajero
+        PUBLIC
+        ws2_32
+        wldap32
+        crypt32
+    )
 else()
     add_executable(Maxicajero ${SOURCES})
 endif()
@@ -134,12 +139,14 @@ target_link_libraries(Maxicajero
                         PUBLIC 
                         Sqlite-cpp
                         nlohmann_json::nlohmann_json 
+                        ixwebsocket::ixwebsocket
                         OpenSSL::SSL
+                        OpenSSL::Crypto
                         ${GTKMM_LIBRARIES} 
-                        ${ZLIB_LIBRARIES}
                         ${MINIZIP_LIBRARY}
                         ${MZIP_LIBRARIES}
                         ${IXWEBSOCKET_LIBRARY}
+                        ZLIB::ZLIB
                         cpr::cpr
 )
 target_include_directories(Maxicajero PRIVATE ${GTKMM_INCLUDE_DIRS})
