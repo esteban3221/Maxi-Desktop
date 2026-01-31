@@ -119,7 +119,7 @@ class CompatibilityChecker {
 public:
     // Política de compatibilidad
     enum class Policy {
-        STRICT,      // Versiones exactamente iguales
+        EXACT,       // Versiones exactamente iguales
         BACKWARD,    // Cliente <= Servidor
         FORWARD,     // Cliente >= Servidor
         RANGE,       // Versión mínima y máxima
@@ -131,7 +131,7 @@ public:
                             const Version& serverVersion,
                             Policy policy = Policy::BACKWARD) {
         switch (policy) {
-            case Policy::STRICT:
+            case Policy::EXACT:
                 return clientVersion == serverVersion;
                 
             case Policy::BACKWARD:
@@ -180,7 +180,7 @@ public:
                     oss << "El cliente debe ser versión " << serverVersion.toString()
                         << " o posterior.";
                     break;
-                case Policy::STRICT:
+                case Policy::EXACT:
                     oss << "Se requiere versión exacta " << serverVersion.toString() << ".";
                     break;
                 case Policy::MAJOR_ONLY:
