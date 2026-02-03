@@ -18,6 +18,11 @@ VConfiguracion::VConfiguracion(/* args */)
 
     append_page(*empresa,"Empresa");
 
+    builder = Gtk::Builder::create_from_string(View::Conf::terminal_ui);
+    auto terminal = Gtk::Builder::get_widget_derived<Terminal>(builder, "box_terminales");
+
+    append_page(*terminal,"Terminales");
+
     builder = Gtk::Builder::create_from_string(View::Conf::impresora_ui);
     auto impresora = Gtk::Builder::get_widget_derived<Impresora>(builder, "box_config_impresora");
 

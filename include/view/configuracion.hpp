@@ -7,6 +7,7 @@
 #include "controller/configuracion/impresora.hpp"
 #include "controller/configuracion/empresa.hpp"
 #include "controller/configuracion/usuarios.hpp"
+#include "controller/configuracion/terminal.hpp"
 
 class VConfiguracion : public Gtk::Notebook
 {

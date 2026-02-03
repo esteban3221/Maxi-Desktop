@@ -54,9 +54,6 @@ set(SOURCES
     src/model/configuracion.cpp
     src/model/list_ip.cpp
     #===================VIEW====================
-    src/view/bloq_num.cpp
-    src/view/box_columns.cpp
-
     src/view/titlebar.cpp
     src/view/login.cpp
     src/view/menu.cpp
@@ -74,6 +71,13 @@ set(SOURCES
     src/view/configuracion/empresa.cpp
     src/view/configuracion/usuarios.cpp
     src/view/configuracion/impresora.cpp
+
+    #===============COMPONENTES================
+    src/view/bloq_num.cpp
+    src/view/box_columns.cpp
+    src/view/configuracion/c_card_mp.cpp
+    src/view/configuracion/terminal.cpp
+
     # #================CONTROLLER=================
     src/controller/main_window.cpp
     src/controller/titlebar.cpp
@@ -94,6 +98,7 @@ set(SOURCES
     src/controller/configuracion/empresa.cpp
     src/controller/configuracion/usuarios.cpp
     src/controller/configuracion/impresora.cpp
+    src/controller/configuracion/terminal.cpp
 
     src/controller/configuracion/print_operation.cpp
     #================GLOBAL=================
@@ -105,6 +110,7 @@ include_directories(include
                     include/controller/accion
                     include/view
                     include/view/config
+                    include/view/configuracion/
                     include/db
                     include/model
                     include/shared

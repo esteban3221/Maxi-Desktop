@@ -1,5 +1,4 @@
 #include "controller/configuracion/usuarios.hpp"
-#include "usuarios.hpp"
 
 CUsuarios::CUsuarios(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuilder) : VUsuarios(cobject, refBuilder)
 {
@@ -11,8 +10,7 @@ CUsuarios::CUsuarios(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &
     v_btn_eliminar->signal_clicked().connect(sigc::mem_fun(*this, &CUsuarios::on_btn_delete_clicked));
 
     v_chk_todos_roles->signal_toggled().connect(sigc::mem_fun(*this, &CUsuarios::on_checkbox_main_toggled));
-    for (auto &&i : v_chk_roles)
-        i->signal_toggled().connect(sigc::mem_fun(*this, &CUsuarios::state_group_checkbox));
+    for (auto &&i : v_chk_roles) i->signal_toggled().connect(sigc::mem_fun(*this, &CUsuarios::state_group_checkbox));
     
     v_btn_guardar_roles->signal_clicked().connect(sigc::mem_fun(*this, &CUsuarios::on_btn_guardar_roles_clicked));
 }
@@ -49,7 +47,7 @@ void CUsuarios::actualiza_data(const Glib::RefPtr<Gtk::SelectionModel> &selectio
 
 void CUsuarios::on_show_map()
 {
-    auto future = cpr::GetAsync(cpr::Url{Global::System::URL , "sesion/get_all_users"}, Global::Utility::header);
+    auto future = cpr::GetAsync(cpr::Url{Global::System::URL, "sesion/get_all_users"}, Global::Utility::header);
     Global::Utility::consume_and_do(future, [this](const cpr::Response &response)
     {
         if (response.status_code == 200)
@@ -76,7 +74,7 @@ void CUsuarios::on_row_activated(guint id)
     auto single_selection = std::dynamic_pointer_cast<Gtk::SingleSelection>(v_treeview->get_model());
     auto m_list = single_selection->get_typed_object<const MUsuarios>(id);
 
-    auto future = cpr::PostAsync(cpr::Url{Global::System::URL , "sesion/get_all_roles_by_id"},Global::Utility::header, cpr::Body
+    auto future = cpr::PostAsync(cpr::Url{Global::System::URL, "sesion/get_all_roles_by_id"},Global::Utility::header, cpr::Body
     {
         "{ \"id_usuario\" : " + std::to_string(m_list->m_id) + "}"
     });
@@ -215,7 +213,7 @@ void CUsuarios::on_dialog_btn_edit_clicked()
         {"password", v_entry_contrasena->get_text()}
     };
 
-    auto future = cpr::PostAsync(cpr::Url{Global::System::URL , "sesion/modifica_usuario"},Global::Utility::header, cpr::Body{json.dump()});
+    auto future = cpr::PostAsync(cpr::Url{Global::System::URL, "sesion/modifica_usuario"},Global::Utility::header, cpr::Body{json.dump()});
 
     Global::Utility::consume_and_do(future, [this](const cpr::Response &response)
     {
@@ -226,11 +224,7 @@ void CUsuarios::on_dialog_btn_edit_clicked()
             v_dialog->close();
         }
         else
-        {
-            
             Global::Widget::reveal_toast("No tiene permisos para acceder a esta seccion", (Gtk::MessageType)3);
-        }
-        
     });
 
 
@@ -243,7 +237,6 @@ void CUsuarios::on_dialog_btn_delete_clicked(int response)
         auto row = v_treeview->get_model()->get_selection()->get_minimum();
         if (row == -1)
         {
-            
             Global::Widget::reveal_toast("Seleccione un usuario para eliminar", Gtk::MessageType::WARNING);
             return;
         }
@@ -256,7 +249,7 @@ void CUsuarios::on_dialog_btn_delete_clicked(int response)
             {"id", m_list->m_id}
         };
 
-        auto future = cpr::PostAsync(cpr::Url{Global::System::URL , "sesion/baja_usuario"},Global::Utility::header, cpr::Body{json.dump()});
+        auto future = cpr::PostAsync(cpr::Url{Global::System::URL, "sesion/baja_usuario"},Global::Utility::header, cpr::Body{json.dump()});
 
         Global::Utility::consume_and_do(future, [this](const cpr::Response &response)
         {
@@ -268,43 +261,27 @@ void CUsuarios::on_dialog_btn_delete_clicked(int response)
                 v_dialog->close();
             }
             else
-            {
-                
                 Global::Widget::reveal_toast(response.text);
-            }
-            
         });
     }
     else
-    {
         v_dialog->close();
-    }
     
 }
 
 void CUsuarios::on_checkbox_main_toggled()
 {
-    if (v_chk_todos_roles->get_active())
-    {
-        for (auto &&i : v_chk_roles)
+    if (v_chk_todos_roles->get_active()) for (auto &&i : v_chk_roles)
             i->set_active();
-    }
-    else
-    {
-        for (auto &&i : v_chk_roles)
+    else for (auto &&i : v_chk_roles)
             i->set_active(false);
-    }
-    
 }
 
 void CUsuarios::state_group_checkbox()
 {
     int count = 0;
-    for (auto &&i : v_chk_roles)
-    {
-        if (i->get_active())
+    for (auto &&i : v_chk_roles)if (i->get_active())
             count++;
-    }
     if (count == 19)
     {
         v_chk_todos_roles->set_active();
@@ -338,21 +315,14 @@ void CUsuarios::on_btn_guardar_roles_clicked()
             json["roles"].push_back(i + 1);
     }
 
-    auto future = cpr::PostAsync(cpr::Url{Global::System::URL , "sesion/modifica_usuario_roles"},Global::Utility::header, cpr::Body{json.dump()});
+    auto future = cpr::PostAsync(cpr::Url{Global::System::URL, "sesion/modifica_usuario_roles"},Global::Utility::header, cpr::Body{json.dump()});
 
     Global::Utility::consume_and_do(future, [this](const cpr::Response &response)
     {
         if (response.status_code == 200)
-        {
-            
             Global::Widget::reveal_toast("Roles guardados correctamente");
-        }
         else
-        {
-            
             Global::Widget::reveal_toast("No tiene permisos para acceder a esta seccion", (Gtk::MessageType)3);
-        }
-        
     });
 }
 
@@ -364,7 +334,7 @@ void CUsuarios::on_dialog_btn_add_clicked()
         return;
     }
 
-    auto future = cpr::PostAsync(cpr::Url{Global::System::URL , "sesion/alta_usuario"},Global::Utility::header, cpr::Body
+    auto future = cpr::PostAsync(cpr::Url{Global::System::URL, "sesion/alta_usuario"},Global::Utility::header, cpr::Body
     {
         "{ \"username\" : \"" + v_entry_usuario->get_text() + "\", \"password\" : \"" + v_entry_contrasena->get_text() + "\"}"
     });
