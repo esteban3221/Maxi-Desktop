@@ -22,6 +22,7 @@ if (WIN32)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -mwindows")
 endif()
 
+find_package(Threads REQUIRED)
 find_package(PkgConfig REQUIRED)
 find_package(cpr REQUIRED)
 find_package(ZLIB REQUIRED)

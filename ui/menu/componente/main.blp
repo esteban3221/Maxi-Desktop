@@ -1,0 +1,124 @@
+using Gtk 4.0;
+
+Box box_form {
+  margin-bottom: 5;
+  margin-top: 5;
+  margin-start: 5;
+  margin-end: 5;
+  orientation: vertical;
+  spacing: 10;
+  
+        Box {
+        orientation: horizontal;
+        homogeneous: false;
+
+        Button btn_close_rvl {
+          halign: start;
+          valign: center;
+          icon-name: "close";
+
+          styles [
+            "circular",
+            "destructive-action",
+          ]
+        }
+
+        Label lbl_titulo_rvl {
+        hexpand: true;
+          halign: center;
+          valign: center;
+          label: _("Agregar Nueva Terminal");
+
+          styles [
+            "title-2",
+          ]
+        }
+      }
+
+  Box {
+    homogeneous: true;
+
+    Label {
+      label: _("<b>Primera vez configurando una terminal Point?</b>\nCrea una aplicación en Mercado Pago y genera tu Access Token.");
+      use-markup: true;
+      wrap: true;
+
+      styles [
+        "title-5",
+      ]
+    }
+
+    LinkButton {
+      halign: end;
+      label: _("Crear aplicación");
+      uri: "https://www.mercadopago.com.mx/developers/es/docs/mp-point/create-application";
+    }
+  }
+
+  Box {
+    spacing: 5;
+
+    Entry ety_token {
+      hexpand: true;
+      placeholder-text: _("Access Token");
+      truncate-multiline: true;
+      tooltip-text: _("Ingrese el Access Token generada en su aplicación");
+    }
+
+    Button btn_verifica_token {
+      label: _("Consultar");
+
+      styles [
+        "pill",
+        "suggested-action",
+      ]
+    }
+  }
+
+  Box {
+    orientation: vertical;
+
+    ScrolledWindow {
+      hexpand: true;
+      vexpand: true;
+
+      ListBox list_terminales {
+        styles [
+          "boxed-list",
+          "rich-list",
+        ]
+      }
+    }
+
+    Label lbl_total_terminales {
+      halign: start;
+      label: _("Total Terminales Encontradas: 0");
+
+      styles [
+        "dim-label",
+      ]
+    }
+
+    Entry ety_alias {
+      margin-top: 10;
+      placeholder-text: _("Alias (Opcional)");
+    }
+
+    Entry ety_descripcion {
+      placeholder-text: _("Descripcion (Opcional)");
+    }
+
+    Button btn_agregar {
+      margin-top: 10;
+      halign: fill;
+      hexpand: true;
+      label: _("Añadir terminal seleccionada");
+      sensitive: false;
+
+      styles [
+        "pill",
+        "suggested-action",
+      ]
+    }
+  }
+}
