@@ -7,17 +7,19 @@ VCardMP::VCardMP(const Glib::ustring& titulo,
     m_content_box.set_margin(12);
     m_content_box.set_spacing(10);
     set_child(m_content_box);
+    set_halign(Gtk::Align::CENTER);
+    set_valign(Gtk::Align::START);
 
     m_lbl_titulo = Gtk::make_managed<Gtk::Label>();
     m_lbl_titulo->set_markup("<b><big>" + Glib::Markup::escape_text(titulo) + "</big></b>");
     m_lbl_titulo->set_halign(Gtk::Align::CENTER);
-    m_lbl_titulo->set_ellipsize(Pango::EllipsizeMode::END);
+    m_lbl_titulo->set_ellipsize(Pango::EllipsizeMode::MIDDLE);
     m_content_box.append(*m_lbl_titulo);
 
     m_lbl_tipo = Gtk::make_managed<Gtk::Label>();
     m_lbl_tipo->add_css_class("caption");
     m_lbl_tipo->set_opacity(0.7);
-    m_lbl_tipo->set_halign(Gtk::Align::CENTER);
+    m_lbl_tipo->set_halign(Gtk::Align::START);
     m_content_box.append(*m_lbl_tipo);
 
     m_sep1 = Gtk::make_managed<Gtk::Separator>(Gtk::Orientation::HORIZONTAL);

@@ -18,11 +18,12 @@ class VTerminal : public Gtk::Box
     private:
         Glib::RefPtr<Gtk::Builder> m_builder;
 
-    protected:
+    public:
         Gtk::Entry *v_ety_token{nullptr};
         Gtk::Entry *v_ety_alias{nullptr};
         Gtk::Entry *v_ety_descripcion{nullptr};
         Gtk::Button *v_btn_verifica_token{nullptr};
+        Gtk::DropDown *v_drop_tipo{nullptr};
         Gtk::ListBox *v_list_terminales{nullptr};
         Gtk::Label *v_lbl_total_terminales{nullptr};
         Gtk::Button *v_btn_agregar{nullptr};
@@ -32,11 +33,12 @@ class VTerminal : public Gtk::Box
         {
         public:
             Gtk::Label *v_titulo;
+            //Modo
+            Gtk::Label *v_subtitulo;
             Row(const std::string &titulo,const std::string &subtitulo);
             ~Row();
         private:
-            //Modo
-            Gtk::Label *v_subtitulo;
+            
             Gtk::Image *v_image_pos;
             Gtk::Box *v_box;
         }; // Row
@@ -47,6 +49,27 @@ class VTerminal : public Gtk::Box
         ~VFormTerminal();
     }; // VFormTerminal
 
+    class VDetailsTerminal : public Gtk::Box
+    {
+    private:
+        Glib::RefPtr<Gtk::Builder> m_builder;
+    public:
+        Gtk::Button *v_btn_close_rvl{nullptr};
+        Gtk::DropDown *v_drop_tipo{nullptr};
+        Gtk::DropDown *v_drop_modo{nullptr};
+        Gtk::Entry *v_ety_alias{nullptr};
+        Gtk::EditableLabel *v_ety_descripcion{nullptr};
+        Gtk::CheckButton *v_chk_predeterminado{nullptr};
+        Gtk::Label *v_lbl_fecha_creacion{nullptr};
+
+        Gtk::Button *v_btn_guardar{nullptr};
+        Gtk::Button *v_btn_eliminar{nullptr};
+
+        VDetailsTerminal(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuilder);
+        ~VDetailsTerminal();
+    };
+
+    
     public:
     VTerminal(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuilder);
     ~VTerminal();
@@ -56,6 +79,7 @@ namespace View
 {
     namespace Conf
     {
+        extern const char *details_terminal_ui;
         extern const char *terminal_ui;
         extern const char *form_terminal_ui;
     } // namespace Conf
