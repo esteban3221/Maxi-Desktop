@@ -82,7 +82,7 @@ void Terminal::on_btn_guardar_detail_clicked()
         {"predeterminado", details_terminal->v_chk_predeterminado->get_active()}
     };
 
-    auto future = cpr::PutAsync(cpr::Url{Global::System::URL + "terminales/editar" + details_terminal->v_lbl_titulo->get_text()},
+    auto future = cpr::PostAsync(cpr::Url{Global::System::URL + "terminales/editar"},
                                 cpr::Header{{"Content-Type", "application/json"}},
                                 cpr::Body{json_body.dump()});
     Global::Utility::consume_and_do(future, [this](cpr::Response response)    {
