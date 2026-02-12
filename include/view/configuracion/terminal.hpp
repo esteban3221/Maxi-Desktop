@@ -61,6 +61,7 @@ class VTerminal : public Gtk::Box
         Gtk::EditableLabel *v_ety_descripcion{nullptr};
         Gtk::CheckButton *v_chk_predeterminado{nullptr};
         Gtk::Label *v_lbl_fecha_creacion{nullptr};
+        Gtk::Label *v_lbl_titulo{nullptr};
 
         Gtk::Button *v_btn_guardar{nullptr};
         Gtk::Button *v_btn_eliminar{nullptr};

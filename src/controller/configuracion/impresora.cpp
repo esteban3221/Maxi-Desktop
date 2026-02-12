@@ -424,6 +424,7 @@ namespace Global
 
                 auto p_size = m_refSettings->get_paper_size();
                 p_size.set_size(297, 80, Gtk::Unit::MM);
+                m_refPageSetup->set_paper_size(p_size);
                               
                 m_refPrintFormOperation->set_default_page_setup(m_refPageSetup);
                 m_refPrintFormOperation->set_print_settings(m_refSettings);
@@ -433,14 +434,29 @@ namespace Global
                     m_refPrintFormOperation->run(Gtk::PrintOperation::Action::PRINT, *Global::Widget::v_main_window);
                     m_refPrintFormOperation->signal_done().connect([](Gtk::PrintOperation::Result result)
                     {
-                        Global::Widget::reveal_toast("Impresion realizada correctamente");
+                        switch (result)
+                        {
+                        case Gtk::PrintOperation::Result::ERROR:
+                            Global::Widget::reveal_toast("Error al imprimir",(Gtk::MessageType)3);
+                            break;
+                        case Gtk::PrintOperation::Result::IN_PROGRESS:
+                            Global::Widget::reveal_toast("La impresion esta tardando mas de lo usual");
+                            break;
+                        case Gtk::PrintOperation::Result::APPLY:
+                            Global::Widget::reveal_toast("Impresion Completada");
+                            break;
+                        case Gtk::PrintOperation::Result::CANCEL:
+                            Global::Widget::reveal_toast("Impresion Cancelada por sistema o usuario de manera externa");
+                            break;
+                        default:
+                            break;
+                        }
                     });
                 }
                 catch (const Gtk::PrintError &ex)
                 {
                     Global::Widget::reveal_toast(ex.what(), (Gtk::MessageType)3);
-                    std::cerr << "An error occurred while trying to run a print operation:"
-                              << ex.what() << std::endl;
+                    std::cerr << "An error occurred while trying to run a print operation:" << ex.what() << std::endl;
                 }
                 
             }

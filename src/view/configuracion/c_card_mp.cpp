@@ -77,3 +77,11 @@ void VCardMP::set_icon_name(const Glib::ustring& icon_name)
 {
     if (m_image) m_image->set_from_icon_name(icon_name);
 }
+
+Glib::ustring &VCardMP::property_id(){return this->m_id;}
+Glib::ustring &VCardMP::property_tipo(){return this->m_tipo;}
+Glib::ustring &VCardMP::property_alias(){return m_alias;}
+Glib::ustring &VCardMP::property_descripcion(){return m_descripcion;}
+Glib::DateTime &VCardMP::property_fecha_creado(){return m_fecha_creado;}
+Glib::ustring &VCardMP::property_modo(){return m_modo;}
+bool &VCardMP::property_predeterminado(){return m_predeterminado;}

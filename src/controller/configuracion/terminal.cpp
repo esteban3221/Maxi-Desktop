@@ -8,6 +8,9 @@ Terminal::Terminal(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &re
     auto detail_terminal_builder = Gtk::Builder::create_from_string(View::Conf::details_terminal_ui);
     details_terminal = detail_terminal_builder->get_widget_derived<VTerminal::VDetailsTerminal>(detail_terminal_builder, "box_details");
     details_terminal->v_btn_close_rvl->signal_clicked().connect(sigc::mem_fun(*this, &Terminal::on_button_close_rvl_clicked));
+    details_terminal->v_btn_guardar->signal_clicked().connect(sigc::mem_fun(*this, &Terminal::on_btn_guardar_detail_clicked));
+    details_terminal->v_btn_eliminar->signal_clicked().connect(sigc::mem_fun(*this, &Terminal::on_btn_eliminar_detail_clicked));
+    details_terminal->v_drop_modo->property_selected().signal_changed().connect(sigc::mem_fun(*this, &Terminal::on_drop_modo_changed));
 
     auto form_terminal_builder = Gtk::Builder::create_from_string(View::Conf::form_terminal_ui);
     form_terminal = form_terminal_builder->get_widget_derived<VTerminal::VFormTerminal>(form_terminal_builder, "box_form");
@@ -40,7 +43,15 @@ void Terminal::on_show_map()
                 card->set_alias(i["alias"].get<std::string>());
                 card->set_descripcion(i["descripcion"].get<std::string>());
 
-                card->signal_clicked().connect(sigc::mem_fun(*this, &Terminal::on_card_mp_clicked));
+                card->property_id() = i["id"].get<std::string>();
+                card->property_tipo() = i["tipo"].get<std::string>();
+                card->property_alias() = i["alias"].get<std::string>();
+                card->property_descripcion() = i["descripcion"].get<std::string>();
+                card->property_fecha_creado() = Glib::DateTime::create_from_iso8601(i["fecha_creado"].get<std::string>());
+                card->property_modo() = i["modo"].get<std::string>();
+                card->property_predeterminado() = i["predeterminado"].get<bool>();
+
+                card->signal_clicked().connect(sigc::bind(sigc::mem_fun(*this, &Terminal::on_card_mp_clicked), card));
 
                 v_flow_terminals->append(*card);
             }
@@ -59,11 +70,127 @@ void Terminal::on_button_add_clicked()
     v_btn_add_terminal->set_visible(false);
 }
 
-void Terminal::on_card_mp_clicked()
+
+void Terminal::on_btn_guardar_detail_clicked()
+{
+    auto json_body = nlohmann::json{
+        {"id", details_terminal->v_lbl_titulo->get_text()},
+        {"alias", details_terminal->v_ety_alias->get_text()},
+        {"descripcion", details_terminal->v_ety_descripcion->get_text()},
+        {"tipo", std::dynamic_pointer_cast<Gtk::StringObject>(details_terminal->v_drop_tipo->get_selected_item())->get_string()},
+        {"modo", std::dynamic_pointer_cast<Gtk::StringObject>(details_terminal->v_drop_modo->get_selected_item())->get_string()},
+        {"predeterminado", details_terminal->v_chk_predeterminado->get_active()}
+    };
+
+    auto future = cpr::PutAsync(cpr::Url{Global::System::URL + "terminales/editar" + details_terminal->v_lbl_titulo->get_text()},
+                                cpr::Header{{"Content-Type", "application/json"}},
+                                cpr::Body{json_body.dump()});
+    Global::Utility::consume_and_do(future, [this](cpr::Response response)    {
+        if (response.status_code == 200)
+        {            Global::Widget::reveal_toast("Terminal actualizada con éxito.");
+            on_show_map();
+            on_button_close_rvl_clicked();
+        }
+        else
+        {
+            Global::Widget::reveal_toast("Hubo un error al actualizar la terminal. Por favor, intenta nuevamente.");
+        }
+    });
+}
+
+void Terminal::on_btn_eliminar_detail_clicked()
+{
+    dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window, "Eliminar terminal", false, Gtk::MessageType::QUESTION, Gtk::ButtonsType::YES_NO));
+    dialog->set_secondary_text("¿Estás seguro de que deseas eliminar esta terminal? Esta acción no se puede deshacer.");
+    dialog->set_icon_name("dialog-warning-symbolic");
+    auto alias = details_terminal->v_ety_alias->get_text();
+    auto descripcion = details_terminal->v_ety_descripcion->get_text();
+    dialog->signal_response().connect([this, alias, descripcion](int response_id)
+    {
+        if (response_id == Gtk::ResponseType::YES)
+        {
+            auto json_body = nlohmann::json{
+                {"id", details_terminal->v_lbl_titulo->get_text()}
+            };
+            auto future = cpr::DeleteAsync(cpr::Url{Global::System::URL + "terminales/eliminar"}, cpr::Body{json_body.dump()});
+            Global::Utility::consume_and_do(future, [this, alias, descripcion](cpr::Response response)
+            {
+                if (response.status_code == 200)
+                {
+                    Global::Widget::reveal_toast("Terminal '" + alias + "' eliminada con éxito.");
+                    on_show_map();
+                    on_button_close_rvl_clicked();
+                }
+                else
+                {
+                    Global::Widget::reveal_toast("Hubo un error al eliminar la terminal '" + alias + "'. Por favor, intenta nuevamente.");
+                }
+            });
+        }
+
+        dialog->close();
+    });
+    dialog->show();
+}
+
+void Terminal::on_drop_modo_changed()
+{
+    dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window, "Terminal", false, Gtk::MessageType::QUESTION, Gtk::ButtonsType::OK_CANCEL));
+    dialog->set_secondary_text("¡Atención! Cambiar el modo de operación de la terminal puede afectar su funcionamiento. Si cambias el modo a 'STANDALONE', la terminal dejará de estar asociada a cualquier punto de venta y no podrá ser utilizada para procesar pagos. ¿Deseas continuar?");
+    dialog->set_icon_name("dialog-warning-symbolic");
+    auto ety_acces_token = Gtk::manage(new Gtk::Entry());
+    ety_acces_token->set_placeholder_text("Access Token");
+    dialog->get_content_area()->append(*ety_acces_token);
+    ety_acces_token->set_margin_top(10);
+    dialog->signal_response().connect([this, ety_acces_token](int response_id)
+    {
+        if (response_id == Gtk::ResponseType::OK)
+        {
+            auto selected_modo = std::dynamic_pointer_cast<Gtk::StringObject>(details_terminal->v_drop_modo->get_selected_item())->get_string();
+            cambia_modo_operacion(details_terminal->v_lbl_titulo->get_text(), selected_modo, ety_acces_token->get_text());
+        }
+        dialog->close();
+    });
+    dialog->show();
+}
+
+void Terminal::on_card_mp_clicked(VCardMP *card)
 {
     v_rvl->set_child(*details_terminal);
     v_rvl->set_reveal_child(true);
     v_btn_add_terminal->set_visible(false);
+
+    details_terminal->v_lbl_titulo->set_text(card->property_id());
+    
+    // Find the index of tipo in the dropdown model
+    auto tipo_str = card->property_tipo();
+    auto model = details_terminal->v_drop_tipo->get_model();
+    guint n_items = g_list_model_get_n_items(G_LIST_MODEL(model->gobj()));
+    for (guint i = 0; i < n_items; ++i) {
+        auto item = std::dynamic_pointer_cast<Gtk::StringObject>(model->get_object(i));
+        if (item && item->get_string() == tipo_str) {
+            details_terminal->v_drop_tipo->set_selected(i);
+            break;
+        }
+    }
+    
+    details_terminal->v_ety_alias->set_text(card->property_alias());
+    details_terminal->v_ety_descripcion->set_text(card->property_descripcion());
+    details_terminal->v_lbl_fecha_creacion->set_text(card->property_fecha_creado().format("%Y-%m-%d %H:%M:%S"));
+    
+    // Find the index of modo in the dropdown model
+    auto modo_str = card->property_modo();
+    auto modo_model = details_terminal->v_drop_modo->get_model();
+    guint modo_n_items = g_list_model_get_n_items(G_LIST_MODEL(modo_model->gobj()));
+    for (guint i = 0; i < modo_n_items; ++i) {
+        auto item = std::dynamic_pointer_cast<Gtk::StringObject>(modo_model->get_object(i));
+        if (item && item->get_string() == modo_str) {
+            details_terminal->v_drop_modo->set_selected(i);
+            break;
+        }
+    }
+    
+    details_terminal->v_chk_predeterminado->set_active(card->property_predeterminado());
 }
 
 void Terminal::on_button_close_rvl_clicked()
@@ -127,64 +254,71 @@ void Terminal::on_btn_agregar_clicked()
     auto descripcion = form_terminal->v_ety_descripcion->get_text();
     auto tipo = std::dynamic_pointer_cast<Gtk::StringObject>(form_terminal->v_drop_tipo->get_selected_item())->get_string();
 
-    std::unique_ptr<Gtk::MessageDialog> dialog;
-
     if (modo_operacion_seleccionado == "STANDALONE")
     {
         dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window, "Terminal",false,Gtk::MessageType::QUESTION, Gtk::ButtonsType::YES_NO));
         dialog->set_secondary_text("La terminal seleccionada opera en modo STANDALONE, lo que significa que no se encuentra asociada a ningún punto de venta. ¿Deseas cambiar el modo de operación?");
-        dialog->signal_response().connect([this, alias, descripcion, &dialog](int response_id)
+        dialog->signal_response().connect([this, alias, descripcion](int response_id)
         {
             if (response_id == Gtk::ResponseType::YES)
-                cambia_modo_operacion(id_terminal_seleccionada, "PDV");
+                cambia_modo_operacion(id_terminal_seleccionada, "PDV", form_terminal->v_ety_token->get_text());
 
             dialog->close();
         });
         dialog->show();
     }
 
+    auto agrega_terminal = [this, alias, descripcion, tipo]()
+    {
+        auto json_body = nlohmann::json{
+            {"id", id_terminal_seleccionada},
+            {"alias", alias},
+            {"modo", modo_operacion_seleccionado},
+            {"access_token", form_terminal->v_ety_token->get_text()},
+            {"descripcion", descripcion},
+            {"tipo", tipo}
+        };
+        auto future = cpr::PostAsync(cpr::Url{Global::System::URL + "terminales/nueva"},
+                                     cpr::Header{{"Content-Type", "application/json"}},
+                                     cpr::Body{json_body.dump()});
+        Global::Utility::consume_and_do(future, [this](cpr::Response response)
+        {
+            if (response.status_code == 201)
+            {
+                Global::Widget::reveal_toast("Terminal agregada con éxito.");
+                on_show_map();
+                on_button_close_rvl_clicked();
+            }
+            else
+            {
+                Global::Widget::reveal_toast("Hubo un error al agregar la terminal. Por favor, intenta nuevamente.");
+            }
+        });
+    };
+
     if (alias.empty() || descripcion.empty())
     {
         dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window, "Terminal", false, Gtk::MessageType::QUESTION, Gtk::ButtonsType::YES_NO));
         dialog->set_secondary_text("No se ha ingresado un alias o descripción para la terminal. ¿Deseas agregar la terminal de todas formas?");
-        dialog->signal_response().connect([this, &dialog, alias, descripcion, tipo](int response_id)
+        dialog->signal_response().connect([this, agrega_terminal](int response_id)
         {
             if (response_id == Gtk::ResponseType::NO)
                 return;
             else if (response_id == Gtk::ResponseType::YES)
             {
-                auto json = nlohmann::json
-                {
-                    {"id", id_terminal_seleccionada},
-                    {"alias", alias},
-                    {"tipo", tipo},
-                    {"modo", modo_operacion_seleccionado},
-                    {"descripcion", descripcion}
-                };
-
-                auto future = cpr::PostAsync(cpr::Url{Global::System::URL, "terminales/nueva"},
-                                            cpr::Body{json.dump()});
-                Global::Utility::consume_and_do(future, [this](cpr::Response response)
-                {        
-                    if (response.status_code == 201)
-                    {            
-                        Global::Widget::reveal_toast("Terminal agregada exitosamente");
-                        on_button_close_rvl_clicked();
-                    }
-                    else 
-                        Global::Widget::reveal_toast("Hubo un error al agregar la terminal. Por favor, Revise los datos ingresados e intente nuevamente.");
-                });
-                
-                on_button_close_rvl_clicked();
+                agrega_terminal();
             }
             
             dialog->close();
         });
         dialog->show();
     }
+    else
+        agrega_terminal();
+    
 }
 
-void Terminal::cambia_modo_operacion(const Glib::ustring &id, const Glib::ustring &modo_operacion)
+void Terminal::cambia_modo_operacion(const Glib::ustring &id, const Glib::ustring &modo_operacion, const std::string &acces_token)
 {
     auto body = cpr::Body{R"( { "terminals": [
         {
@@ -193,7 +327,7 @@ void Terminal::cambia_modo_operacion(const Glib::ustring &id, const Glib::ustrin
         }
     ]})"};
     auto future = cpr::PostAsync(cpr::Url{"https://api.mercadopago.com/terminals/v1/setup"},
-                                 cpr::Header{{"Authorization", "Bearer " + form_terminal->v_ety_token->get_text()}},
+                                 cpr::Header{{"Authorization", "Bearer " + acces_token}},
                                  body);
 
     Global::Utility::consume_and_do(future, [this](cpr::Response response)

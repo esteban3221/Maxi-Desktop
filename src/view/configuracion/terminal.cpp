@@ -32,6 +32,7 @@ VTerminal::VFormTerminal::~VFormTerminal()
 
 VTerminal::VDetailsTerminal::VDetailsTerminal(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuilder) : m_builder(refBuilder), Gtk::Box(cobject)
 {
+  v_lbl_titulo = m_builder->get_widget<Gtk::Label>("lbl_titulo_rvl");
   v_btn_close_rvl = m_builder->get_widget<Gtk::Button>("btn_close_rvl");
   v_drop_tipo = m_builder->get_widget<Gtk::DropDown>("drop_tipo");
   v_drop_modo = m_builder->get_widget<Gtk::DropDown>("drop_modo");
@@ -181,6 +182,7 @@ namespace View
                         </child>
                         <child>
                           <object class="GtkButton" id="btn_edit_modo">
+                          <property name="visible">false</property>
                             <property name="child">
                               <object class="GtkImage">
                                 <property name="icon-name">edit-symbolic</property>
