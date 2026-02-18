@@ -20,7 +20,8 @@ private:
         {
             this->sqlite3->command("CREATE TABLE ip (\n"
                                    "id INTEGER PRIMARY KEY AUTOINCREMENT,\n"
-                                   "ip TEXT NOT NULL UNIQUE\n"
+                                   "ip TEXT NOT NULL UNIQUE,\n"
+                                   "predeterminado INTEGER NOT NULL DEFAULT 0\n"
                                    ")");
 
             this->sqlite3->command("CREATE TABLE configuracion (\n"

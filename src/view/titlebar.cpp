@@ -5,7 +5,7 @@ VTitlebar::VTitlebar(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &
 {
     v_ety_servidor = m_builder->get_widget<Gtk::Entry>("ety_servidor");
     v_list_ip = m_builder->get_widget<Gtk::ListBox>("list_ip");
-    v_btn_regresar = m_builder->get_widget<Gtk::Button>("btn_regresar");
+    //v_btn_regresar = m_builder->get_widget<Gtk::Button>("btn_regresar");
     v_menu_status = m_builder->get_widget<Gtk::MenuButton>("menu_status");
     v_menu_titlebar = m_builder->get_widget<Gtk::MenuButton>("menu_titlebar");
     v_popover_titlebar = m_builder->get_widget<Gtk::Popover>("popover_titlebar");
@@ -19,13 +19,16 @@ VTitlebar::~VTitlebar()
 {
 }
 
-VTitlebar::ListItem::ListItem(const Glib::RefPtr<MListIp> &list_ip)
+VTitlebar::ListItem::ListItem(const Glib::RefPtr<MListIp> &list_ip) : m_id(list_ip->m_id), m_ip(list_ip->m_ip)
 {
     auto box = Gtk::manage(new Gtk::Box());
     auto lbl_ip = Gtk::manage(new Gtk::Label(list_ip->m_ip));
     auto btn_del = Gtk::manage(new Gtk::Button());
-    
+    img_select = Gtk::manage(new Gtk::Image());
+    img_select->set_from_icon_name("emblem-default-symbolic");
+    img_select->set_visible(list_ip->m_selected);
 
+    box->append(*img_select);
     box->append(*lbl_ip);
     box->append(*btn_del);
 
@@ -38,7 +41,7 @@ VTitlebar::ListItem::ListItem(const Glib::RefPtr<MListIp> &list_ip)
     btn_del->signal_clicked().connect([this, list_ip]() 
     {
         auto bd = std::make_unique<ListIp>();
-        bd->delete_ip(list_ip);
+        bd->delete_ip(list_ip->m_id);
         ((Gtk::ListBox *)get_parent())->remove(*this);
     });
 
@@ -70,12 +73,14 @@ namespace View
     </child>
     <child type="end">
       <object class="GtkBox">
+      <!--
         <child>
           <object class="GtkButton" id="btn_regresar">
             <property name="icon-name">go-previous-symbolic</property>
             <property name="tooltip-markup">Cerrar Sesion (Crtl d)</property>
           </object>
         </child>
+      -->
         <child type="end">
           <object class="GtkMenuButton" id="menu_titlebar">
             <property name="icon-name">open-menu-symbolic</property>
@@ -108,10 +113,12 @@ namespace View
         <attribute name="action">app.quit</attribute>
         <attribute name="label" translatable="yes">Quit App</attribute>
       </item>
+      <!--
       <item>
         <attribute name="action">app.volcadolog</attribute>
         <attribute name="label">Volcar datos de Aplicación</attribute>
       </item>
+      -->
     </section>
   </menu>
   <object class="GtkPopover" id="popover_titlebar">

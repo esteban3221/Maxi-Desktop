@@ -50,65 +50,60 @@ void Venta::on_btn_enter_clicked()
     v_ety_concepto.set_sensitive(false);
     v_base_nip->v_ety_spin->update();
 
-    ws.connect(Global::System::WS +"/ws/venta",[this]() 
-    {
-        enviar_datos_venta();
-    },
-    [this](const std::string& msg) {
-        manejar_respuesta_servidor(msg);
-    },
+    ws.connect(Global::System::WS +"/ws/venta",
+    sigc::mem_fun(*this, &Venta::enviar_datos_venta),
+    sigc::mem_fun(*this, &Venta::manejar_respuesta_servidor),
     [this](const std::string& err) {
         Global::Widget::reveal_toast(Glib::ustring::compose("Error de conexión: %1", err), (Gtk::MessageType)3, 5000);
     },
     [this](int code, const std::string& reason) {
         g_info("Conexión cerrada: %s (código %d)", reason.c_str(), code);
-    }
-    );
+    });
 
     auto value = v_base_nip->v_ety_spin->get_value_as_int();
-    auto json = nlohmann::json{
+    auto json = nlohmann::json
+    {
         {"value", value},
         {"concepto", v_ety_concepto.get_text()},
-        {"is_view_ingreso", is_view_ingreso}};
+        {"is_view_ingreso", is_view_ingreso}
+    };
     auto future = cpr::PostAsync(cpr::Url{Global::System::URL + "accion/inicia_venta"}, Global::Utility::header, cpr::Body{json.dump()});
     Global::Utility::consume_and_do(future, [this](const cpr::Response &response)
-                                    {
-                if (response.status_code == 200) 
-                {
-                    auto j = nlohmann::json::parse(response.text);
+    {
+        if (response.status_code == 200) 
+        {
+            auto j = nlohmann::json::parse(response.text);
+            auto log = std::make_unique<Log>();
+            auto m_log = log->get_log(j["ticket"]);
+            auto ticket = m_log->get_item(0);
+            auto faltante = j["Cambio_faltante"].get<int>();
 
-                    auto log = std::make_unique<Log>();
-                    auto m_log = log->get_log(j["ticket"]);
-                    auto ticket = m_log->get_item(0);
-                    auto faltante = j["Cambio_faltante"].get<int>();
-
-                    Global::Widget::reveal_toast(Glib::ustring::compose("<span weight=\"bold\"> %5 </span>\n\n"
-                                                                        "Total: \t\t$%1\n"
-                                                                        "Cambio: \t$%2\n"
-                                                                        "Ingreso: \t$%3\n"
-                                                                        "Faltante: \t$%4\n", 
-                                                                        ticket->m_total, 
-                                                                        ticket->m_cambio, 
-                                                                        ticket->m_ingreso, 
-                                                                        faltante,
-                                                                        is_view_ingreso ? "Ingreso" : "Venta"), Gtk::MessageType::OTHER);
-
-                    Global::System::imprime_ticket(ticket, faltante);
-
-                    if (faltante > 0) 
-                    {
-                        v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window,"Cambio Faltante",false,Gtk::MessageType::INFO, Gtk::ButtonsType::NONE));
-                        v_dialog->set_secondary_text(Glib::ustring::format("Se requiere un cambio de " , faltante));
-                        v_dialog->set_visible();
-                    }
-                } else 
-                {
-                    v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window, "Error"));
-                    v_dialog->set_secondary_text(response.text);
-                    v_dialog->set_visible();
-                }
-                Global::Widget::m_refActionGroup->lookup_action("cerrarsesion")->activate();
-                set_sensitive(true); });
+            Global::Widget::reveal_toast(Glib::ustring::compose("<span weight=\"bold\"> %5 </span>\n\n"
+                                                                "Total: \t\t$%1\n"
+                                                                "Cambio: \t$%2\n"
+                                                                "Ingreso: \t$%3\n"
+                                                                "Faltante: \t$%4\n", 
+                                                                ticket->m_total, 
+                                                                ticket->m_cambio, 
+                                                                ticket->m_ingreso, 
+                                                                faltante,
+                                                                is_view_ingreso ? "Ingreso" : "Venta"), Gtk::MessageType::OTHER);
+            Global::System::imprime_ticket(ticket, faltante);
+            if (faltante > 0) 
+            {
+                v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window,"Cambio Faltante",false,Gtk::MessageType::INFO, Gtk::ButtonsType::NONE));
+                v_dialog->set_secondary_text(Glib::ustring::format("Se requiere un cambio de " , faltante));
+                v_dialog->set_visible();
+            }
+        } else 
+        {
+            v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window, "Error"));
+            v_dialog->set_secondary_text(response.text);
+            v_dialog->set_visible();
+        }
+        Global::Widget::m_refActionGroup->lookup_action("cerrarsesion")->activate();
+        set_sensitive(true); 
+    });
 }
 
 void Venta::on_map_show()
@@ -126,20 +121,21 @@ void Venta::on_map_show()
 
 void Venta::enviar_datos_venta()
 {
-    auto json = nlohmann::json
-    {
-        {"action", "consulta"}
-    };
-    ws.send(json.dump());
+    // auto json = nlohmann::json
+    // {
+    //     {"action", "consulta"}
+    // };
+    // ws.send(json.dump());
 }
 
 void Venta::manejar_respuesta_servidor(const std::string& respuesta)
 {
-    try {
+    try 
+    {
         auto json = nlohmann::json::parse(respuesta);
         std::string status = json["status"].get<std::string>();
 
-        if (status == "idle" || status == "Proceso terminado") {
+        if (status == "Proceso terminado") {
             Glib::signal_idle().connect_once([this]() {
                 ws.close();
                 g_info("WebSocket cerrado desde hilo principal");
@@ -154,10 +150,6 @@ void Venta::manejar_respuesta_servidor(const std::string& respuesta)
                 v_box_columns->v_ety_columns[2]->set_text(Glib::ustring::compose("$ %1", json["cambio"].get<int>()));
             }
         });
-
-        std::this_thread::sleep_for(std::chrono::milliseconds(200));
-        enviar_datos_venta();
-
     } catch (const std::exception& e) {
         g_warning("Error respuesta WS: %s", e.what());
     }

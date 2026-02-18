@@ -19,9 +19,8 @@ private:
     void poll_alerta_niveles();
     void alerta_niveles(const nlohmann::json &json);
     
-    //wbsocket
+        // WebSocket client para comunicación en tiempo real
     IXWSClient ws;
-    
     void enviar_datos();
     void manejar_respuesta_servidor(const std::string& respuesta);
 

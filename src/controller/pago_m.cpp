@@ -99,7 +99,6 @@ void PagoM::on_btn_cobrar_clicked()
                                                 auto m_log = log->get_log(j["ticket"]);
                                                 auto ticket = m_log->get_item(0);
                                                 auto faltante = j["Cambio_faltante"].get<int>();
-                                                Global::System::imprime_ticket(ticket, faltante);
                             
                                                 Global::Widget::reveal_toast(Glib::ustring::compose("<span weight=\"bold\">Pago Manual</span>\n\n"
                                                                         "Total: \t\t$%1\n"
@@ -110,6 +109,8 @@ void PagoM::on_btn_cobrar_clicked()
                                                                         ticket->m_cambio, 
                                                                         ticket->m_ingreso, 
                                                                         faltante), Gtk::MessageType::OTHER);
+                                                                        
+                                                Global::System::imprime_ticket(ticket, faltante);
                                                 
                                             }
                                             else

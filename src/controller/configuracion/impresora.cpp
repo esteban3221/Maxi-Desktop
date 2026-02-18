@@ -96,9 +96,7 @@ void Impresora::on_list_test_printer(Gtk::ListBoxRow *row)
     {
         m_refPrintFormOperation->run(Gtk::PrintOperation::Action::PRINT);
         m_refPrintFormOperation->signal_done().connect([this](Gtk::PrintOperation::Result result)
-                                                       {
-            
-            Global::Widget::reveal_toast("Impresion realizada correctamente"); });
+                                                       { Global::Widget::reveal_toast("Impresion realizada correctamente"); });
     }
     catch (const Gtk::PrintError &ex)
     {
@@ -245,9 +243,9 @@ void Impresora::init_local()
 
 void Impresora::init_remoto()
 {
-    auto response = cpr::GetAsync(cpr::Url{Global::System::URL, "configuracion/get_informacion_impresora"},Global::Utility::header);
+    auto response = cpr::GetAsync(cpr::Url{Global::System::URL, "configuracion/get_informacion_impresora"}, Global::Utility::header);
     Global::Utility::consume_and_do(response, [this](const cpr::Response &response)
-    {
+                                    {
         if (response.status_code == 200)
         {
             auto json = nlohmann::json::parse(response.text);
@@ -260,8 +258,7 @@ void Impresora::init_remoto()
             remoto.v_check_vizualizador[3]->set_active(json["rfc"].get<bool>());
             remoto.v_check_vizualizador[4]->set_active(json["vendedor"].get<bool>());
             remoto.v_check_vizualizador[5]->set_active(json["contacto"].get<bool>());
-        } 
-    });
+        } });
 }
 
 void Impresora::on_list_box_row_selected(Gtk::ListBoxRow *row)
@@ -286,179 +283,214 @@ void Impresora::on_list_box_row_selected(Gtk::ListBoxRow *row)
 
 void Impresora::test_text_impresion(int id)
 {
-    auto response = cpr::GetAsync(cpr::Url{Global::System::URL, "configuracion/get_informacion_empresa"},Global::Utility::header);
+    auto response = cpr::GetAsync(cpr::Url{Global::System::URL + "configuracion/get_informacion_empresa"},
+                                  Global::Utility::header);
 
-    Global::Utility::consume_and_do(response, [this, id](const cpr::Response &response)
-                                    {
-        if (response.status_code == 200)
-        {
-            text_buffer->set_text("");
+    Global::Utility::consume_and_do(response, [this, id](const cpr::Response& response)
+    {
+        if (response.status_code != 200)
+            return;
 
-            auto json = nlohmann::json::parse(response.text);
-            auto ticket_config = std::make_unique<std::stringstream>();
+        text_buffer->set_text("");  // Limpiar buffer
 
-            *ticket_config << "****** <span weight=\"bold\">TICKET DE COMPRA</span> ******\n"
-                        << "--------------------------------\n\n"
-                        << json["razon_social"].get<std::string>() << "\n\n";
-            
+        auto json = nlohmann::json::parse(response.text);
 
-            if ((id ? remoto : local ).v_check_vizualizador[2]->get_active())
-                *ticket_config << "<span weight=\"bold\">Direccion</span>: " << json["direccion"].get<std::string>() << "\n"
-                            << "--------------------------------\n";
+        std::stringstream ticket;
 
-            if ((id ? remoto : local ).v_check_vizualizador[3]->get_active())
-                *ticket_config << "<span weight=\"bold\">RFC</span>: " << json["rfc"].get<std::string>()<< "\n"
-                            << "--------------------------------\n";
+        // Encabezado centrado y destacado
+        ticket << "<span size=\"x-large\" weight=\"bold\">TICKET DE COMPRA</span>\n"
+               << "<span size=\"small\">" << Glib::DateTime::create_now_local().format("%Y-%m-%d %H:%M:%S") << "</span>\n"
+               << "====================================\n\n";
 
-            if ((id ? remoto : local ).v_check_vizualizador[1]->get_active())
-                *ticket_config << "<span weight=\"bold\">Fecha</span>: "
-                            << Glib::DateTime::create_now_local().format("%Y-%m-%d %H:%M:%S") << "\n";
+        // Datos de la empresa (opcionales)
+        ticket << "<span weight=\"bold\">" << json["razon_social"].get<std::string>() << "</span>\n";
 
-            *ticket_config << "No. Ticket: 0001"
-                        << "\n\n";
+        if ((id ? remoto : local).v_check_vizualizador[2]->get_active())
+            ticket << json["direccion"].get<std::string>() << "\n";
 
-            if ((id ? remoto : local ).v_check_vizualizador[4]->get_active())
-                *ticket_config << std::left << std::setw(10) << "<span weight=\"bold\">Le atendio</span>: "
-                            << "Juan Perez \n\n"
-                            << "--------------------------------\n";
+        if ((id ? remoto : local).v_check_vizualizador[3]->get_active())
+            ticket << "RFC: " << json["rfc"].get<std::string>() << "\n";
 
-            *ticket_config << "<span weight=\"bold\">Articulo\n"
-                        << std::left << std::setw(10) << "Cnt." << std::setw(10) << "P.U."
-                        << "T.</span>\n"
-                        << "--------------------------------\n";
-            *ticket_config << "<span weight=\"bold\">Articulo de prueba</span>\n"
-                        << std::setw(10) << "10" << std::setw(10) << "6"
-                        << std::setw(10) << "60"
-                        << "\n"
-                        << "--------------------------------\n";
-            *ticket_config << "<span weight=\"bold\">Total</span>: \t60.00\n";
-            *ticket_config << "<span weight=\"bold\">Tipo de Pago</span>:\tEfectivo\n"
-                        << "--------------------------------\n";
-            *ticket_config << "<span weight=\"bold\">Ingreso</span>:\t90.00\n";
-            *ticket_config << "<span weight=\"bold\">Cambio</span>:\t30.00\n"
-                        << "--------------------------------\n";
+        ticket << "------------------------------------\n";
 
-            if ((id ? remoto : local ).v_check_vizualizador[5]->get_active())
-                *ticket_config << "**<span weight=\"bold\">" << json["contacto"].get<std::string>() << "</span>**"
-                            << "\n"
-                            << "--------------------------------\n";
-            if ((id ? remoto : local ).v_check_vizualizador[0]->get_active())
-                *ticket_config << "**<span weight=\"bold\">" << json["agradecimiento"].get<std::string>()<< "</span>**"
-                            << "\n"
-                            << "--------------------------------\n";
+        // Información general
+        ticket << "<span weight=\"bold\">No. Ticket:</span> 0001\n\n";
 
-            ticket_markup = ticket_config->str();
-            text_buffer->insert_markup(text_buffer->end(), ticket_config->str());
-        } });
+        if ((id ? remoto : local).v_check_vizualizador[4]->get_active())
+            ticket << "<span weight=\"bold\">Le atendió:</span> Juan Pérez\n"
+                   << "------------------------------------\n";
+
+        // Detalle de artículos (ejemplo fijo)
+        ticket << "<span weight=\"bold\">Artículo\t\tCnt.\tP.U.\tT.</span>\n"
+               << "------------------------------------\n"
+               << "<span weight=\"bold\">Artículo de prueba</span>\n"
+               << std::setw(24) << "10\t\t6\t\t60\n"
+               << "------------------------------------\n";
+
+        // Montos alineados
+        ticket << std::left << std::setw(18) << "<span weight=\"bold\">Total:</span>"
+               << std::right << std::setw(18) << "<span weight=\"bold\" size=\"large\">$60.00</span>\n";
+
+        ticket << std::left << std::setw(18) << "<span weight=\"bold\">Tipo de pago:</span>"
+               << std::right << std::setw(18) << "Efectivo\n";
+
+        ticket << std::left << std::setw(18) << "<span weight=\"bold\">Ingreso:</span>"
+               << std::right << std::setw(18) << "$90.00\n";
+
+        ticket << std::left << std::setw(18) << "<span weight=\"bold\">Cambio:</span>"
+               << std::right << std::setw(18) << "$30.00\n";
+
+        ticket << "------------------------------------\n";
+
+        // Pie de página
+        if ((id ? remoto : local).v_check_vizualizador[5]->get_active())
+            ticket << "<span size=\"small\" style=\"italic\">"
+                   << json["contacto"].get<std::string>() << "</span>\n";
+
+        if ((id ? remoto : local).v_check_vizualizador[0]->get_active())
+            ticket << "\n<span size=\"small\" style=\"italic\" weight=\"bold\">"
+                   << json["agradecimiento"].get<std::string>() << "</span>\n";
+
+        ticket << "\n\n\n";  // Espacio para que se vea bien en el buffer
+
+        // Insertar con markup en el TextBuffer
+        ticket_markup = ticket.str();
+        text_buffer->insert_markup(text_buffer->end(), ticket.str());
+    });
 }
-
 namespace Global
 {
     namespace System
     {
         void imprime_ticket(Glib::RefPtr<MLog> log, int faltante)
         {
-
             auto db = std::make_unique<Configuracion>();
             auto db_ = db->get_conf_data(5, 11);
 
             if (db_->get_item(0)->m_valor != "1")
                 return;
 
-            std::stringstream ticket_config;
+            // Obtener datos de la empresa
+            auto response = cpr::Get(cpr::Url{Global::System::URL + "configuracion/get_informacion_empresa"},
+                                     Global::Utility::header);
 
-            auto response = cpr::Get(cpr::Url{Global::System::URL, "configuracion/get_informacion_empresa"}, Global::Utility::header);
             if (response.status_code != 200)
                 return;
-            else
+
+            auto json = nlohmann::json::parse(response.text);
+
+            std::stringstream ticket;
+
+            // Encabezado centrado y destacado
+            ticket << "<span size=\"x-large\" weight=\"bold\">" << log->m_tipo << "</span>\n"
+            //Dexcriocion¿ / concepto de la operacion
+                   << std::left << std::setw(20) << "<span weight=\"bold\">Descripcion:</span>"
+                   << std::right << std::setw(20) << log->m_descripcion << "\n"
+                   << "<span size=\"small\">" << Glib::DateTime::create_now_local().format("%Y-%m-%d %H:%M:%S") << "</span>\n"
+                   << "====================================\n\n";
+
+            // Datos de la empresa (opcionales según configuración)
+            ticket << "<span weight=\"bold\">" << json["razon_social"].get<std::string>() << "</span>\n";
+
+            if (db_->get_item(3)->m_valor == "1")
+                ticket << json["direccion"].get<std::string>() << "\n";
+
+            if (db_->get_item(4)->m_valor == "1")
+                ticket << "RFC: " << json["rfc"].get<std::string>() << "\n";
+
+            ticket << "------------------------------------\n";
+
+            // Información de la operación
+            ticket << "<span weight=\"bold\">Folio:</span> " << log->m_id << "\n";
+
+            if (db_->get_item(5)->m_valor == "1")
+                ticket << "<span weight=\"bold\">Atendió:</span> " << log->m_user << "\n";
+
+            ticket << "------------------------------------\n";
+
+            // Detalle de montos (alineados a la derecha)
+            ticket << std::left << std::setw(18) << "Total:"
+                   << std::right << std::setw(18) << "<span weight=\"bold\" size=\"large\">$" << log->m_total << "</span>\n";
+
+            ticket << std::left << std::setw(18) << "Tipo de pago:"
+                   << std::right << std::setw(18) << "Efectivo\n";
+
+            ticket << std::left << std::setw(18) << "Ingreso:"
+                   << std::right << std::setw(18) << "$" << log->m_ingreso << "\n";
+
+            ticket << std::left << std::setw(18) << "Cambio:"
+                   << std::right << std::setw(18) << "$" << log->m_cambio << "\n";
+
+            if (faltante > 0)
+                ticket << std::left << std::setw(18) << "<span foreground=\"red\">Faltante:</span>"
+                       << std::right << std::setw(18) << "<span foreground=\"red\">$" << faltante << "</span>\n";
+
+            ticket << "------------------------------------\n";
+
+            // Estado destacado
+            ticket << "<span size=\"large\" weight=\"bold\" foreground=\""
+                   << (log->m_estatus == "Exito" ? "#2ecc71" : (log->m_estatus == "PENDIENTE" ? "#f39c12" : "#e74c3c"))
+                   << "\">" << log->m_estatus << "</span>\n";
+
+            ticket << "====================================\n";
+
+            // Pie de página
+            if (db_->get_item(6)->m_valor == "1")
+                ticket << "<span size=\"small\" style=\"italic\">"
+                       << json["contacto"].get<std::string>() << "</span>\n";
+
+            if (db_->get_item(1)->m_valor == "1")
+                ticket << "\n<span size=\"small\" style=\"italic\" weight=\"bold\">"
+                       << json["agradecimiento"].get<std::string>() << "</span>\n";
+
+            ticket << "\n\n\n"; // Espacio final para corte de ticket
+
+            // Configuración de impresión
+            auto print_op = PrintFormOperation::create();
+            auto settings = Gtk::PrintSettings::create();
+            auto page_setup = Gtk::PageSetup::create();
+
+            print_op->set_markup(ticket.str());
+            print_op->set_track_print_status(true);
+
+            // Tamaño típico para ticket (80mm ancho × longitud variable)
+            auto paper_size = Gtk::PaperSize("custom", "Ticket", 80, 297, Gtk::Unit::MM); // 80mm × 297mm (largo suficiente)
+            page_setup->set_paper_size(paper_size);
+            page_setup->set_orientation(Gtk::PageOrientation::PORTRAIT);
+            page_setup->set_top_margin(5, Gtk::Unit::MM);
+            page_setup->set_bottom_margin(5, Gtk::Unit::MM);
+            page_setup->set_left_margin(5, Gtk::Unit::MM);
+            page_setup->set_right_margin(5, Gtk::Unit::MM);
+
+            print_op->set_default_page_setup(page_setup);
+            print_op->set_print_settings(settings);
+
+            try
             {
-                auto json = nlohmann::json::parse(response.text);
+                print_op->run(Gtk::PrintOperation::Action::PRINT, *Global::Widget::v_main_window);
 
-                ticket_config << "****** <span weight=\"bold\">" << log->m_tipo << "</span> ******\n"
-                              << "--------------------------------\n\n"
-                              << json["razon_social"].get<std::string>() << "\n\n";
-
-                if (db_->get_item(3)->m_valor == "1")
-                    ticket_config << "Direccion:<span weight=\"bold\">" << json["direccion"].get<std::string>() << "</span>\n"
-                                  << "--------------------------------\n";
-
-                if (db_->get_item(4)->m_valor == "1")
-                    ticket_config << "RFC:<span weight=\"bold\">" << json["rfc"].get<std::string>() << "</span>\n"
-                                  << "--------------------------------\n";
-
-                if (db_->get_item(2)->m_valor == "1")
-                    ticket_config << "Fecha:<span weight=\"bold\">" << Glib::DateTime::create_now_local().format("%Y-%m-%d %H:%M:%S") << "</span>\n";
-
-                ticket_config << "ID:<span weight=\"bold\">" << log->m_id << "</span>\n\n";
-
-                if (db_->get_item(5)->m_valor == "1")
-                    ticket_config << "Le atendio: " << log->m_user << "\n\n"
-                                  << "--------------------------------\n";
-
-                ticket_config << "Total:\t<span weight=\"bold\">" << log->m_total << "</span>\n";
-                ticket_config << "Tipo de Pago:\t" << "Efectivo\n"
-                              << "--------------------------------\n";
-                ticket_config << "Ingreso:\t" << log->m_ingreso << "\n";
-                ticket_config << "Cambio:\t" << log->m_cambio << "\n";
-                ticket_config << "Faltante:\t" << faltante << "\n";
-
-                ticket_config << "-------------STATUS------------\n"
-                              << "<span weight=\"bold\">" << log->m_estatus << "</span>\n"
-                              << "--------------------------------\n";
-
-                if (db_->get_item(6)->m_valor == "1")
-                    ticket_config << "**<span weight=\"bold\">" << json["contacto"].get<std::string>() << "</span>**\n"
-                                  << "--------------------------------\n";
-
-                if (db_->get_item(1)->m_valor == "1")
-                    ticket_config << "**<span weight=\"bold\">" << json["agradecimiento"].get<std::string>() << "</span>**\n"
-                                  << "--------------------------------\n";
-                
-                auto m_refPrintFormOperation = PrintFormOperation::create();
-                auto m_refSettings = Gtk::PrintSettings::create();
-                auto m_refPageSetup = Gtk::PageSetup::create();
-
-                m_refPrintFormOperation->set_markup(ticket_config.str());
-                              
-                m_refPrintFormOperation->set_track_print_status();
-
-                auto p_size = m_refSettings->get_paper_size();
-                p_size.set_size(297, 80, Gtk::Unit::MM);
-                m_refPageSetup->set_paper_size(p_size);
-                              
-                m_refPrintFormOperation->set_default_page_setup(m_refPageSetup);
-                m_refPrintFormOperation->set_print_settings(m_refSettings);
-                              
-                try
+                print_op->signal_done().connect([](Gtk::PrintOperation::Result result)
                 {
-                    m_refPrintFormOperation->run(Gtk::PrintOperation::Action::PRINT, *Global::Widget::v_main_window);
-                    m_refPrintFormOperation->signal_done().connect([](Gtk::PrintOperation::Result result)
+                    switch (result)
                     {
-                        switch (result)
-                        {
                         case Gtk::PrintOperation::Result::ERROR:
-                            Global::Widget::reveal_toast("Error al imprimir",(Gtk::MessageType)3);
-                            break;
-                        case Gtk::PrintOperation::Result::IN_PROGRESS:
-                            Global::Widget::reveal_toast("La impresion esta tardando mas de lo usual");
+                            Global::Widget::reveal_toast("Error al imprimir", Gtk::MessageType::ERROR);
                             break;
                         case Gtk::PrintOperation::Result::APPLY:
-                            Global::Widget::reveal_toast("Impresion Completada");
+                            Global::Widget::reveal_toast("Ticket impreso correctamente", Gtk::MessageType::INFO);
                             break;
                         case Gtk::PrintOperation::Result::CANCEL:
-                            Global::Widget::reveal_toast("Impresion Cancelada por sistema o usuario de manera externa");
+                            Global::Widget::reveal_toast("Impresión cancelada", Gtk::MessageType::WARNING);
                             break;
                         default:
                             break;
-                        }
-                    });
-                }
-                catch (const Gtk::PrintError &ex)
-                {
-                    Global::Widget::reveal_toast(ex.what(), (Gtk::MessageType)3);
-                    std::cerr << "An error occurred while trying to run a print operation:" << ex.what() << std::endl;
-                }
-                
+                    } 
+                });
+            }
+            catch (const Gtk::PrintError &ex)
+            {
+                Global::Widget::reveal_toast("Error de impresión: " + std::string(ex.what()), Gtk::MessageType::ERROR);
+                std::cerr << "Error en impresión: " << ex.what() << std::endl;
             }
         }
     }

@@ -15,7 +15,6 @@ private:
 
     // WebSocket client para comunicación en tiempo real
     IXWSClient ws;
-
     void enviar_datos_venta();
     void manejar_respuesta_servidor(const std::string& respuesta);
 

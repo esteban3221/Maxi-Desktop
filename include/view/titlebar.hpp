@@ -10,7 +10,7 @@ private:
 
 protected:
     Gtk::MenuButton *v_menu_status, *v_menu_titlebar;
-    Gtk::Button *v_btn_regresar;
+    //Gtk::Button *v_btn_regresar;
     Gtk::Popover *v_popover_titlebar;
     Gtk::Entry *v_ety_servidor;
     Gtk::ListBox *v_list_ip;
@@ -23,6 +23,10 @@ protected:
     public:
         ListItem(const Glib::RefPtr<MListIp> &);
         ~ListItem();
+
+        const size_t m_id;
+        const Glib::ustring m_ip;
+        Gtk::Image *img_select;
     };
 
 public:

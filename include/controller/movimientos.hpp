@@ -14,14 +14,21 @@ private:
     Glib::RefPtr<Gtk::ColumnViewColumn> column_id;
     Glib::RefPtr<Gtk::SortListModel> sorter_model;
 
+    Glib::RefPtr<Gio::ListModel> create_model(const Glib::RefPtr<Glib::ObjectBase> &log = {});
+    Glib::RefPtr<Gtk::TreeListModel> tree_model_list;
+    // Glib::RefPtr<Gio::ListStore<MLog>> m_log;
+
     std::unique_ptr<Gtk::MessageDialog> v_dialog;
 
     void init_datos();
     void reimprime_tickets();
     void imprime_corte();
 
-    void actualiza_data(const Glib::RefPtr<Gtk::SelectionModel> &selection, const Glib::RefPtr<Gio::ListStore<MLog>> &log);
-    void consume_data();
+    const nlohmann::json &consume_data();
+    nlohmann::json m_cached_data;  // Cache de los datos
+    bool m_data_cached = false;     // Flag para saber si ya tenemos datos
+
+    void init_refrescar_datos();
     void muestra_calendario_inicio(Gtk::Entry::IconPosition);
     void muestra_calendario_fin(Gtk::Entry::IconPosition);
     void set_fecha();

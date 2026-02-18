@@ -19,7 +19,14 @@ Glib::RefPtr<Gio::ListStore<MListIp>> ListIp::get_all_ip()
     
     for (size_t i = 0; i < contenedor_data->at("id").size(); i++)
     {
-        m_list->append(MListIp::create(std::stoi(contenedor_data->at("id")[i]), contenedor_data->at("ip")[i]));
+        m_list->append
+        (
+            MListIp::create(
+                std::stoi(contenedor_data->at("id")[i]), 
+                contenedor_data->at("ip")[i], 
+                contenedor_data->at("predeterminado")[i] == "1"
+            )
+        );
     }
     
     return m_list;
@@ -34,8 +41,15 @@ size_t ListIp::insert(const Glib::RefPtr<MListIp> &item)
     return std::stoull(contenedor_data->at("id")[0]);
 }
 
-void ListIp::delete_ip(const Glib::RefPtr<MListIp> &item)
+void ListIp::delete_ip(size_t id)
 {
     auto &database = Database::getInstance();
-    database.sqlite3->command("delete from ip where id = ?", item->m_id);
+    database.sqlite3->command("delete from ip where id = ?", id);
+}
+
+void ListIp::predeterminar(size_t id)
+{
+    auto &database = Database::getInstance();
+    database.sqlite3->command("update ip set predeterminado = 0");
+    database.sqlite3->command("update ip set predeterminado = 1 where id = ?", id);
 }

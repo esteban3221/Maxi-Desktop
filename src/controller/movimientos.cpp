@@ -5,8 +5,8 @@ Movimientos::Movimientos(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builde
     v_spin_pag->set_adjustment(Gtk::Adjustment::create(1, 1, 100));
     init_datos();
 
-    signal_map().connect(sigc::mem_fun(*this, &Movimientos::consume_data));
-    v_btn_aplica_filtro->signal_clicked().connect(sigc::mem_fun(*this, &Movimientos::consume_data));
+    signal_map().connect(sigc::mem_fun(*this, &Movimientos::init_refrescar_datos));
+    v_btn_aplica_filtro->signal_clicked().connect(sigc::mem_fun(*this, &Movimientos::init_refrescar_datos));
     v_btn_imprime_corte->signal_clicked().connect(sigc::mem_fun(*this, &Movimientos::imprime_corte));
     v_ety_ini->signal_icon_press().connect(sigc::mem_fun(*this, &Movimientos::muestra_calendario_inicio));
     v_ety_fin->signal_icon_press().connect(sigc::mem_fun(*this, &Movimientos::muestra_calendario_fin));
@@ -18,6 +18,18 @@ Movimientos::Movimientos(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builde
 Movimientos::~Movimientos()
 {
     v_pop_calendario.unparent();
+}
+
+void Movimientos::init_refrescar_datos()
+{
+    // Limpiar cache antes de refrescar
+    m_data_cached = false;
+    
+    auto root = create_model();
+    tree_model_list = Gtk::TreeListModel::create(root, sigc::mem_fun(*this, &Movimientos::create_model));
+    auto sorter_model = Gtk::SortListModel::create(tree_model_list, m_IdSorter);
+    auto selection = Gtk::MultiSelection::create(sorter_model);
+    v_column_log->set_model(selection);
 }
 
 void Movimientos::imprime_corte()
@@ -57,6 +69,7 @@ void Movimientos::imprime_corte()
                         detalles += "----------------------------------------\n";
                         detalles += "ID: " + std::to_string(i["id"].get<int>()) + " - ";
                         detalles += i["tipo"].get<std::string>() + "\n";
+                        detalles += "Concepto: " + i["descripcion"].get<std::string>() + "\n";
                         detalles += "Fecha: " +  Glib::DateTime::create_from_iso8601(i["fecha"].get<std::string>()).format("%F %H:%M:%S") + "\n";
                         detalles += "Ingreso: $" + std::to_string(i["ingreso"].get<int>()) + "\n";
                         detalles += "Cambio: $" + std::to_string(i["cambio"].get<int>()) + "\n";
@@ -69,7 +82,7 @@ void Movimientos::imprime_corte()
                     }
 
                     detalles += "----------------------------------------\n";
-                    auto ti_log = MLog::create(0,Global::User::Current,"Corte de Caja", ingresos, cambios, total, detalles, Glib::DateTime::create_now_local());
+                    auto ti_log = MLog::create(0,Global::User::Current,"Corte de Caja", "", ingresos, cambios, total, detalles, Glib::DateTime::create_now_local());
 
                     Global::System::imprime_ticket(ti_log);
                 }
@@ -86,7 +99,6 @@ void Movimientos::init_datos()
     m_list_tipos = Gtk::StringList::create(tipos);
     v_dp_tipo->set_model(m_list_tipos);
 
-    auto model_list = Gio::ListStore<MLog>::create();
 
     // ✅ Sorter por ID (orden descendente por defecto)
     auto uint_expression = Gtk::ClosureExpression<unsigned int>::create(
@@ -99,14 +111,14 @@ void Movimientos::init_datos()
     m_IdSorter = Gtk::NumericSorter<unsigned int>::create(uint_expression);
     m_IdSorter->set_sort_order(Gtk::SortType::DESCENDING);
 
-    auto sorter_model = Gtk::SortListModel::create(model_list, m_IdSorter);
-    auto selection = Gtk::SingleSelection::create(sorter_model);
+    auto sorter_model = Gtk::SortListModel::create(tree_model_list, m_IdSorter);
+    auto selection = Gtk::MultiSelection::create(sorter_model);
 
     v_column_log->set_model(selection);
 
     {
         auto factory = Gtk::SignalListItemFactory::create();
-        factory->signal_setup().connect(sigc::mem_fun(*this, &Movimientos::on_setup_label));
+        factory->signal_setup().connect(sigc::mem_fun(*this, &Movimientos::on_setup_id));
         factory->signal_bind().connect(sigc::mem_fun(*this, &Movimientos::on_bind_id));
 
         column_id = Gtk::ColumnViewColumn::create("ID", factory);
@@ -128,6 +140,15 @@ void Movimientos::init_datos()
         factory->signal_setup().connect(sigc::mem_fun(*this, &Movimientos::on_setup_label_text));
         factory->signal_bind().connect(sigc::mem_fun(*this, &Movimientos::on_bind_tipo));
         auto column = Gtk::ColumnViewColumn::create("Tipo", factory);
+        column->set_expand();
+        v_column_log->append_column(column);
+    }
+
+    {
+        auto factory = Gtk::SignalListItemFactory::create();
+        factory->signal_setup().connect(sigc::mem_fun(*this, &Movimientos::on_setup_label_text));
+        factory->signal_bind().connect(sigc::mem_fun(*this, &Movimientos::on_bind_concepto));
+        auto column = Gtk::ColumnViewColumn::create("Concepto", factory);
         column->set_expand();
         v_column_log->append_column(column);
     }
@@ -178,6 +199,61 @@ void Movimientos::init_datos()
     }
 }
 
+Glib::RefPtr<Gio::ListModel> Movimientos::create_model(const Glib::RefPtr<Glib::ObjectBase> &log)
+{
+    // Usar datos cacheados
+    const auto& data = consume_data();
+    auto col = std::dynamic_pointer_cast<MLog>(log);
+    auto result = Gio::ListStore<MLog>::create();
+    
+    for (auto &&i : data["log"])
+    {
+        if (!col)  // Nivel raíz - agregar movimientos principales
+        {
+            result->append(MLog::create(
+                i["id"].get<int>(),
+                i["usuario"].get<std::string>(),
+                i["tipo"].get<std::string>(),
+                i["descripcion"].get<std::string>(),
+                i["ingreso"].get<int>(),
+                i["cambio"].get<int>(),
+                i["total"].get<int>(),
+                i["estatus"].get<std::string>(),
+                Glib::DateTime::create_from_iso8601(i["fecha"].get<std::string>())
+            ));
+        }
+        else  // Nivel hijo - agregar detalles del movimiento actual
+        {
+            if(i.contains("detalle_movimiento") && i["id"].get<int>() == col->m_id)
+            {
+                for (auto &&det : i["detalle_movimiento"])
+                {
+                    result->append(MLog::create(
+                        0,  // ID 0 para hijos
+                        "",
+                        det["tipo_movimiento"].get<std::string>(),  // Usar tipo_movimiento
+                        "",
+                        (det["tipo_movimiento"].get<std::string>() == "entrada") 
+                            ? (det["denominacion"].get<int>() * det["cantidad"].get<int>()) 
+                            : 0,
+                        (det["tipo_movimiento"].get<std::string>() == "salida") 
+                            ? (det["denominacion"].get<int>() * std::abs(det["cantidad"].get<int>())) 
+                            : 0,
+                        0,
+                        "",
+                        Glib::DateTime::create_from_iso8601(det["creado_en"].get<std::string>())
+                    ));
+                }
+                break;  // Importante: salir del loop cuando encontramos el movimiento
+            }
+        }
+    }
+    
+    return (result->get_n_items() > 0) ? result : Glib::RefPtr<Gio::ListModel>();
+}
+
+
+
 void Movimientos::reimprime_tickets()
 {
     auto row = v_column_log->get_model()->get_selection()->get_minimum();
@@ -194,66 +270,64 @@ void Movimientos::reimprime_tickets()
     m_list->m_tipo.erase(m_list->m_tipo.size() - 14, 14);
 }
 
-void Movimientos::actualiza_data(const Glib::RefPtr<Gtk::SelectionModel> &selection, const Glib::RefPtr<Gio::ListStore<MLog>> &log)
+
+const nlohmann::json& Movimientos::consume_data()
 {
-    auto single = std::dynamic_pointer_cast<Gtk::SingleSelection>(selection);
-    auto sort_store = std::dynamic_pointer_cast<Gtk::SortListModel>(single->get_model());
-    auto list_store = std::dynamic_pointer_cast<Gio::ListStore<MLog>>(sort_store->get_model());
-
-    list_store->remove_all();
-
-    for (size_t i = 0; i < log->get_n_items(); i++)
-    {
-        if (log->get_item(i)->m_user.empty())
-            log->get_item(i)->m_user = "<span weight=\"bold\">Usuario Eliminado</span>";
-        list_store->append(log->get_item(i));
-    }
-    // column_id->set_sorter(m_IdSorter);
-}
-
-void Movimientos::consume_data()
-{
+    // Si ya tenemos datos cacheados, devolverlos
+    if (m_data_cached)
+        return m_cached_data;
+    
+    // Si no, hacer la petición HTTP
     v_spin_pag->update();
-
+    
     auto id_tipo = v_dp_tipo->get_selected();
     auto tipo = m_list_tipos->get_string(id_tipo);
     auto f_ini = v_ety_ini->get_text();
     auto f_fin = v_ety_fin->get_text();
     auto pag = v_spin_pag->get_value_as_int();
-
+    
     pag = pag == 1 ? 0 : pag - 1 * 100;
-
+    
     auto json = nlohmann::json{
         {"tipo", tipo},
         {"f_ini", f_ini},
         {"f_fin", f_fin},
-        {"pag", pag}};
-
-    auto future = cpr::PostAsync(cpr::Url{Global::System::URL + "log/movimientos"}, Global::Utility::header, cpr::Body{json.dump()});
-
-    Global::Utility::consume_and_do(future, [this](const cpr::Response &response)
-                                    {
-        if (response.status_code == 200)
-        {
-            auto j = nlohmann::json::parse(response.text);
-
-            auto log = std::make_unique<Log>();
-            auto m_log = log->get_log(j["log"]);
-
-            auto model = v_column_log->get_model();
-            actualiza_data(model, m_log);
-
-            v_lbl_total_registros->set_text(Glib::ustring::format("Mostrando ", m_log->get_n_items(), " de ", j["total_rows"].get<int>()));
-
-            auto pag = j["total_rows"].get<int>() > 0 ? j["total_rows"].get<int>() / m_log->get_n_items() : 0;
-            v_ety_pag->set_text("de " + std::to_string(pag));
-            v_spin_pag->set_adjustment(Gtk::Adjustment::create(1, 1, pag));
-        }
-        else
-        {
-            auto model = v_column_log->get_model();
-            actualiza_data(model, Gio::ListStore<MLog>::create());
-        } });
+        {"pag", pag}
+    };
+    
+    auto future = cpr::PostAsync(cpr::Url{Global::System::URL + "log/movimientos"}, 
+                                 Global::Utility::header, 
+                                 cpr::Body{json.dump()});
+    
+    auto response = future.get();
+    
+    if (response.status_code == 200)
+    {
+        m_cached_data = nlohmann::json::parse(response.text);
+        m_data_cached = true;
+        
+        // Actualizar UI
+        v_lbl_total_registros->set_text(Glib::ustring::format(
+            "Mostrando ", m_cached_data["log"].size(), 
+            " de ", m_cached_data["total_rows"].get<int>()));
+        
+        auto pag = m_cached_data["total_rows"].get<int>() > 0 
+            ? m_cached_data["total_rows"].get<int>() / m_cached_data["log"].size() 
+            : 0;
+        v_ety_pag->set_text("de " + std::to_string(pag));
+        v_spin_pag->set_adjustment(Gtk::Adjustment::create(1, 1, pag));
+    }
+    else
+    {
+        m_cached_data = nlohmann::json();
+        m_data_cached = true;  // Cachear incluso el resultado vacío
+        
+        v_lbl_total_registros->set_text("No se pudieron cargar los movimientos.");
+        v_ety_pag->set_text("");
+        v_spin_pag->set_adjustment(Gtk::Adjustment::create(1, 1, 1));
+    }
+    
+    return m_cached_data;
 }
 
 void Movimientos::muestra_calendario_inicio(Gtk::Entry::IconPosition icon_pos)

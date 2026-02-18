@@ -20,13 +20,15 @@ protected:
     Gtk::Popover v_pop_calendario;
     Gtk::Calendar v_calendario;
 
-
+    void on_setup_id(const Glib::RefPtr<Gtk::ListItem> &list_item);
     void on_setup_label(const Glib::RefPtr<Gtk::ListItem> &list_item);
     void on_setup_label_text(const Glib::RefPtr<Gtk::ListItem> &list_item);
+    void on_setup_button(const Glib::RefPtr<Gtk::ListItem> &list_item);
     
     void on_bind_id(const Glib::RefPtr<Gtk::ListItem> &list_item);
     void on_bind_usuario(const Glib::RefPtr<Gtk::ListItem> &list_item);
     void on_bind_tipo(const Glib::RefPtr<Gtk::ListItem> &list_item);
+    void on_bind_concepto(const Glib::RefPtr<Gtk::ListItem> &list_item);
     void on_bind_ingreso(const Glib::RefPtr<Gtk::ListItem> &list_item);
     void on_bind_cambio(const Glib::RefPtr<Gtk::ListItem> &list_item);
     void on_bind_total(const Glib::RefPtr<Gtk::ListItem> &list_item);

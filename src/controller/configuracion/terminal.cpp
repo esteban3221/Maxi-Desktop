@@ -200,6 +200,17 @@ void Terminal::on_button_close_rvl_clicked()
     {
         v_rvl->unset_child();
     }, v_rvl->get_transition_duration());
+
+    form_terminal->v_ety_token->set_sensitive(true);
+    form_terminal->v_ety_token->set_icon_from_icon_name("edit-symbolic");
+    form_terminal->v_ety_token->set_text("");
+    form_terminal->v_btn_verifica_token->set_sensitive(true);
+    form_terminal->v_lbl_total_terminales->set_text("Total terminales: ");
+    form_terminal->v_list_terminales->remove_all();
+    form_terminal->v_ety_alias->set_text("");
+    form_terminal->v_ety_descripcion->set_text("");
+    form_terminal->v_drop_tipo->set_selected(-1);
+
     v_btn_add_terminal->set_visible(true);
 }
 
@@ -326,7 +337,7 @@ void Terminal::cambia_modo_operacion(const Glib::ustring &id, const Glib::ustrin
         "operating_mode": ")" + modo_operacion + R"("
         }
     ]})"};
-    auto future = cpr::PostAsync(cpr::Url{"https://api.mercadopago.com/terminals/v1/setup"},
+    auto future = cpr::PatchAsync(cpr::Url{"https://api.mercadopago.com/terminals/v1/setup"},
                                  cpr::Header{{"Authorization", "Bearer " + acces_token}},
                                  body);
 
@@ -334,7 +345,7 @@ void Terminal::cambia_modo_operacion(const Glib::ustring &id, const Glib::ustrin
     {
         if (response.status_code == 200)
         {
-            Global::Widget::reveal_toast("Modo de operación cambiado exitosamente");
+            Global::Widget::reveal_toast("Modo de operación cambiado exitosamente, No olvide reiniciar la terminal para que los cambios tengan efecto.");
             form_terminal->v_list_terminales->set_sensitive(true);
         }
         else
