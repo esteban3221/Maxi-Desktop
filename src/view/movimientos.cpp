@@ -2,8 +2,8 @@
 
 VMovimientos::VMovimientos(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuilder) : Gtk::Box(cobject), m_builder(refBuilder)
 {
-  v_btn_printer = m_builder->get_widget<Gtk::Button>("btn_printer");
-  v_btn_imprime_corte = m_builder->get_widget<Gtk::Button>("btn_imprime_corte");
+  // v_btn_printer = m_builder->get_widget<Gtk::Button>("btn_printer");
+  // v_btn_imprime_corte = m_builder->get_widget<Gtk::Button>("btn_imprime_corte");
   v_btn_aplica_filtro = m_builder->get_widget<Gtk::Button>("btn_aplica_filtro");
   v_btn_remueve_filtros = m_builder->get_widget<Gtk::Button>("btn_remueve_filtros");
   v_dp_tipo = m_builder->get_widget<Gtk::DropDown>("dp_tipo");
@@ -134,13 +134,15 @@ void VMovimientos::on_bind_tipo(const Glib::RefPtr<Gtk::ListItem> &list_item)
     std::string texto;
     if (col->m_id == 0) { // Es un detalle
         texto = col->m_tipo == "entrada" ? "Entrada" : "Salida";
+        label->set_halign(Gtk::Align::END);
     } else {
         texto = col->m_tipo;
+        label->set_halign(Gtk::Align::START);
     }
 
     // Configuración del label
     label->set_text(texto);
-    label->set_xalign(0.5);
+    
     label->set_justify(Gtk::Justification::CENTER);
     
     // Color según el tipo
@@ -181,7 +183,15 @@ void VMovimientos::on_bind_ingreso(const Glib::RefPtr<Gtk::ListItem> &list_item)
   auto col = std::dynamic_pointer_cast<MLog>(row->get_item());
   auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
 
-  label->set_text("$" + Glib::ustring::format(col->m_ingreso));
+  if (col->m_ingreso == "0" && col->m_id == 0)
+  {
+    label->set_text("");
+    return;
+  }
+  else if (col->m_id == 0) // Es un detalle
+    label->set_text(Glib::ustring::format(col->m_ingreso));
+  else
+    label->set_text("$" + Glib::ustring::format(col->m_ingreso));
 }
 
 void VMovimientos::on_bind_cambio(const Glib::RefPtr<Gtk::ListItem> &list_item)
@@ -190,7 +200,15 @@ void VMovimientos::on_bind_cambio(const Glib::RefPtr<Gtk::ListItem> &list_item)
   auto col = std::dynamic_pointer_cast<MLog>(row->get_item());
   auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
 
-  label->set_text("$" + Glib::ustring::format(col->m_cambio));
+  if (col->m_cambio == "0" && col->m_id == 0)
+  {
+    label->set_text("");
+    return;
+  }
+  else if (col->m_id == 0) // Es un detalle
+    label->set_text(Glib::ustring::format(col->m_cambio));
+  else
+    label->set_text("$" + Glib::ustring::format(col->m_cambio));
 }
 
 void VMovimientos::on_bind_total(const Glib::RefPtr<Gtk::ListItem> &list_item)
@@ -222,37 +240,16 @@ void VMovimientos::on_bind_fecha(const Glib::RefPtr<Gtk::ListItem> &list_item)
 
 namespace View
 {
-  const char *movimientos_ui = R"(<?xml version='1.0' encoding='UTF-8'?>
-<!-- Created with Cambalache 0.96.1 -->
+  const char *movimientos_ui = R"(
+  <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <!-- interface-name movimientos.ui -->
   <requires lib="gtk" version="4.0"/>
   <object class="GtkBox" id="box_movimientos">
-    <property name="orientation">vertical</property>
+    <property name="orientation">1</property>
     <property name="spacing">5</property>
     <child>
       <object class="GtkBox">
         <property name="spacing">7</property>
-        <child>
-          <object class="GtkButton" id="btn_printer">
-            <property name="icon-name">document-print-symbolic</property>
-            <property name="tooltip-text">Reimprimir Ticket</property>
-            <style>
-              <class name="suggested-action"/>
-            </style>
-          </object>
-        </child>
-        <child>
-          <object class="GtkButton" id="btn_imprime_corte">
-            <property name="halign">start</property>
-            <property name="hexpand">true</property>
-            <property name="icon-name">printer-network-symbolic</property>
-            <property name="tooltip-text">Imprime Corte</property>
-            <style>
-              <class name="warning"/>
-            </style>
-          </object>
-        </child>
         <child>
           <object class="GtkDropDown" id="dp_tipo">
             <property name="tooltip-text">Tipo de Movimiento</property>
@@ -293,7 +290,7 @@ namespace View
         </child>
         <child>
           <object class="GtkButton" id="btn_aplica_filtro">
-            <property name="halign">end</property>
+            <property name="halign">2</property>
             <property name="hexpand">true</property>
             <property name="icon-name">object-select-symbolic</property>
             <property name="tooltip-text">Aplicar Filtro</property>
@@ -301,7 +298,7 @@ namespace View
         </child>
         <child>
           <object class="GtkButton" id="btn_remueve_filtros">
-            <property name="halign">end</property>
+            <property name="halign">2</property>
             <property name="icon-name">edit-delete-symbolic</property>
             <property name="tooltip-text">Eliminar Filtros</property>
           </object>
@@ -324,7 +321,7 @@ namespace View
     <child>
       <object class="GtkLabel" id="lbl_total_registros">
         <property name="css-classes">dim-label</property>
-        <property name="halign">start</property>
+        <property name="halign">1</property>
         <property name="label">Mostrando 10 de 100 registros</property>
       </object>
     </child>

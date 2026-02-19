@@ -21,8 +21,8 @@ Glib::RefPtr<Gio::ListStore<MLog>> Log::get_log(const nlohmann::json_abi_v3_12_0
             i["usuario"].get<std::string>(),
             i["tipo"].get<std::string>(),
             i["descripcion"].get<std::string>(),
-            i["ingreso"].get<int>(),
-            i["cambio"].get<int>(),
+            std::to_string(i["ingreso"].get<int>()),
+            std::to_string(i["cambio"].get<int>()),
             i["total"].get<int>(),
             i["estatus"].get<std::string>(),
             Glib::DateTime::create_from_iso8601(i["fecha"].get<std::string>())

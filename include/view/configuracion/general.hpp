@@ -6,19 +6,32 @@ class VGeneral : public Gtk::Box
 {
 private:
     Glib::RefPtr<Gtk::Builder> m_builder;
+
 protected:
-    Gtk::Entry *v_ety_mensaje_inicio;
-    Gtk::Button *v_btn_reinicia_val;
-    Gtk::Button *v_btn_actualiza_pos;
-    Gtk::Button *v_btn_retirada = nullptr;
-    Gtk::Button *v_btn_imagen = nullptr;
-    Gtk::Button *v_btn_imagen_2 = nullptr;
-    Gtk::Button *v_btn_desactiva_carrousel = nullptr;
-    Gtk::CheckButton *v_chk_mostrar_notificaciones;
-    
+    // Visualización
+    Gtk::Switch*   v_sw_mostrar_notificaciones  {nullptr};
+    Gtk::Entry*    v_ety_mensaje_inicio         {nullptr};
+    Gtk::Button*   v_btn_seleccionar_icono      {nullptr};
+    Gtk::Button*   v_btn_seleccionar_carpeta    {nullptr};
+    Gtk::Switch*   v_sw_desactivar_carrousel    {nullptr};
+
+    // Efectivo
+    Gtk::Switch*   v_sw_redondeo                {nullptr};
+    Gtk::Switch*   v_sw_terminar_operacion      {nullptr};
+
+    // Tarjeta
+    Gtk::DropDown* v_dd_iniciar_proceso         {nullptr};
+    Gtk::Switch*   v_sw_diferir                 {nullptr};
+
+    // Acciones / Mantenimiento
+    Gtk::Button*   v_btn_reiniciar_validadores  {nullptr};
+    Gtk::Button*   v_btn_actualizar_pos         {nullptr};
+    Gtk::Button*   v_btn_retirada               {nullptr};
+
     std::unique_ptr<Gtk::MessageDialog> v_dialog;
+
 public:
-    VGeneral(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuilder);
+    VGeneral(BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builder>& refBuilder);
     ~VGeneral();
 };
 

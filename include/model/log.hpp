@@ -15,8 +15,8 @@ public:
   Glib::ustring m_user;
   Glib::ustring m_tipo;
   Glib::ustring m_descripcion;
-  int m_ingreso;
-  int m_cambio;
+  Glib::ustring m_ingreso;
+  Glib::ustring m_cambio;
   int m_total;
   Glib::ustring m_estatus;
   Glib::DateTime m_fecha;
@@ -25,8 +25,8 @@ public:
                                    const Glib::ustring &user,
                                    const Glib::ustring &tipo,
                                    const Glib::ustring &descripcion,
-                                   int ingreso,
-                                   int cambio,
+                                   const Glib::ustring &ingreso,
+                                   const Glib::ustring &cambio,
                                    int total,
                                    const Glib::ustring &estatus,
                                    Glib::DateTime fecha)
@@ -39,8 +39,8 @@ protected:
        const Glib::ustring &user,
        const Glib::ustring &tipo,
        const Glib::ustring &descripcion,
-       int ingreso,
-       int cambio,
+       const Glib::ustring &ingreso,
+       const Glib::ustring &cambio,
        int total,
        const Glib::ustring &estatus,
        const Glib::DateTime &fecha)

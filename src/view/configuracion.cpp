@@ -4,7 +4,7 @@ VConfiguracion::VConfiguracion(/* args */)
 {
 
     auto builder = Gtk::Builder::create_from_string(View::Conf::general_ui);
-    auto general = Gtk::Builder::get_widget_derived<General>(builder, "boxConfGeneral");
+    auto general = Gtk::Builder::get_widget_derived<General>(builder, "page_general");
 
     append_page(*general,"General");
 

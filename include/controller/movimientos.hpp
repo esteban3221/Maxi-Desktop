@@ -34,6 +34,19 @@ private:
     void set_fecha();
     void borra_filtro();
 
+    //menu contextual
+    void create_context_menu();
+    void on_column_view_button_pressed(int n_press, double x, double y);
+    void show_context_menu(double x, double y, const Glib::RefPtr<Glib::ObjectBase>& item);
+    void on_menu_reimprimir();
+    void on_menu_ver_detalles();
+    void on_menu_anular();
+
+    Glib::RefPtr<Gio::MenuItem> m_menu_item_reimprimir;
+    Glib::RefPtr<Gio::MenuItem> m_menu_item_detalles;
+    Glib::RefPtr<Gio::MenuItem> m_menu_item_anular;
+    Gtk::PopoverMenu *m_popover_menu;
+
 public:
     Movimientos(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuilder);
     ~Movimientos();

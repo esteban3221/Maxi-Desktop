@@ -9,7 +9,7 @@ CUsuarios::CUsuarios(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &
     v_btn_modificar->signal_clicked().connect(sigc::mem_fun(*this, &CUsuarios::on_btn_edit_clicked));
     v_btn_eliminar->signal_clicked().connect(sigc::mem_fun(*this, &CUsuarios::on_btn_delete_clicked));
 
-    v_chk_todos_roles->signal_toggled().connect(sigc::mem_fun(*this, &CUsuarios::on_checkbox_main_toggled));
+    v_chk_todos_roles->signal_realize().connect(sigc::mem_fun(*this, &CUsuarios::on_checkbox_main_toggled));
     for (auto &&i : v_chk_roles) i->signal_toggled().connect(sigc::mem_fun(*this, &CUsuarios::state_group_checkbox));
     
     v_btn_guardar_roles->signal_clicked().connect(sigc::mem_fun(*this, &CUsuarios::on_btn_guardar_roles_clicked));
@@ -285,15 +285,11 @@ void CUsuarios::state_group_checkbox()
     if (count == 19)
     {
         v_chk_todos_roles->set_active();
-        v_chk_todos_roles->set_inconsistent(false);
     }
     else if (count == 0)
     {
         v_chk_todos_roles->set_active(false);
-        v_chk_todos_roles->set_inconsistent(false);
     }
-    else
-        v_chk_todos_roles->set_inconsistent();
 }
 
 void CUsuarios::on_btn_guardar_roles_clicked()
