@@ -52,31 +52,22 @@ void CambioA::on_btn_empezar_clicked()
                     auto j = nlohmann::json::parse(response.text);
 
                     auto log = std::make_unique<Log>();
-                    auto m_log = log->get_log(j["ticket"]);
-                    auto ticket = m_log->get_item(0);
-                    auto faltante = j["Cambio_faltante"].get<int>();
+                    auto ticket = log->get_log(j["ticket"])->get_item(0);
+                    
+                    
 
                     Global::Widget::reveal_toast(Glib::ustring::compose("<span weight=\"bold\"> %5 </span>\n\n"
                                                                         "Total: \t\t$%1\n"
                                                                         "Cambio: \t$%2\n"
                                                                         "Ingreso: \t$%3\n"
-                                                                        "Faltante: \t$%4\n", 
+                                                                        "Estatus: \t%4", 
                                                                         ticket->m_total, 
                                                                         ticket->m_cambio, 
                                                                         ticket->m_ingreso, 
-                                                                        faltante,
-                                                                        "Cambio Automatico"), Gtk::MessageType::OTHER);
+                                                                        ticket->m_estatus,
+                                                                        "Cambio Automatico"));
 
-                    Global::System::imprime_ticket(ticket, faltante);
-
-                    if (faltante > 0) 
-                    {
-                        // v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window,"Cambio Faltante",false,Gtk::MessageType::INFO, Gtk::ButtonsType::NONE));
-                        // v_dialog->set_secondary_text(Glib::ustring::format("Se requiere un cambio de " , faltante));
-                        // v_dialog->set_visible();
-                        Global::Widget::reveal_toast(Glib::ustring::compose("<span weight=\"bold\">Cambio Automatico</span>\n\n"
-                                                                        "Se requiere un cambio de $%1", faltante), Gtk::MessageType::WARNING);
-                    }
+                    Global::System::imprime_ticket(ticket);
                 } else 
                 {
                     // v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window, "Error"));

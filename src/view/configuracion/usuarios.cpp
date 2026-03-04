@@ -32,14 +32,14 @@ VUsuarios::VUsuarios(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &
     v_chk_salir_windows      = m_builder->get_widget<Gtk::CheckButton>("check_salir_windows");
     v_chk_apagar_equipo      = m_builder->get_widget<Gtk::CheckButton>("check_apagar_equipo");
 
-//     v_chk_todos_roles = {
-//     v_chk_venta, v_chk_pago, v_chk_carga, v_chk_retirada,
-//     v_chk_cambio_man, v_chk_cambio_auto, v_chk_ingresos,
-//     v_chk_envio_casette, v_chk_retirada_casette, v_chk_consulta_efectivo,
-//     v_chk_mov_pendientes, v_chk_consulta_mov, v_chk_cierre_falt,
-//     v_chk_estadisticas, v_chk_fianza, v_chk_mostrar_report,
-//     v_chk_configuracion, v_chk_salir_windows, v_chk_apagar_equipo
-// };
+v_chk_roles = {
+    v_chk_venta, v_chk_pago, v_chk_carga, v_chk_retirada,
+    v_chk_cambio_man, v_chk_cambio_auto, v_chk_ingresos,
+    v_chk_envio_casette, v_chk_retirada_casette, v_chk_consulta_efectivo,
+    v_chk_mov_pendientes, v_chk_consulta_mov, v_chk_cierre_falt,
+    v_chk_estadisticas, v_chk_fianza, v_chk_mostrar_report,
+    v_chk_configuracion, v_chk_salir_windows, v_chk_apagar_equipo
+};
 
     v_chk_todos_roles = m_builder->get_widget<Gtk::Switch>("check_todos");
 

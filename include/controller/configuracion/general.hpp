@@ -13,6 +13,7 @@ private:
     void on_ety_change_mensaje_inicio();
     void on_btn_reinicia_val_clicked();
     void on_btn_retirada();
+    void on_actualiza_operaciones_event();
 
     void on_btn_actualiza_pos_clicked();
     void on_btn_imagen_pos_clicked();

@@ -362,7 +362,7 @@ namespace Global
 {
     namespace System
     {
-        void imprime_ticket(Glib::RefPtr<MLog> log, int faltante)
+        void imprime_ticket(Glib::RefPtr<MLog> log)
         {
             auto db = std::make_unique<Configuracion>();
             auto db_ = db->get_conf_data(5, 11);
@@ -421,9 +421,9 @@ namespace Global
             ticket << std::left << std::setw(18) << "Cambio:"
                    << std::right << std::setw(18) << "$" << log->m_cambio << "\n";
 
-            if (faltante > 0)
-                ticket << std::left << std::setw(18) << "<span foreground=\"red\">Faltante:</span>"
-                       << std::right << std::setw(18) << "<span foreground=\"red\">$" << faltante << "</span>\n";
+            // if (faltante > 0)
+            //     ticket << std::left << std::setw(18) << "<span foreground=\"red\">Faltante:</span>"
+            //            << std::right << std::setw(18) << "<span foreground=\"red\">$" << faltante << "</span>\n";
 
             ticket << "------------------------------------\n";
 

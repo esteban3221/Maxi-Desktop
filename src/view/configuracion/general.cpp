@@ -15,6 +15,8 @@ VGeneral::VGeneral(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &re
     v_btn_reiniciar_validadores = m_builder->get_widget<Gtk::Button>("btn_reiniciar_validadores");
     v_btn_actualizar_pos = m_builder->get_widget<Gtk::Button>("btn_actualizar_pos");
     v_btn_retirada = m_builder->get_widget<Gtk::Button>("btn_retirada");
+
+    v_dd_iniciar_proceso->set_model(list_procesos);
 }
 
 VGeneral::~VGeneral()

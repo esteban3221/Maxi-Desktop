@@ -23,7 +23,7 @@ void Venta::on_btn_cancelar_clicked()
         if (response_id == Gtk::ResponseType::OK)
         {
             ws.send(nlohmann::json{{"action", "detener"}}.dump());
-            Global::Widget::reveal_toast(Glib::ustring::compose("<span weight=\"bold\"> %1 Cancelada </span>", is_view_ingreso ? "Ingreso" : "Venta"), Gtk::MessageType::OTHER);
+            Global::Widget::reveal_toast(Glib::ustring::compose("<span weight=\"bold\"> %1 Cancelada </span>", is_view_ingreso ? "Ingreso" : "Venta"));
                 
             set_sensitive(true); 
         }
@@ -74,28 +74,22 @@ void Venta::on_btn_enter_clicked()
         {
             auto j = nlohmann::json::parse(response.text);
             auto log = std::make_unique<Log>();
-            auto m_log = log->get_log(j["ticket"]);
-            auto ticket = m_log->get_item(0);
-            auto faltante = j["Cambio_faltante"].get<int>();
+            auto ticket = log->get_log(j["ticket"])->get_item(0);
+            
 
             Global::Widget::reveal_toast(Glib::ustring::compose("<span weight=\"bold\"> %5 </span>\n\n"
                                                                 "Total: \t\t$%1\n"
                                                                 "Cambio: \t$%2\n"
                                                                 "Ingreso: \t$%3\n"
-                                                                "Faltante: \t$%4\n", 
+                                                                "Estatus: \t%4", 
                                                                 ticket->m_total, 
                                                                 ticket->m_cambio, 
                                                                 ticket->m_ingreso, 
-                                                                faltante,
-                                                                is_view_ingreso ? "Ingreso" : "Venta"), Gtk::MessageType::OTHER);
-            Global::System::imprime_ticket(ticket, faltante);
-            if (faltante > 0) 
-            {
-                v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window,"Cambio Faltante",false,Gtk::MessageType::INFO, Gtk::ButtonsType::NONE));
-                v_dialog->set_secondary_text(Glib::ustring::format("Se requiere un cambio de " , faltante));
-                v_dialog->set_visible();
-            }
-        } else 
+                                                                ticket->m_estatus,
+                                                                is_view_ingreso ? "Ingreso" : "Venta"));
+            Global::System::imprime_ticket(ticket);
+        } 
+        else 
         {
             v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window, "Error"));
             v_dialog->set_secondary_text(response.text);
@@ -133,9 +127,10 @@ void Venta::manejar_respuesta_servidor(const std::string& respuesta)
     try 
     {
         auto json = nlohmann::json::parse(respuesta);
-        std::string status = json["status"].get<std::string>();
+        auto terminado = json["terminado"].get<bool>();
 
-        if (status == "Proceso terminado") {
+        if (terminado) 
+        {
             Glib::signal_idle().connect_once([this]() {
                 ws.close();
                 g_info("WebSocket cerrado desde hilo principal");
@@ -144,7 +139,8 @@ void Venta::manejar_respuesta_servidor(const std::string& respuesta)
         }
 
         Glib::signal_idle().connect_once([this, json]() {
-            if (json.contains("total")) {
+            if (json.contains("total")) 
+            {
                 v_box_columns->v_ety_columns[0]->set_text(Glib::ustring::compose("$ %1", json["total"].get<int>()));
                 v_box_columns->v_ety_columns[1]->set_text(Glib::ustring::compose("$ %1", json["ingreso"].get<int>()));
                 v_box_columns->v_ety_columns[2]->set_text(Glib::ustring::compose("$ %1", json["cambio"].get<int>()));

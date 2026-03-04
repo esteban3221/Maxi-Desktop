@@ -1,5 +1,6 @@
 #pragma once
 #include <gtkmm.h>
+#include <algorithm>
 #include "global.hpp"
 
 class VPagoM : public Gtk::Box
@@ -7,12 +8,18 @@ class VPagoM : public Gtk::Box
 private:
     Glib::RefPtr<Gtk::Builder> m_builder;
 protected:
-    Gtk::SpinButton *v_spin_bill[6]{nullptr};
-    Gtk::SpinButton *v_spin_coin[4]{nullptr};
-    Gtk::Label *v_lbl_bill[6]{nullptr};
-    Gtk::Label *v_lbl_coin[4]{nullptr};
+    struct SpinData 
+    {
+        Gtk::SpinButton* spin;
+        int denominacion;
+    };
+
+    Gtk::Box *v_box_level_validadores = nullptr;
     Gtk::Button *v_btn_cobrar = nullptr;
     Gtk::Entry *v_ety_concepto = nullptr;
+
+    Gtk::Box *agregar_contenedor(const std::vector<std::pair<size_t,size_t>> &vec_val, std::string key);
+    std::map<std::string, std::vector<SpinData>> m_inputs_pago;
 
     std::unique_ptr<Gtk::MessageDialog> v_dialog;
 public:

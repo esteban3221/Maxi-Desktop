@@ -22,16 +22,16 @@ namespace Global
             switch (type)
             {
             case Gtk::MessageType::INFO:
-                v_button_conatiner->set_css_classes({"pill", "osd"});
+                v_button_conatiner->set_css_classes({"osd"});
             break;
             case Gtk::MessageType::WARNING:
-                v_button_conatiner->set_css_classes({"pill", "warning"});
+                v_button_conatiner->set_css_classes({"warning"});
             break;
             case Gtk::MessageType::QUESTION:
-                v_button_conatiner->set_css_classes({"pill", "suggested-action"});
+                v_button_conatiner->set_css_classes({"suggested-action"});
             break;
             case (Gtk::MessageType)3:
-                v_button_conatiner->set_css_classes({"pill", "destructive-action"});
+                v_button_conatiner->set_css_classes({"destructive-action"});
             break;
             case Gtk::MessageType::OTHER:
                 v_button_conatiner->set_css_classes({"button"});

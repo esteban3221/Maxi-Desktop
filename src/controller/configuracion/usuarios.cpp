@@ -9,7 +9,7 @@ CUsuarios::CUsuarios(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &
     v_btn_modificar->signal_clicked().connect(sigc::mem_fun(*this, &CUsuarios::on_btn_edit_clicked));
     v_btn_eliminar->signal_clicked().connect(sigc::mem_fun(*this, &CUsuarios::on_btn_delete_clicked));
 
-    v_chk_todos_roles->signal_realize().connect(sigc::mem_fun(*this, &CUsuarios::on_checkbox_main_toggled));
+    v_chk_todos_roles->property_active().signal_changed().connect(sigc::mem_fun(*this, &CUsuarios::on_checkbox_main_toggled));
     for (auto &&i : v_chk_roles) i->signal_toggled().connect(sigc::mem_fun(*this, &CUsuarios::state_group_checkbox));
     
     v_btn_guardar_roles->signal_clicked().connect(sigc::mem_fun(*this, &CUsuarios::on_btn_guardar_roles_clicked));
@@ -99,10 +99,7 @@ void CUsuarios::on_row_activated(guint id)
             
         }
         else
-        {
-            
             Global::Widget::reveal_toast("No tiene permisos para acceder a esta seccion", (Gtk::MessageType)3);
-        }
         
     });
 }
@@ -121,6 +118,7 @@ void CUsuarios::lanza_dialog(const std::string &title)
     v_entry_contrasena = Gtk::manage(new Gtk::PasswordEntry());
 
     v_dialog->set_default_size(300, 200);
+    v_dialog->set_resizable(false);
 
     v_entry_usuario->set_placeholder_text("Escriba el nombre de usuario");
     v_entry_usuario->property_primary_icon_name() = "system-users-symbolic";
@@ -283,13 +281,9 @@ void CUsuarios::state_group_checkbox()
     for (auto &&i : v_chk_roles)if (i->get_active())
             count++;
     if (count == 19)
-    {
         v_chk_todos_roles->set_active();
-    }
-    else if (count == 0)
-    {
+    else
         v_chk_todos_roles->set_active(false);
-    }
 }
 
 void CUsuarios::on_btn_guardar_roles_clicked()

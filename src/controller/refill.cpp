@@ -28,7 +28,7 @@ void Refill::on_btn_detener()
         if (response_id == Gtk::ResponseType::YES)
         {
             ws.send(nlohmann::json{{"action", "detener"}}.dump());
-            Global::Widget::reveal_toast("Refill detenido", Gtk::MessageType::OTHER);
+            Global::Widget::reveal_toast("Refill detenido");
 
             v_btn_detener->set_visible(false);
             v_btn_incia->set_visible(true);
@@ -291,21 +291,21 @@ void Refill::on_btn_iniciar()
             auto j = nlohmann::json::parse(response.text);
 
             auto log = std::make_unique<Log>();
-            auto m_log = log->get_log(j["ticket"]);
-            auto ticket = m_log->get_item(0);
-            auto faltante = j["Cambio_faltante"].get<int>();
+            auto ticket = log->get_log(j["ticket"])->get_item(0);
+            
+            
 
             Global::Widget::reveal_toast(Glib::ustring::compose("<span weight=\"bold\">Refill</span>\n\n"
                                                                         "Total: \t\t$%1\n"
                                                                         "Cambio: \t$%2\n"
                                                                         "Ingreso: \t$%3\n"
-                                                                        "Faltante: \t$%4\n", 
+                                                                        "Estatus: \t%4", 
                                                                         ticket->m_total, 
                                                                         ticket->m_cambio, 
                                                                         ticket->m_ingreso, 
-                                                                        faltante), Gtk::MessageType::OTHER);
+                                                                        ticket->m_estatus));
 
-            Global::System::imprime_ticket(ticket, faltante);
+            Global::System::imprime_ticket(ticket);
 
             on_show_map();
             v_lbl_total_parcial_billetes->set_text(j["billetes"].get<std::string>());
@@ -331,10 +331,10 @@ void Refill::on_btn_transpaso()
             if (j.contains("ticket")) 
             {
                 auto log = std::make_unique<Log>();
-                auto m_log = log->get_log(j["ticket"]);
-                auto ticket = m_log->get_item(0);
+                auto ticket = log->get_log(j["ticket"])->get_item(0);
+                
 
-                Global::System::imprime_ticket(ticket, 0);
+                Global::System::imprime_ticket(ticket);
             }
         }
         Global::Widget::m_refActionGroup->lookup_action("cerrarsesion")->activate(); });

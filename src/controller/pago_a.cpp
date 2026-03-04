@@ -24,27 +24,22 @@ void PagoA::on_btn_enter_clicked()
                 if (response.status_code == 200) {
                     auto j = nlohmann::json::parse(response.text);
 
-                    auto faltante = j["Cambio_faltante"].get<int>();
+                    
                     auto log = std::make_unique<Log>();
-                    auto m_log = log->get_log(j["ticket"]);
-                    auto ticket = m_log->get_item(0);
-                    Global::System::imprime_ticket(ticket, faltante);
+                    auto ticket = log->get_log(j["ticket"])->get_item(0);
+                    
+                    Global::System::imprime_ticket(ticket);
 
                     Global::Widget::reveal_toast(Glib::ustring::compose("<span weight=\"bold\">Pago</span>\n\n"
                                                                         "Total: \t\t$%1\n"
                                                                         "Cambio: \t$%2\n"
                                                                         "Ingreso: \t$%3\n"
-                                                                        "Faltante: \t$%4", 
+                                                                        "Estatus \t%4", 
                                                                         ticket->m_total, 
                                                                         ticket->m_cambio, 
                                                                         ticket->m_ingreso, 
-                                                                        faltante), Gtk::MessageType::OTHER);
+                                                                        ticket->m_estatus));
 
-                    if (faltante > 0) {
-                        v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window, "Cambio Faltante", false, Gtk::MessageType::INFO, Gtk::ButtonsType::NONE));
-                        v_dialog->set_secondary_text("Se requiere un cambio de " + j["Cambio_faltante"].get<std::string>());
-                        v_dialog->set_visible();
-                    }
                 } else {
                     v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window, "Error", false, (Gtk::MessageType)3 /*para windows*/, Gtk::ButtonsType::NONE));
                     v_dialog->set_secondary_text(response.text);

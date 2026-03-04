@@ -7,10 +7,16 @@ General::General(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refB
     v_btn_reiniciar_validadores->signal_clicked().connect(sigc::mem_fun(*this, &General::on_btn_reinicia_val_clicked));
     v_btn_actualizar_pos->signal_clicked().connect(sigc::mem_fun(*this, &General::on_btn_actualiza_pos_clicked));
     v_btn_retirada->signal_clicked().connect(sigc::mem_fun(*this, &General::on_btn_retirada));
-    //v_btn_imagen->signal_clicked().connect(sigc::mem_fun(*this, &General::on_btn_imagen_pos_clicked));
-    //v_btn_imagen_2->signal_clicked().connect(sigc::mem_fun(*this, &General::on_btn_imagen_2_clicked));
-    //v_btn_desactiva_carrousel->signal_clicked().connect(sigc::mem_fun(*this, &General::on_btn_desactiva_carrousel_clicked));
-    //v_chk_mostrar_notificaciones->signal_toggled().connect(sigc::mem_fun(*this, &General::on_chk_mostrar_notificaciones_toggled));
+    v_btn_seleccionar_icono->signal_clicked().connect(sigc::mem_fun(*this, &General::on_btn_imagen_pos_clicked));
+    v_btn_seleccionar_carpeta->signal_clicked().connect(sigc::mem_fun(*this, &General::on_btn_imagen_2_clicked));
+
+    v_sw_desactivar_carrousel->property_active().signal_changed().connect(sigc::mem_fun(*this, &General::on_btn_desactiva_carrousel_clicked));
+    v_sw_mostrar_notificaciones->property_active().signal_changed().connect(sigc::mem_fun(*this, &General::on_chk_mostrar_notificaciones_toggled));
+
+    v_sw_redondeo->property_active().signal_changed().connect(sigc::mem_fun(*this, &General::on_actualiza_operaciones_event));
+    v_sw_terminar_operacion->property_active().signal_changed().connect(sigc::mem_fun(*this, &General::on_actualiza_operaciones_event));
+    v_sw_diferir->property_active().signal_changed().connect(sigc::mem_fun(*this, &General::on_actualiza_operaciones_event));
+    v_dd_iniciar_proceso->property_selected().signal_changed().connect(sigc::mem_fun(*this, &General::on_actualiza_operaciones_event));
 }
 
 General::~General()
@@ -123,6 +129,28 @@ bool General::agregar_archivo_a_zip(zipFile zf, const std::string &ruta_archivo,
     return true;
 }
 
+void General::on_actualiza_operaciones_event()
+{
+    auto json_body = nlohmann::json{
+        {"redondea_cambio", v_sw_redondeo->get_active()},
+        {"terminar_operaciones", v_sw_terminar_operacion->get_active()},
+        {"permite_diferir", v_sw_diferir->get_active()},
+        {"iniciar_proceso_en", v_dd_iniciar_proceso->get_selected()}
+    };
+
+    auto future = cpr::PostAsync(cpr::Url{Global::System::URL + "configuracion/actualiza_operaciones"},
+                                 Global::Utility::header,
+                                 cpr::Body{json_body.dump()},
+                                 cpr::Timeout{5000});
+    Global::Utility::consume_and_do(future, [this](cpr::Response response)
+                                    {
+        if (response.status_code == 200)
+            Global::Widget::reveal_toast("Configuración actualizada con éxito");
+        else
+            Global::Widget::reveal_toast("Error al actualizar la configuración", (Gtk::MessageType)3 /*La macro de windows permea TODO LO QUE TENGA ERROR*/);
+                                    });
+}
+
 void General::on_show_mapping()
 {
     auto db = std::make_unique<Configuracion>();
@@ -130,6 +158,21 @@ void General::on_show_mapping()
 
     v_sw_mostrar_notificaciones->set_active(data->get_item(0)->m_valor == "1");
     v_ety_mensaje_inicio->set_text(data->get_item(1)->m_valor);
+
+    auto future = cpr::GetAsync(cpr::Url{Global::System::URL + "configuracion/get_informacion_operaciones"}, Global::Utility::header);
+    Global::Utility::consume_and_do(future, [this](cpr::Response response)
+    {
+        if (response.status_code == 200) 
+        {
+            auto j = nlohmann::json::parse(response.text);
+            v_sw_redondeo->set_active(j["redondea_cambio"].get<bool>());
+            v_sw_terminar_operacion->set_active(j["terminar_operaciones"].get<bool>());
+            v_sw_diferir->set_active(j["permite_diferir"].get<bool>());
+            v_dd_iniciar_proceso->set_selected(j["iniciar_proceso_en"].get<int>());
+        }
+        else
+            Global::Widget::reveal_toast("Error al cargar los datos", (Gtk::MessageType)3 /*La macro de windows permea TODO LO QUE TENGA ERROR*/);
+    });
 }
 
 void General::on_chk_mostrar_notificaciones_toggled()
@@ -151,13 +194,9 @@ void General::on_btn_desactiva_carrousel_clicked()
     Global::Utility::consume_and_do(future, [this](cpr::Response response)
     {
         if (response.status_code == 200) 
-        {
             Global::Widget::reveal_toast("Exito");
-        }
         else
-        {
             Global::Widget::reveal_toast("Error al desactivar el carrousel", (Gtk::MessageType)3 /*La macro de windows permea TODO LO QUE TENGA ERROR*/);
-        }
     });
 }
 
@@ -195,9 +234,7 @@ void General::on_folder_dialog_finish(const Glib::RefPtr<Gio::AsyncResult>& resu
             });
         }
         else
-        {
             Global::Widget::reveal_toast("Error al comprimir la carpeta", (Gtk::MessageType)3);
-        }
     }
     catch (const Gtk::DialogError &err)
     {
@@ -217,8 +254,8 @@ void General::on_btn_retirada()
             if (j.contains("ticket")) 
             {
                 auto log = std::make_unique<Log>();
-                auto m_log = log->get_log(j["ticket"]);
-                auto ticket = m_log->get_item(0);
+                auto ticket = log->get_log(j["ticket"])->get_item(0);
+                
 
                 Global::System::imprime_ticket(ticket);
             }
@@ -341,11 +378,12 @@ void General::on_file_dialog_finish(const Glib::RefPtr<Gio::AsyncResult> &result
                                      cpr::Multipart{{"file", cpr::File(filename)}});
 
         Global::Utility::consume_and_do(future, [this](cpr::Response response)
-                                        {
+        {
             if (response.status_code == 200)
                 Global::Widget::reveal_toast("Exito");
             
-            std::cout << response.text << std::endl; });
+            std::cout << response.text << std::endl; 
+        });
     }
     catch (const Gtk::DialogError &err)
     {
