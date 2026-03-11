@@ -473,8 +473,8 @@ namespace Global
                 {
                     switch (result)
                     {
-                        case Gtk::PrintOperation::Result::ERROR:
-                            Global::Widget::reveal_toast("Error al imprimir", Gtk::MessageType::ERROR);
+                        case Gtk::PrintOperation::Result(0):
+                            Global::Widget::reveal_toast("Error al imprimir", Gtk::MessageType(3));
                             break;
                         case Gtk::PrintOperation::Result::APPLY:
                             Global::Widget::reveal_toast("Ticket impreso correctamente", Gtk::MessageType::INFO);
@@ -489,7 +489,7 @@ namespace Global
             }
             catch (const Gtk::PrintError &ex)
             {
-                Global::Widget::reveal_toast("Error de impresión: " + std::string(ex.what()), Gtk::MessageType::ERROR);
+                Global::Widget::reveal_toast("Error de impresión: " + std::string(ex.what()), Gtk::MessageType(3));
                 std::cerr << "Error en impresión: " << ex.what() << std::endl;
             }
         }
