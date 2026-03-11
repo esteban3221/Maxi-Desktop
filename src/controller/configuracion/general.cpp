@@ -265,20 +265,16 @@ void General::on_btn_retirada()
 }
 void General::on_btn_reinicia_val_clicked()
 {
-    nlohmann::json json = {
-        {"rol", 9},
-        {"bill", {{"command", "ResetDevice"}, {"args", ""}}},
-        {"coin", {{"command", "ResetDevice"}, {"args", ""}}}};
-    auto future = cpr::PostAsync(cpr::Url{Global::System::URL + "configuracion/custom_command"}, Global::Utility::header, cpr::Body{json.dump()});
-    Global::Utility::consume_and_do(future, [this](cpr::Response response)
-                                    {
-        if (response.status_code == 200) 
-        {
-            
-            Global::Widget::reveal_toast("Exito");
-        }
+    nlohmann::json json = {{"rol", 9}};
 
-        std::cout << response.text << std::endl; });
+    auto future = cpr::PostAsync(cpr::Url{Global::System::URL + "configuracion/reiniciar_validadores"}, Global::Utility::header, cpr::Body{json.dump()});
+    Global::Utility::consume_and_do(future, [this](cpr::Response response)
+    {
+        if (response.status_code == 200)
+            Global::Widget::reveal_toast("Exito");
+        else
+            Global::Widget::reveal_toast(response.text, Gtk::MessageType(3));
+    });
 }
 void General::on_btn_actualiza_pos_clicked()
 {

@@ -95,6 +95,7 @@ void TitleBar::on_ws_open()
     g_debug("Conectado al WebSocket");
     v_menu_status->set_css_classes({"suggested-action"});
     v_menu_status->set_label("Conectado");
+    Global::Widget::v_revealer->set_reveal_child(false);
 }
 
 void TitleBar::check_compatibilidad()
@@ -158,41 +159,6 @@ void TitleBar::check_compatibilidad()
 
 void TitleBar::on_ws_message(const std::string& msg)
 {
-    Glib::signal_idle().connect_once([this, msg]() {  
-    auto json = nlohmann::json::parse(msg);
-    auto mensaje = json["status"].get<std::string>();
-    auto code = json["code"].get<int>();
-
-    switch (code)
-    {
-    case cpr::status::HTTP_TEMPORARY_REDIRECT:
-        v_menu_status->set_css_classes({"warning"});
-        v_menu_status->set_label(mensaje);
-        Global::Widget::m_refActionGroup->lookup_action("cerrarsesion")->set_property("enabled", false);
-        break;
-    case cpr::status::HTTP_OK:
-        v_menu_status->set_css_classes({"suggested-action"});
-        v_menu_status->set_label(mensaje);
-        Global::Widget::m_refActionGroup->lookup_action("cerrarsesion")->set_property("enabled", true);
-        break;
-    case cpr::status::HTTP_BAD_REQUEST:
-        v_menu_status->set_css_classes({"destructive-action"});
-        Global::Widget::m_refActionGroup->lookup_action("cerrarsesion")->set_property("enabled", false);
-        Global::Widget::reveal_toast(mensaje, (Gtk::MessageType)3, 5000);
-        break;
-    case cpr::status::HTTP_CONTINUE:
-        v_menu_status->set_css_classes({"plain"});
-        v_menu_status->set_label(mensaje);
-        Global::Widget::m_refActionGroup->lookup_action("cerrarsesion")->set_property("enabled", false);
-        break;
-    case cpr::status::HTTP_INTERNAL_SERVER_ERROR:
-        v_menu_status->set_css_classes({"destructive-action"});
-        Global::Widget::reveal_toast(mensaje, (Gtk::MessageType)3, 5000);
-        Global::Widget::m_refActionGroup->lookup_action("cerrarsesion")->set_property("enabled", false);
-        break;
-    default:
-        break;
-    }});
 }
 
 void TitleBar::on_ws_error(const std::string& err)
@@ -207,5 +173,9 @@ void TitleBar::on_ws_error(const std::string& err)
 
 void TitleBar::on_ws_close(int code, const std::string& reason)
 {
-    std::cout << "Cerrado: " << reason << " (code " << code << ")" << std::endl;
+    Glib::signal_idle().connect_once([this]() 
+    {
+        v_menu_status->set_label("Desconectado");
+        v_menu_status->set_css_classes({"destructive-action"});
+    });
 }

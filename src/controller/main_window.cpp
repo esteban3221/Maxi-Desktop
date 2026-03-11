@@ -70,26 +70,7 @@ void MainWindow::on_button_clicked()
 }
 void MainWindow::acceleretors(const Glib::RefPtr<Gtk::Application>& app)
 {
-    Global::Widget::m_refActionGroup = Gio::SimpleActionGroup::create();
-
     Global::Widget::m_refActionGroup->add_action("quit", [this]() { this->close(); });
-    Global::Widget::m_refActionGroup->add_action("volcadolog", [this]() 
-    {   
-        auto future = cpr::GetAsync(cpr::Url{Global::System::URL + "configuracion/get_volcado_servicio"});
-        Global::Utility::consume_and_do(future, [this](const cpr::Response &response)
-            {
-                if (response.status_code == 200) 
-                {
-                    auto resultado = MailTo::enviar("esteban-oe100@hotmail.com", 
-                                                    "Volcado de log - Maxicajero Server", 
-                                                    response.text);
-                    if (resultado)
-                        std::cout << "Volcado de log enviado correctamente." << std::endl;  
-                    else
-                        std::cerr << "Error al enviar el volcado de log." << std::endl;
-                }
-            });
-    });
     Global::Widget::m_refActionGroup->add_action("about",  [this,&app]() 
     { 
         about.set_transient_for(*this);
