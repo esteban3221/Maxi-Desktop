@@ -15,7 +15,7 @@ namespace Global
         Gtk::Revealer *v_revealer = nullptr;
         Gtk::Label *v_revealer_title = nullptr;
         Gtk::ProgressBar *v_progress_bar = nullptr;
-        Glib::RefPtr<Gio::SimpleActionGroup> m_refActionGroup;
+        Glib::RefPtr<Gio::SimpleActionGroup> m_refActionGroup = Gio::SimpleActionGroup::create();;
 
         void reveal_toast(const Glib::ustring &title, Gtk::MessageType type, int duration )
         {
@@ -63,27 +63,37 @@ namespace Global
             return utf8_str;
         }
         #endif
+
         cpr::Header header{{"Authorization", "Bearer " + Global::System::token}};
         void consume_and_do(cpr::AsyncResponse &async, const std::function<void(const cpr::Response &)> &callback)
         {
-            std::thread([async = std::move(async), callback]() mutable {
-                try {
-                    while (async.wait_for(std::chrono::milliseconds(100)) != std::future_status::ready) {
-                        Glib::signal_idle().connect_once([]() {
+            std::thread([async = std::move(async), callback]() mutable 
+            {
+                try 
+                {
+                    auto lookup = Widget::m_refActionGroup->lookup_action("cerrarsesion");
+                    while (async.wait_for(std::chrono::milliseconds(100)) != std::future_status::ready) 
+                    {
+                        Glib::signal_idle().connect_once([lookup]() 
+                        {
+                            if(lookup) lookup->set_property("enabled", false);
                             Global::Widget::v_progress_bar->pulse();
                         });
                     }
         
                     auto response = async.get();
         
-                    Glib::signal_idle().connect_once([response, callback]() {
+                    Glib::signal_idle().connect_once([response, callback, lookup]() 
+                    {
+                        if(lookup) lookup->set_property("enabled", true);
                         Global::Widget::v_progress_bar->set_fraction(1.0);
                         callback(response);
                     });
                 } 
                 catch (const std::exception& e) 
                 {
-                    std::cerr << "Error: " << e.what() << std::endl;
+                    g_error(e.what());
+                    Widget::m_refActionGroup->lookup_action("cerrarsesion")->set_property("enabled", true);
                 } 
             }).detach();
         }

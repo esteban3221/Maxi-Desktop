@@ -92,7 +92,9 @@ void Refill::on_show_map()
     v_bill_col_ingreso_total->set_visible(false);
 
     v_btn_detener->set_visible(false);
-    v_btn_incia->set_visible(true);
+    v_btn_detener->set_sensitive();
+    v_btn_incia->set_visible();
+    v_btn_incia->set_sensitive();
 
     auto future = cpr::GetAsync(cpr::Url{Global::System::URL, "validadores/get_dashboard"}, Global::Utility::header);
     Global::Utility::consume_and_do(future, [this](cpr::Response response)
@@ -119,13 +121,14 @@ void Refill::on_show_map()
                     int in_cashbox = item["storedInCashbox"].get<int>();
                     int in_payout  = item["storedInPayout"].get<int>();
 
-                    if (type == "BILL") {
+                    if (type == "BILL") 
+                    {
                         total_bill_cass += (val * in_cashbox);
                         total_bill_recy += (val * in_payout);
-                    } else {
-                        total_mon_cass  += (val * in_cashbox);
+                    } 
+                    else 
                         total_mon_recy  += (val * in_payout);
-                    }
+                    
                 }
 
                 auto level_cash = level->get_level_cash(levels);
