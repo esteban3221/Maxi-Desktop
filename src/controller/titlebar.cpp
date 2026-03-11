@@ -4,9 +4,9 @@
 TitleBar::TitleBar(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuilder) : VTitlebar(cobject, refBuilder)
 {
     init_list_ip();
+
     async.dispatcher.connect(sigc::mem_fun(async, &Global::Async::on_dispatcher_emit));
     v_ety_servidor->signal_activate().connect(sigc::mem_fun(*this, &TitleBar::on_ety_servidor_activate));
-    // v_btn_regresar->signal_clicked().connect(sigc::mem_fun(*this, &TitleBar::on_btn_regresar_clicked));
     v_list_ip->signal_row_activated().connect(sigc::mem_fun(*this, &TitleBar::on_list_ip_row_activated));
     check_compatibilidad();
 
@@ -93,6 +93,8 @@ void TitleBar::on_list_ip_row_activated(Gtk::ListBoxRow *row)
 void TitleBar::on_ws_open()
 {
     g_debug("Conectado al WebSocket");
+    v_menu_status->set_css_classes({"suggested-action"});
+    v_menu_status->set_label("Conectado");
 }
 
 void TitleBar::check_compatibilidad()
@@ -188,7 +190,6 @@ void TitleBar::on_ws_message(const std::string& msg)
         Global::Widget::reveal_toast(mensaje, (Gtk::MessageType)3, 5000);
         Global::Widget::m_refActionGroup->lookup_action("cerrarsesion")->set_property("enabled", false);
         break;
-    
     default:
         break;
     }});

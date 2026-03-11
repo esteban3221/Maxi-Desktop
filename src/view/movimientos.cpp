@@ -97,19 +97,29 @@ void VMovimientos::on_setup_button(const Glib::RefPtr<Gtk::ListItem> &list_item)
 
 void VMovimientos::on_bind_id(const Glib::RefPtr<Gtk::ListItem> &list_item)
 {
-  auto row = std::dynamic_pointer_cast<Gtk::TreeListRow>(list_item->get_item());
+    auto row = std::dynamic_pointer_cast<Gtk::TreeListRow>(list_item->get_item());
+    if (!row) return;
 
-  auto col_log = std::dynamic_pointer_cast<MLog>(row->get_item());
-  if (col_log)
-  {
-    auto expander = dynamic_cast<Gtk::TreeExpander *>(list_item->get_child());
-    expander->set_list_row(row);
-    auto label = dynamic_cast<Gtk::Label *>(expander->get_child());
+    auto col_log = std::dynamic_pointer_cast<MLog>(row->get_item());
+    
+    if (col_log)
+    {
+        auto expander = dynamic_cast<Gtk::TreeExpander *>(list_item->get_child());
+        expander->set_list_row(row);
+        
+        auto label = dynamic_cast<Gtk::Label *>(expander->get_child());
 
-    if (col_log->m_id != 0)
-      label->set_text(Glib::ustring::format(col_log->m_id));
-    return;
-  }
+        if (col_log->m_id != 0) 
+        {
+            label->set_text(Glib::ustring::format(col_log->m_id));
+            expander->set_visible(true); 
+        }
+        else 
+        {
+            label->set_text(""); 
+            expander->set_visible(false);
+        }
+    }
 }
 
 void VMovimientos::on_bind_usuario(const Glib::RefPtr<Gtk::ListItem> &list_item)

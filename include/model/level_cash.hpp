@@ -42,4 +42,5 @@ public:
     // std::vector<std::shared_ptr<Model::LevelCash_t>> get_log();
     Glib::RefPtr<Gio::ListStore<MLevelCash>> get_level_cash(const nlohmann::json_abi_v3_12_0::json &json);
     void update_level_cash(const Glib::RefPtr<MLevelCash> &level);
+    Glib::RefPtr<MLevelCash> from_json(const nlohmann::json_abi_v3_12_0::json &json);
 };

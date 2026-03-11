@@ -30,42 +30,41 @@ void Refill::on_btn_detener()
             ws.send(nlohmann::json{{"action", "detener"}}.dump());
             Global::Widget::reveal_toast("Refill detenido");
 
-            v_btn_detener->set_visible(false);
+            v_btn_detener->set_sensitive(false);
             v_btn_incia->set_visible(true);
         }
         v_dialog->close();
     });
-    // v_dialog->set_hide_on_close();
     v_dialog->set_visible();
 }
 
 void Refill::poll_alerta_niveles()
 {
-    std::thread([this]()
-    {
-        while (true)
-        {
-            std::this_thread::sleep_for(std::chrono::seconds(5));
-            auto db = std::make_unique<Configuracion>();
-            auto data = db->get_conf_data(1,1);
-            if (data->get_item(0)->m_valor == "1")
-                continue;
+    // std::thread([this]()
+    // {
+    //     while (true)
+    //     {
+    //         std::this_thread::sleep_for(std::chrono::seconds(5));
+    //         auto db = std::make_unique<Configuracion>();
+    //         auto data = db->get_conf_data(1,1);
+    //         if (data->get_item(0)->m_valor == "1")
+    //             continue;
 
-            if(Global::System::token.empty())
-                continue;
+    //         if(Global::System::token.empty())
+    //             continue;
             
-            auto future = cpr::GetAsync(cpr::Url{Global::System::URL, "validadores/get_dashboard"}, Global::Utility::header);
-            Global::Utility::consume_and_do(future,[this](cpr::Response response)
-            {
-                if (response.status_code == 200) 
-                {
-                    auto json = nlohmann::json::parse(response.text);
-                    alerta_niveles(json["bill"]);
-                    alerta_niveles(json["coin"]);
-                }
-            });
-        } 
-    }).detach();
+    //         auto future = cpr::GetAsync(cpr::Url{Global::System::URL, "validadores/get_dashboard"}, Global::Utility::header);
+    //         Global::Utility::consume_and_do(future,[this](cpr::Response response)
+    //         {
+    //             if (response.status_code == 200) 
+    //             {
+    //                 auto json = nlohmann::json::parse(response.text);
+    //                 alerta_niveles(json["bill"]);
+    //                 alerta_niveles(json["coin"]);
+    //             }
+    //         });
+    //     } 
+    // }).detach();
 }
 
 void Refill::alerta_niveles(const nlohmann::json &json)
@@ -102,20 +101,51 @@ void Refill::on_show_map()
         {
             auto level = std::make_unique<LevelCash>();
             auto json = nlohmann::json::parse(response.text);
-            auto level_coin = level->get_level_cash(json["coin"]);
-            auto level_bill = level->get_level_cash(json["bill"]);
-            
-            auto model_bill = v_tree_reciclador_billetes->get_model();
-            actualiza_data(model_bill,level_bill);
-            auto model_coin = v_tree_reciclador_monedas->get_model();
-            actualiza_data(model_coin,level_coin);
 
-            v_lbl_total->set_text(json["total"].get<std::string>());
-            v_lbl_total_billetes->set_text(json["total_billetes"].get<std::string>());
-            v_lbl_total_monedas->set_text(json["total_monedas_recy"].get<std::string>());
-            v_lbl_total_billetes_cass->set_text(json["total_billetes_cass"].get<std::string>());
-            v_lbl_total_parcial_billetes->set_text(json["total_billetes_recy"].get<std::string>());
-            v_lbl_total_parcial_monedas->set_text(json["total_monedas_recy"].get<std::string>());
+            long long total_bill_cass = 0;
+            long long total_bill_recy = 0;
+            long long total_mon_cass  = 0;
+            long long total_mon_recy  = 0;
+
+            for (auto it = json.begin(); it != json.end(); ++it)
+            {
+                auto device_data = it.value();
+                auto type = device_data["type"].get<std::string>();
+                auto levels = device_data["levels"];
+
+                for (auto& item : levels)
+                {
+                    long long val = item["value"].get<long long>();
+                    int in_cashbox = item["storedInCashbox"].get<int>();
+                    int in_payout  = item["storedInPayout"].get<int>();
+
+                    if (type == "BILL") {
+                        total_bill_cass += (val * in_cashbox);
+                        total_bill_recy += (val * in_payout);
+                    } else {
+                        total_mon_cass  += (val * in_cashbox);
+                        total_mon_recy  += (val * in_payout);
+                    }
+                }
+
+                auto level_cash = level->get_level_cash(levels);
+                auto model = (type == "BILL") ? v_tree_reciclador_billetes->get_model() : v_tree_reciclador_monedas->get_model();
+                actualiza_data(model, level_cash);
+            }
+
+            double t_bill_cass = total_bill_cass / 100.0;
+            double t_bill_recy = total_bill_recy / 100.0;
+            double t_mon_cass  = total_mon_cass / 100.0;
+            double t_mon_recy  = total_mon_recy / 100.0;
+
+            v_lbl_total_billetes->set_text(Glib::ustring::format(t_bill_cass + t_bill_recy));
+            v_lbl_total_monedas->set_text(Glib::ustring::format(t_mon_cass + t_mon_recy));
+    
+            v_lbl_total_billetes_cass->set_text(Glib::ustring::format(t_bill_cass));
+            v_lbl_total_parcial_billetes->set_text(Glib::ustring::format(t_bill_recy));
+            
+            v_lbl_total_parcial_monedas->set_text(Glib::ustring::format(t_mon_recy));
+            v_lbl_total->set_text(Glib::ustring::format(t_bill_cass + t_bill_recy + t_mon_cass + t_mon_recy));
         } 
     });
 }
@@ -264,16 +294,13 @@ void Refill::on_btn_iniciar()
     v_bill_col_ingreso_total->set_visible(true);
 
     v_btn_detener->set_visible(true);
-    v_btn_incia->set_visible(false);
+    v_btn_incia->set_sensitive(false);
 
-    ws.connect(Global::System::WS +"/ws/refill",[this]() 
+    ws.connect(Global::System::WS + "/ws/refill",[this]() 
     {
         enviar_datos();
     },
-    [this](const std::string& msg) 
-    {
-        manejar_respuesta_servidor(msg);
-    },
+    sigc::mem_fun(*this, &Refill::manejar_respuesta_servidor),
     [this](const std::string& err) 
     {
         Global::Widget::reveal_toast(Glib::ustring::compose("Error de conexión: %1", err), (Gtk::MessageType)3, 5000);
@@ -308,8 +335,8 @@ void Refill::on_btn_iniciar()
             Global::System::imprime_ticket(ticket);
 
             on_show_map();
-            v_lbl_total_parcial_billetes->set_text(j["billetes"].get<std::string>());
-            v_lbl_total_parcial_monedas->set_text(j["monedas"].get<std::string>());
+            // v_lbl_total_parcial_billetes->set_text(j["billetes"].get<std::string>());
+            // v_lbl_total_parcial_monedas->set_text(j["monedas"].get<std::string>());
             Global::Widget::m_refActionGroup->lookup_action("cerrarsesion")->activate();
         } 
     });
@@ -342,11 +369,6 @@ void Refill::on_btn_transpaso()
 
 void Refill::enviar_datos()
 {
-    auto json = nlohmann::json
-    {
-        {"action", "consulta"}
-    };
-    ws.send(json.dump());
 }
 
 void Refill::manejar_respuesta_servidor(const std::string& respuesta)
@@ -354,46 +376,42 @@ void Refill::manejar_respuesta_servidor(const std::string& respuesta)
     try 
     {
         auto json = nlohmann::json::parse(respuesta);
-        auto status = json["status"].get<std::string>();
-
-        if (status == "idle") {
-            Glib::signal_idle().connect_once([this]() {
-                ws.close();
-                g_info("WebSocket cerrado desde hilo principal");
-            });
-            return; 
-        }
         auto level = std::make_unique<LevelCash>();
+        if(json.contains("status") && json["status"].get<std::string>() == "detenido")
+        {
+            ws.close();
+            return;
+        }
+
+        auto it = json.begin(); 
         
-        auto level_coin = level->get_level_cash(json["coin"]);
-        auto level_bill = level->get_level_cash(json["bill"]);
+        const auto key = it.key();
+        auto data = it.value();
+        auto is_coin = key == "COIN";
+
+        auto m_item = level->from_json(data);
+        auto model = is_coin ? v_tree_reciclador_monedas->get_model() : v_tree_reciclador_billetes->get_model();
+        auto single = std::dynamic_pointer_cast<Gtk::SingleSelection>(model);
+        auto list_store = std::dynamic_pointer_cast<Gio::ListStore<MLevelCash>>(single->get_model());
         
-        auto model_bill = v_tree_reciclador_billetes->get_model();
-        auto model_coin = v_tree_reciclador_monedas->get_model();
+        for (size_t i = 0; i < list_store->get_n_items(); i++)
+        {
+            if (auto item = list_store->get_item(i); item->m_denominacion == m_item->m_denominacion)
+            {
+                Glib::signal_idle().connect_once([this, list_store, single, m_item, i]
+                {
+                    list_store->remove(i);
+                    list_store->insert(i, m_item);
+                    single->select_item(i, true);
+                });
+            }
+        }
 
         size_t total_recy_billetes = 0;
         size_t total_cass_billetes = 0;
         size_t total_recy_monedas = 0;
 
-        for (size_t i = 0; i < level_coin->get_n_items(); i++)
-            total_recy_monedas += level_coin->get_item(i)->m_ingreso * level_coin->get_item(i)->m_denominacion;
-        
-        for (size_t i = 0; i < level_bill->get_n_items(); i++)
-        {
-            total_recy_billetes += level_bill->get_item(i)->m_ingreso * level_bill->get_item(i)->m_denominacion;
-            total_cass_billetes += level_bill->get_item(i)->m_cant_alm * level_bill->get_item(i)->m_denominacion;
-        }
 
-        Glib::signal_idle().connect_once([this, model_coin, level_coin, model_bill, level_bill, total_recy_monedas, total_recy_billetes]() 
-        {
-            actualiza_data(model_coin,level_coin);
-            actualiza_data(model_bill,level_bill);
-            v_lbl_total_parcial_billetes->set_text(Glib::ustring::compose("$ %1", total_recy_billetes));
-            v_lbl_total_parcial_monedas->set_text(Glib::ustring::compose("$ %1", total_recy_monedas));
-        });
-
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
-        enviar_datos();
 
     } catch (const std::exception& e) {
         g_warning("Error respuesta WS: %s", e.what());

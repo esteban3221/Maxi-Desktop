@@ -40,41 +40,34 @@ CambioA::~CambioA()
 void CambioA::on_btn_empezar_clicked()
 {
     set_sensitive(false);
-    nlohmann::json json = {
-        {"concepto", v_ety_concepto.get_text()}};
+    nlohmann::json json = {{"concepto", v_ety_concepto.get_text()}};
 
     auto future = cpr::PostAsync(cpr::Url{Global::System::URL + "accion/inicia_cambio"}, Global::Utility::header, cpr::Body{json.dump()});
 
     Global::Utility::consume_and_do(future, [this](const cpr::Response &response)
-                                    {
-                if (response.status_code == 200) 
-                {
-                    auto j = nlohmann::json::parse(response.text);
+    {
+        if (response.status_code == 200) 
+        {
+            auto j = nlohmann::json::parse(response.text);
+            auto log = std::make_unique<Log>();
+            auto ticket = log->get_log(j["ticket"])->get_item(0);
+            
+            Global::Widget::reveal_toast(Glib::ustring::compose("<span weight=\"bold\"> %5 </span>\n\n"
+                                                                "Total: \t\t$%1\n"
+                                                                "Cambio: \t$%2\n"
+                                                                "Ingreso: \t$%3\n"
+                                                                "Estatus: \t%4", 
+                                                                ticket->m_total, 
+                                                                ticket->m_cambio, 
+                                                                ticket->m_ingreso, 
+                                                                ticket->m_estatus,
+                                                                "Cambio Automatico"));
+            Global::System::imprime_ticket(ticket);
+        } 
+        else 
+            Global::Widget::reveal_toast(Glib::ustring::compose("Error: %1", response.text), Gtk::MessageType(3));
 
-                    auto log = std::make_unique<Log>();
-                    auto ticket = log->get_log(j["ticket"])->get_item(0);
-                    
-                    
-
-                    Global::Widget::reveal_toast(Glib::ustring::compose("<span weight=\"bold\"> %5 </span>\n\n"
-                                                                        "Total: \t\t$%1\n"
-                                                                        "Cambio: \t$%2\n"
-                                                                        "Ingreso: \t$%3\n"
-                                                                        "Estatus: \t%4", 
-                                                                        ticket->m_total, 
-                                                                        ticket->m_cambio, 
-                                                                        ticket->m_ingreso, 
-                                                                        ticket->m_estatus,
-                                                                        "Cambio Automatico"));
-
-                    Global::System::imprime_ticket(ticket);
-                } else 
-                {
-                    // v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window, "Error"));
-                    // v_dialog->set_secondary_text(response.text);
-                    // v_dialog->set_visible();
-                    Global::Widget::reveal_toast(Glib::ustring::compose("Error: %1", response.text), Gtk::MessageType(3));
-                }
-                Global::Widget::m_refActionGroup->lookup_action("cerrarsesion")->activate();
-                set_sensitive(true); });
+        Global::Widget::m_refActionGroup->lookup_action("cerrarsesion")->activate();
+        set_sensitive(true); 
+    });
 }

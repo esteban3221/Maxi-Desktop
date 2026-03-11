@@ -25,7 +25,7 @@ void Venta::on_btn_cancelar_clicked()
             ws.send(nlohmann::json{{"action", "detener"}}.dump());
             Global::Widget::reveal_toast(Glib::ustring::compose("<span weight=\"bold\"> %1 Cancelada </span>", is_view_ingreso ? "Ingreso" : "Venta"));
                 
-            set_sensitive(true); 
+            v_box_columns->v_btn_cancelar->set_sensitive(false);
         }
         v_dialog->close();
     });
@@ -148,6 +148,7 @@ void Venta::manejar_respuesta_servidor(const std::string& respuesta)
         });
     } catch (const std::exception& e) {
         g_warning("Error respuesta WS: %s", e.what());
+        ws.close();
     }
 }
 

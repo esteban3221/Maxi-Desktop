@@ -7,12 +7,10 @@ Movimientos::Movimientos(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builde
 
     signal_map().connect(sigc::mem_fun(*this, &Movimientos::init_refrescar_datos));
     v_btn_aplica_filtro->signal_clicked().connect(sigc::mem_fun(*this, &Movimientos::init_refrescar_datos));
-    // v_btn_imprime_corte->signal_clicked().connect(sigc::mem_fun(*this, &Movimientos::imprime_corte));
     v_ety_ini->signal_icon_press().connect(sigc::mem_fun(*this, &Movimientos::muestra_calendario_inicio));
     v_ety_fin->signal_icon_press().connect(sigc::mem_fun(*this, &Movimientos::muestra_calendario_fin));
     v_calendario.signal_day_selected().connect(sigc::mem_fun(*this, &Movimientos::set_fecha));
     v_btn_remueve_filtros->signal_clicked().connect(sigc::mem_fun(*this, &Movimientos::borra_filtro));
-    // v_btn_printer->signal_clicked().connect(sigc::mem_fun(*this, &Movimientos::reimprime_tickets));
 }
 
 Movimientos::~Movimientos()
@@ -26,7 +24,7 @@ void Movimientos::init_refrescar_datos()
     m_data_cached = false;
 
     auto root = create_model();
-    tree_model_list = Gtk::TreeListModel::create(root, sigc::mem_fun(*this, &Movimientos::create_model), true);
+    tree_model_list = Gtk::TreeListModel::create(root, sigc::mem_fun(*this, &Movimientos::create_model));
     auto sorter_model = Gtk::SortListModel::create(tree_model_list, m_IdSorter);
     auto selection = Gtk::MultiSelection::create(sorter_model);
     v_column_log->set_model(selection);
@@ -201,18 +199,7 @@ void Movimientos::init_datos()
     click_gesture->set_button(GDK_BUTTON_SECONDARY); // Solo clic derecho
     click_gesture->signal_pressed().connect( sigc::mem_fun(*this, &Movimientos::on_column_view_button_pressed), false);
 
-    // // También queremos clic izquierdo para selección normal
-    // auto left_click = Gtk::GestureClick::create();
-    // left_click->set_button(GDK_BUTTON_PRIMARY);
-    // left_click->signal_pressed().connect([this](int n_press, double x, double y)
-    //                                      {
-    //                                          // El comportamiento por defecto ya maneja la selección
-    //                                      });
-
     v_column_log->add_controller(click_gesture);
-    // v_column_log->add_controller(left_click);
-
-    // Crear el menú popup
     create_context_menu();
 }
 
@@ -247,52 +234,58 @@ void Movimientos::create_context_menu()
 
 Glib::RefPtr<Gio::ListModel> Movimientos::create_model(const Glib::RefPtr<Glib::ObjectBase> &log)
 {
-    // Usar datos cacheados
     const auto &data = consume_data();
-    auto col = std::dynamic_pointer_cast<MLog>(log);
     auto result = Gio::ListStore<MLog>::create();
 
-        
-    if (!data.contains("log") || data["log"].empty()) 
-        return result;  // Modelo vacío pero válido
-    
+    // Caso A: Estamos creando la RAÍZ (el item_padre es nulo)
+    if (!log) 
+    {
+        if (!data.contains("log")) return result;
+
         for (auto &&i : data["log"])
         {
-            if (!col) // Nivel raíz - agregar movimientos principales
+            auto nuevo_log = MLog::create
+            (
+                i["id"].get<int>(),
+                i["usuario"].get<std::string>(),
+                i["tipo"].get<std::string>(),
+                i["descripcion"].get<std::string>(),
+                std::to_string(i["ingreso"].get<int>()),
+                std::to_string(i["cambio"].get<int>()),
+                i["total"].get<int>(),
+                i["estatus"].get<std::string>(),
+                Glib::DateTime::create_from_iso8601(i["fecha"].get<std::string>())
+            );
+            
+            if(i.contains("detalle_movimiento") && i["detalle_movimiento"].size() > 0)
+            nuevo_log->m_detalles_json = i["detalle_movimiento"]; 
+            
+            result->append(nuevo_log);
+        }
+    }
+    // Caso B: El árbol pide los HIJOS de un MLog específico
+    else 
+    {
+        auto padre = std::dynamic_pointer_cast<MLog>(log);
+        if (padre && !padre->m_detalles_json.empty())
+        {
+            for (auto &&det : padre->m_detalles_json)
             {
-                result->append(MLog::create(
-                    i["id"].get<int>(),
-                    i["usuario"].get<std::string>(),
-                    i["tipo"].get<std::string>(),
-                    i["descripcion"].get<std::string>(),
-                    std::to_string(i["ingreso"].get<int>()),
-                    std::to_string(i["cambio"].get<int>()),
-                    i["total"].get<int>(),
-                    i["estatus"].get<std::string>(),
-                    Glib::DateTime::create_from_iso8601(i["fecha"].get<std::string>())));
-            }
-            else // Nivel hijo - agregar detalles del movimiento actual
-            {
-                if (i.contains("detalle_movimiento") && i["id"].get<int>() == col->m_id)
-                {
-                    for (auto &&det : i["detalle_movimiento"])
-                    {
-                        result->append(MLog::create(
-                            0, // ID 0 para hijos
-                            "",
-                            det["tipo_movimiento"].get<std::string>(), // Usar tipo_movimiento
-                            "",
-                            (det["tipo_movimiento"].get<std::string>() == "entrada") ? std::to_string(det["denominacion"].get<int>()) + " → " + std::to_string(det["cantidad"].get<int>()) : "0",
-                            (det["tipo_movimiento"].get<std::string>() == "salida") ? std::to_string(det["denominacion"].get<int>()) + " ← " + std::to_string(det["cantidad"].get<int>()) : "0",
-                            det["denominacion"].get<int>() * det["cantidad"].get<int>(),
-                            "",
-                            Glib::DateTime::create_from_iso8601(det["creado_en"].get<std::string>())));
-                    }
-                    // break;  // Importante: salir del loop cuando encontramos el movimiento
-                }
+                result->append(MLog::create
+                (
+                    0, // ID 0 para hijos
+                    "",
+                    det["tipo_movimiento"].get<std::string>(),
+                    "",
+                    (det["tipo_movimiento"].get<std::string>() == "entrada") ? std::to_string(det["denominacion"].get<int>()) + " → " + std::to_string(det["cantidad"].get<int>()) : "0",
+                    (det["tipo_movimiento"].get<std::string>() == "salida") ? std::to_string(det["denominacion"].get<int>()) + " ← " + std::to_string(det["cantidad"].get<int>()) : "0",
+                    det["denominacion"].get<int>() * det["cantidad"].get<int>(),
+                    "",
+                    Glib::DateTime::create_from_iso8601(det["creado_en"].get<std::string>())
+                ));
             }
         }
-
+    }
     return result;
 }
 
@@ -407,10 +400,20 @@ void Movimientos::muestra_calendario_fin(Gtk::Entry::IconPosition icon_pos)
 void Movimientos::set_fecha()
 {
     if (v_pop_calendario.get_parent() == v_ety_fin)
-        ((Gtk::Entry *)v_pop_calendario.get_parent())->set_text(v_calendario.get_date().add_hours(23).add_minutes(59).add_seconds(59).format_iso8601());
+        ((Gtk::Entry *)v_pop_calendario.get_parent())->set_text(
+            v_calendario.
+            get_date().
+            add_hours(23).
+            add_minutes(59).
+            add_seconds(59).
+            format_iso8601());
     else
     {
-        v_ety_fin->set_text(v_calendario.get_date().add_hours(23).add_minutes(59).add_seconds(59).format_iso8601());
+        v_ety_fin->set_text(v_calendario.get_date().
+            add_hours(23).
+            add_minutes(59).
+            add_seconds(59).
+            format_iso8601());
         v_ety_ini->set_text(v_calendario.get_date().format_iso8601());
     }
 }

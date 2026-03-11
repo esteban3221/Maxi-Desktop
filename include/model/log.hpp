@@ -21,6 +21,8 @@ public:
   Glib::ustring m_estatus;
   Glib::DateTime m_fecha;
 
+  nlohmann::json m_detalles_json;
+
   static Glib::RefPtr<MLog> create(size_t id,
                                    const Glib::ustring &user,
                                    const Glib::ustring &tipo,

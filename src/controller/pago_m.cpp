@@ -16,8 +16,6 @@ void PagoM::on_show_map()
     m_inputs_pago.clear();
     total = 0;
 
-    Global::Widget::reveal_toast("Solicitando datos a validadores, Espere un momento.");
-
     for (auto &&i : v_box_level_validadores->get_children())
             v_box_level_validadores->remove(*i);
 
@@ -63,6 +61,7 @@ void PagoM::on_spin_value_changed()
 void PagoM::on_btn_cobrar_clicked()
 {
     on_spin_value_changed();
+    v_btn_cobrar->set_sensitive(false);
 
     if (total > 0)
     {
