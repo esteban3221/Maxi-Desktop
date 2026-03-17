@@ -14,6 +14,8 @@ void PagoM::on_show_map()
 {
     v_ety_concepto->set_text("");
     m_inputs_pago.clear();
+    v_btn_cobrar->set_sensitive();
+
     total = 0;
 
     for (auto &&i : v_box_level_validadores->get_children())

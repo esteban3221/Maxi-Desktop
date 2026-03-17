@@ -277,8 +277,8 @@ Glib::RefPtr<Gio::ListModel> Movimientos::create_model(const Glib::RefPtr<Glib::
                     "",
                     det["tipo_movimiento"].get<std::string>(),
                     "",
-                    (det["tipo_movimiento"].get<std::string>() == "entrada") ? std::to_string(det["denominacion"].get<int>()) + " → " + std::to_string(det["cantidad"].get<int>()) : "0",
-                    (det["tipo_movimiento"].get<std::string>() == "salida") ? std::to_string(det["denominacion"].get<int>()) + " ← " + std::to_string(det["cantidad"].get<int>()) : "0",
+                    (det["tipo_movimiento"].get<std::string>() == "entrada") ? "$" + std::to_string(det["denominacion"].get<int>()) + " → " + std::to_string(det["cantidad"].get<int>()) : "0",
+                    (det["tipo_movimiento"].get<std::string>() == "salida") ? "$" + std::to_string(det["denominacion"].get<int>()) + " ← " + std::to_string(det["cantidad"].get<int>()) : "0",
                     det["denominacion"].get<int>() * det["cantidad"].get<int>(),
                     "",
                     Glib::DateTime::create_from_iso8601(det["creado_en"].get<std::string>())

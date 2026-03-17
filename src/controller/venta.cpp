@@ -35,7 +35,8 @@ void Venta::on_btn_cancelar_clicked()
 
 void Venta::on_btn_enter_clicked()
 {
-    if (v_base_nip->v_ety_spin->get_value_as_int() < 1)
+    auto monto = v_base_nip->v_ety_spin->get_value_as_int();
+    if (monto < 1)
     {
         v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window, "Info", false, Gtk::MessageType::INFO, Gtk::ButtonsType::NONE));
         v_dialog->set_secondary_text("El monto a vender debe ser mayor a 0");
@@ -46,6 +47,9 @@ void Venta::on_btn_enter_clicked()
 
     // Deshabilita el botón para evitar múltiples clics
     v_revealer_columns.set_reveal_child(true);
+    v_box_columns->v_ety_columns[0]->set_text(Glib::ustring::format(monto));
+    v_box_columns->v_ety_columns[1]->set_text("");
+    v_box_columns->v_ety_columns[2]->set_text("");
     v_base_nip->set_sensitive(false);
     v_ety_concepto.set_sensitive(false);
     v_base_nip->v_ety_spin->update();
