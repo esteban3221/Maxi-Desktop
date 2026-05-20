@@ -147,7 +147,7 @@ void General::on_actualiza_operaciones_event()
         if (response.status_code == 200)
             Global::Widget::reveal_toast("Configuración actualizada con éxito");
         else
-            Global::Widget::reveal_toast("Error al actualizar la configuración", (Gtk::MessageType)3 /*La macro de windows permea TODO LO QUE TENGA ERROR*/);
+            Global::Widget::reveal_toast("Error al actualizar la configuración: " + response.text, (Gtk::MessageType)3 /*La macro de windows permea TODO LO QUE TENGA ERROR*/);
                                     });
 }
 

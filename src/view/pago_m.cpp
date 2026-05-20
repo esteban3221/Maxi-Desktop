@@ -72,6 +72,7 @@ Gtk::Box *VPagoM::agregar_contenedor(const std::vector<std::pair<size_t, size_t>
     label->set_css_classes({"denom-label"});
 
     auto spin = Gtk::make_managed<Gtk::SpinButton>(Gtk::Adjustment::create(0, 0, i.second, 1, 10, 0));
+    spin->set_tooltip_text(Glib::ustring::format(i.second));
     spin->set_numeric(true);
     spin->set_halign(Gtk::Align::END);
     spin->set_hexpand(true);

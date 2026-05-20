@@ -51,7 +51,7 @@ VTerminal::VDetailsTerminal::~VDetailsTerminal()
 VTerminal::VFormTerminal::Row::Row(const std::string &titulo, const std::string &subtitulo)
 {
   v_image_pos = Gtk::manage(new Gtk::Image());
-  v_image_pos->set_from_icon_name("gnome-phone-manager-symbolic");
+  v_image_pos->set_from_icon_name("phonelink-ring-symbolic");
   v_image_pos->set_icon_size(Gtk::IconSize::LARGE);
 
   v_titulo = Gtk::manage(new Gtk::Label(titulo));

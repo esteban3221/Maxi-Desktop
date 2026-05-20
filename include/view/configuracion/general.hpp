@@ -15,7 +15,7 @@ protected:
     Gtk::Button*   v_btn_seleccionar_carpeta    {nullptr};
     Gtk::Switch*   v_sw_desactivar_carrousel    {nullptr};
 
-    Glib::RefPtr<Gtk::StringList> list_procesos = Gtk::StringList::create({"Preguntar en POS", "Efectivo", "Tarjeta"});
+    Glib::RefPtr<Gtk::StringList> list_procesos = Gtk::StringList::create({"Efectivo", "Tarjeta", "Preguntar en POS"});
 
     // Efectivo
     Gtk::Switch*   v_sw_redondeo                {nullptr};
