@@ -13,6 +13,7 @@ Refill::Refill(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBui
     v_btn_incia->signal_clicked().connect(sigc::mem_fun(*this, &Refill::on_btn_iniciar));
     v_btn_transpaso->signal_clicked().connect(sigc::mem_fun(*this, &Refill::on_btn_transpaso));
     v_btn_detener->signal_clicked().connect(sigc::mem_fun(*this, &Refill::on_btn_detener));
+    v_btn_imprime_faltante->signal_clicked().connect(sigc::mem_fun(*this, &Refill::on_btn_imprimir_faltante));
 }
 
 Refill::~Refill()
@@ -24,7 +25,7 @@ void Refill::on_btn_detener()
     v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window, "Refill", false, Gtk::MessageType::QUESTION, Gtk::ButtonsType::YES_NO, true));
     v_dialog->set_secondary_text("¿Está seguro de detener el proceso de Refill?");
     v_dialog->signal_response().connect([this](int response_id)
-    {
+                                        {
         if (response_id == Gtk::ResponseType::YES)
         {
             ws.send(nlohmann::json{{"action", "detener"}}.dump());
@@ -33,8 +34,7 @@ void Refill::on_btn_detener()
             v_btn_detener->set_sensitive(false);
             v_btn_incia->set_visible(true);
         }
-        v_dialog->close();
-    });
+        v_dialog->close(); });
     v_dialog->set_visible();
 }
 
@@ -52,18 +52,18 @@ void Refill::poll_alerta_niveles()
 
     //         if(Global::System::token.empty())
     //             continue;
-            
+
     //         auto future = cpr::GetAsync(cpr::Url{Global::System::URL, "validadores/get_dashboard"}, Global::Utility::header);
     //         Global::Utility::consume_and_do(future,[this](cpr::Response response)
     //         {
-    //             if (response.status_code == 200) 
+    //             if (response.status_code == 200)
     //             {
     //                 auto json = nlohmann::json::parse(response.text);
     //                 alerta_niveles(json["bill"]);
     //                 alerta_niveles(json["coin"]);
     //             }
     //         });
-    //     } 
+    //     }
     // }).detach();
 }
 
@@ -98,7 +98,7 @@ void Refill::on_show_map()
 
     auto future = cpr::GetAsync(cpr::Url{Global::System::URL, "validadores/get_dashboard"}, Global::Utility::header);
     Global::Utility::consume_and_do(future, [this](cpr::Response response)
-    {
+                                    {
         if (response.status_code == 200) 
         {
             auto level = std::make_unique<LevelCash>();
@@ -149,8 +149,7 @@ void Refill::on_show_map()
             
             v_lbl_total_parcial_monedas->set_text(Glib::ustring::format(t_mon_recy));
             v_lbl_total->set_text(Glib::ustring::format(t_bill_cass + t_bill_recy + t_mon_cass + t_mon_recy));
-        } 
-    });
+        } });
 }
 
 void Refill::init_data(Gtk::ColumnView *vcolumn, const Glib::RefPtr<Gio::ListStore<MLevelCash>> &level)
@@ -242,7 +241,6 @@ void Refill::init_data(Gtk::ColumnView *vcolumn, const Glib::RefPtr<Gio::ListSto
         column->set_visible(false);
         vcolumn->append_column(column);
     }
-
 }
 
 void Refill::actualiza_data(const Glib::RefPtr<Gtk::SelectionModel> &selection, const Glib::RefPtr<Gio::ListStore<MLevelCash>> &level)
@@ -299,23 +297,14 @@ void Refill::on_btn_iniciar()
     v_btn_detener->set_visible(true);
     v_btn_incia->set_sensitive(false);
 
-    ws.connect(Global::System::WS + "/ws/refill",[this]() 
-    {
-        enviar_datos();
-    },
-    sigc::mem_fun(*this, &Refill::manejar_respuesta_servidor),
-    [this](const std::string& err) 
-    {
-        Global::Widget::reveal_toast(Glib::ustring::compose("Error de conexión: %1", err), (Gtk::MessageType)3, 5000);
-    },
-    [this](int code, const std::string& reason) 
-    {
-        g_info("Conexión cerrada: %s (código %d)", reason.c_str(), code);
-    });
+    ws.connect(Global::System::WS + "/ws/refill", [this]()
+               { enviar_datos(); }, sigc::mem_fun(*this, &Refill::manejar_respuesta_servidor), [this](const std::string &err)
+               { Global::Widget::reveal_toast(Glib::ustring::compose("Error de conexión: %1", err), (Gtk::MessageType)3, 5000); }, [this](int code, const std::string &reason)
+               { g_info("Conexión cerrada: %s (código %d)", reason.c_str(), code); });
 
     auto future = cpr::PostAsync(cpr::Url{Global::System::URL + "accion/inicia_refill"}, Global::Utility::header);
     Global::Utility::consume_and_do(future, [this](cpr::Response response)
-    {
+                                    {
         if (response.status_code == 200) 
         {
             auto j = nlohmann::json::parse(response.text);
@@ -341,8 +330,7 @@ void Refill::on_btn_iniciar()
             // v_lbl_total_parcial_billetes->set_text(j["billetes"].get<std::string>());
             // v_lbl_total_parcial_monedas->set_text(j["monedas"].get<std::string>());
             Global::Widget::m_refActionGroup->lookup_action("cerrarsesion")->activate();
-        } 
-    });
+        } });
 }
 
 void Refill::on_btn_transpaso()
@@ -370,24 +358,79 @@ void Refill::on_btn_transpaso()
         Global::Widget::m_refActionGroup->lookup_action("cerrarsesion")->activate(); });
 }
 
+std::string Refill::faltante_to_string(const Glib::RefPtr<Gio::ListStore<MLevelCash>> &level)
+{
+    std::string result;
+    for (size_t i = 0; i < level->get_n_items(); i++)
+    {
+        auto item = level->get_item(i);
+        int diff = item->m_nivel_inmo - item->m_cant_recy;
+        if (diff < 0)
+        {
+            result += Glib::ustring::compose("$%1, Sobrante: %2\n", item->m_denominacion, -diff);
+        }
+        else
+        {
+            result += Glib::ustring::compose("$%1, Faltante: %2\n", item->m_denominacion, diff);
+        }
+    }
+
+    result += '\n';
+    return result;
+}
+
+void Refill::on_btn_imprimir_faltante()
+{
+    std::string faltante = "";
+
+    auto selection_bill = v_tree_reciclador_billetes->get_model();
+    auto single_bill = std::dynamic_pointer_cast<Gtk::SingleSelection>(selection_bill);
+    auto list_store_bill = std::dynamic_pointer_cast<Gio::ListStore<MLevelCash>>(single_bill->get_model());
+
+    auto selection_coin = v_tree_reciclador_monedas->get_model();
+    auto single_coin = std::dynamic_pointer_cast<Gtk::SingleSelection>(selection_coin);
+    auto list_store_coin = std::dynamic_pointer_cast<Gio::ListStore<MLevelCash>>(single_coin->get_model());
+
+    faltante = faltante_to_string(list_store_bill);
+    faltante += faltante_to_string(list_store_coin);
+
+    if (faltante.empty())
+    {
+        Global::Widget::reveal_toast("No hay faltantes para imprimir", Gtk::MessageType::INFO);
+        return;
+    }
+
+    auto f_log = MLog::create(0,
+                              "Sistema",         // user
+                              "Refill Consulta", // tipo
+                              "",                // <-- Mueve aquí la cadena larga
+                              "0",               // ingreso (como string)
+                              "0",               // cambio (como string)
+                              0,                 // total
+                              faltante,          // estatus
+                              Glib::DateTime::create_now_local());
+
+    Global::System::imprime_ticket(f_log);
+}
+
 void Refill::enviar_datos()
 {
 }
 
-void Refill::manejar_respuesta_servidor(const std::string& respuesta)
+void Refill::manejar_respuesta_servidor(const std::string &respuesta)
 {
-    try 
+    try
     {
         auto json = nlohmann::json::parse(respuesta);
         auto level = std::make_unique<LevelCash>();
-        if(json.contains("status") && json["status"].get<std::string>() == "detenido")
+        if (json.contains("status") && json["status"].get<std::string>() == "detenido")
         {
             ws.close();
             return;
         }
 
-        auto it = json.begin(); 
-        
+        auto it = json.begin();
+
         const auto key = it.key();
         auto data = it.value();
         auto is_coin = key == "COIN";
@@ -396,27 +439,25 @@ void Refill::manejar_respuesta_servidor(const std::string& respuesta)
         auto model = is_coin ? v_tree_reciclador_monedas->get_model() : v_tree_reciclador_billetes->get_model();
         auto single = std::dynamic_pointer_cast<Gtk::SingleSelection>(model);
         auto list_store = std::dynamic_pointer_cast<Gio::ListStore<MLevelCash>>(single->get_model());
-        
+
         for (size_t i = 0; i < list_store->get_n_items(); i++)
         {
             if (auto item = list_store->get_item(i); item->m_denominacion == m_item->m_denominacion)
             {
                 Glib::signal_idle().connect_once([this, list_store, single, m_item, i]
-                {
+                                                 {
                     list_store->remove(i);
                     list_store->insert(i, m_item);
-                    single->select_item(i, true);
-                });
+                    single->select_item(i, true); });
             }
         }
 
         size_t total_recy_billetes = 0;
         size_t total_cass_billetes = 0;
         size_t total_recy_monedas = 0;
-
-
-
-    } catch (const std::exception& e) {
+    }
+    catch (const std::exception &e)
+    {
         g_warning("Error respuesta WS: %s", e.what());
     }
 }

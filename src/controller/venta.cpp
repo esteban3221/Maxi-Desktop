@@ -52,13 +52,15 @@ void Venta::on_btn_enter_clicked()
     }
 
     // Deshabilita el botón para evitar múltiples clics
+    Glib::signal_idle().connect_once([this, monto]()
+                                     { 
     v_revealer_columns.set_reveal_child(true);
     v_box_columns->v_ety_columns[0]->set_text(Glib::ustring::format(monto));
     v_box_columns->v_ety_columns[1]->set_text("");
     v_box_columns->v_ety_columns[2]->set_text("");
     v_base_nip->set_sensitive(false);
     v_ety_concepto.set_sensitive(false);
-    v_base_nip->v_ety_spin->update();
+    v_base_nip->v_ety_spin->update(); });
 
     ws.connect(Global::System::WS + "/ws/venta", sigc::mem_fun(*this, &Venta::enviar_datos_venta), sigc::mem_fun(*this, &Venta::manejar_respuesta_servidor), [this](const std::string &err)
                { Global::Widget::reveal_toast(Glib::ustring::compose("Error de conexión: %1", err), (Gtk::MessageType)3, 5000); }, [this](int code, const std::string &reason)

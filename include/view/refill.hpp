@@ -30,6 +30,7 @@ protected:
     Gtk::Button *v_btn_incia = nullptr;
     Gtk::Button *v_btn_transpaso = nullptr;
     Gtk::Button *v_btn_detener = nullptr;
+    Gtk::Button *v_btn_imprime_faltante = nullptr;
 
     std::unique_ptr<Gtk::MessageDialog> v_dialog;
 
@@ -42,7 +43,7 @@ protected:
     void on_bind_ingreso(const Glib::RefPtr<Gtk::ListItem> &list_item);
     void on_bind_ingreso_total(const Glib::RefPtr<Gtk::ListItem> &list_item);
     void on_bind_inmo_min(const Glib::RefPtr<Gtk::ListItem> &list_item);
-    
+
     void on_bind_inmo(const Glib::RefPtr<Gtk::ListItem> &list_item);
     void on_bind_inmo_max(const Glib::RefPtr<Gtk::ListItem> &list_item);
     void on_bind_btn(const Glib::RefPtr<Gtk::ListItem> &list_item);

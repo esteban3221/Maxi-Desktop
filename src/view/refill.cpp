@@ -1,122 +1,129 @@
 #include "view/refill.hpp"
 
 VRefill::VRefill(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuilder) : Gtk::Box(cobject),
-																						  m_builder(refBuilder)
+                                                                                          m_builder(refBuilder)
 {
-	v_tree_reciclador_billetes = m_builder->get_widget<Gtk::ColumnView>("treeRecicladorBilletes");
-	v_tree_reciclador_monedas = m_builder->get_widget<Gtk::ColumnView>("treeRecicladorMonedas");
+  v_tree_reciclador_billetes = m_builder->get_widget<Gtk::ColumnView>("treeRecicladorBilletes");
+  v_tree_reciclador_monedas = m_builder->get_widget<Gtk::ColumnView>("treeRecicladorMonedas");
 
-	v_lbl_total_parcial_monedas = m_builder->get_widget<Gtk::Label>("lblTotalMXN1");
-	v_lbl_total_parcial_billetes = m_builder->get_widget<Gtk::Label>("lblTotalMXN2");
+  v_lbl_total_parcial_monedas = m_builder->get_widget<Gtk::Label>("lblTotalMXN1");
+  v_lbl_total_parcial_billetes = m_builder->get_widget<Gtk::Label>("lblTotalMXN2");
   v_lbl_total_billetes_cass = m_builder->get_widget<Gtk::Label>("lblTotalMXN2_");
-	v_lbl_total_monedas = m_builder->get_widget<Gtk::Label>("lblTotalMXN4");
-	v_lbl_total_billetes = m_builder->get_widget<Gtk::Label>("lblTotalMXN5");
-	v_lbl_total = m_builder->get_widget<Gtk::Label>("lblTotalMXN3");
+  v_lbl_total_monedas = m_builder->get_widget<Gtk::Label>("lblTotalMXN4");
+  v_lbl_total_billetes = m_builder->get_widget<Gtk::Label>("lblTotalMXN5");
+  v_lbl_total = m_builder->get_widget<Gtk::Label>("lblTotalMXN3");
 
-	v_btn_incia = m_builder->get_widget<Gtk::Button>("btn_iniciar");
-	v_btn_transpaso = m_builder->get_widget<Gtk::Button>("btn_transpaso");
+  v_btn_incia = m_builder->get_widget<Gtk::Button>("btn_iniciar");
+  v_btn_transpaso = m_builder->get_widget<Gtk::Button>("btn_transpaso");
   v_btn_detener = m_builder->get_widget<Gtk::Button>("btn_detener");
+  v_btn_imprime_faltante = m_builder->get_widget<Gtk::Button>("btn_imprime_faltante");
   v_btn_transpaso->set_visible(false);
   v_btn_detener->set_visible(false);
 }
 
 void VRefill::on_setup_label(const Glib::RefPtr<Gtk::ListItem> &list_item)
 {
-	list_item->set_child(*Gtk::make_managed<Gtk::Label>("", Gtk::Align::END));
+  list_item->set_child(*Gtk::make_managed<Gtk::Label>("", Gtk::Align::END));
 }
 
 void VRefill::on_setup_button(const Glib::RefPtr<Gtk::ListItem> &list_item)
 {
-	auto button = (Gtk::make_managed<Gtk::Button>());
-	button->set_icon_name("document-save-symbolic");
-	button->set_css_classes({"circular", "flat"});
-	list_item->set_child(*button);
+  auto button = (Gtk::make_managed<Gtk::Button>());
+  button->set_icon_name("document-save-symbolic");
+  button->set_css_classes({"circular", "flat"});
+  list_item->set_child(*button);
 }
 
 void VRefill::on_setup_spin(const Glib::RefPtr<Gtk::ListItem> &list_item)
 {
-	auto spin = Gtk::make_managed<Gtk::SpinButton>(Gtk::Adjustment::create(0, 0, 500, 1, 10), 1.0, 0);
-	spin->set_halign(Gtk::Align::FILL);
-	list_item->set_child(*spin);
+  auto spin = Gtk::make_managed<Gtk::SpinButton>(Gtk::Adjustment::create(0, 0, 500, 1, 10), 1.0, 0);
+  spin->set_halign(Gtk::Align::FILL);
+  list_item->set_child(*spin);
 }
 
 void VRefill::on_bind_deno(const Glib::RefPtr<Gtk::ListItem> &list_item)
 {
-	auto col = std::dynamic_pointer_cast<MLevelCash>(list_item->get_item());
-	auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
+  auto col = std::dynamic_pointer_cast<MLevelCash>(list_item->get_item());
+  auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
 
-	label->set_text(Glib::ustring::format(col->m_denominacion));
+  label->set_text(Glib::ustring::format(col->m_denominacion));
 }
 
 void VRefill::on_bind_alm(const Glib::RefPtr<Gtk::ListItem> &list_item)
 {
-	auto col = std::dynamic_pointer_cast<MLevelCash>(list_item->get_item());
-	auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
+  auto col = std::dynamic_pointer_cast<MLevelCash>(list_item->get_item());
+  auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
 
-	label->set_text(Glib::ustring::format(col->m_cant_alm));
+  label->set_text(Glib::ustring::format(col->m_cant_alm));
 }
 
 void VRefill::on_bind_recy(const Glib::RefPtr<Gtk::ListItem> &list_item)
 {
-	auto col = std::dynamic_pointer_cast<MLevelCash>(list_item->get_item());
-	auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
+  auto col = std::dynamic_pointer_cast<MLevelCash>(list_item->get_item());
+  auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
 
-	label->set_text(Glib::ustring::format(col->m_cant_recy));
+  label->set_text(Glib::ustring::format(col->m_cant_recy));
 }
 
 void VRefill::on_bind_ingreso(const Glib::RefPtr<Gtk::ListItem> &list_item)
 {
-	auto col = std::dynamic_pointer_cast<MLevelCash>(list_item->get_item());
-	auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
+  auto col = std::dynamic_pointer_cast<MLevelCash>(list_item->get_item());
+  auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
 
-	label->set_text(Glib::ustring::format(col->m_ingreso));
+  label->set_text(Glib::ustring::format(col->m_ingreso));
 }
 
 void VRefill::on_bind_ingreso_total(const Glib::RefPtr<Gtk::ListItem> &list_item)
 {
-	auto col = std::dynamic_pointer_cast<MLevelCash>(list_item->get_item());
-	auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
+  auto col = std::dynamic_pointer_cast<MLevelCash>(list_item->get_item());
+  auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
 
-	label->set_text(Glib::ustring::format(col->m_ingreso * col->m_denominacion));
+  label->set_text(Glib::ustring::format(col->m_ingreso * col->m_denominacion));
 }
 
 void VRefill::on_bind_inmo(const Glib::RefPtr<Gtk::ListItem> &list_item)
 {
-	auto col = std::dynamic_pointer_cast<MLevelCash>(list_item->get_item());
-	auto spin = dynamic_cast<Gtk::SpinButton *>(list_item->get_child());
+  auto col = std::dynamic_pointer_cast<MLevelCash>(list_item->get_item());
+  auto spin = dynamic_cast<Gtk::SpinButton *>(list_item->get_child());
 
-	spin->set_adjustment(Gtk::Adjustment::create(col->m_nivel_inmo, 0, 999));
-	spin->signal_changed().connect([this, col, spin](){ col->m_nivel_inmo = spin->get_value_as_int(); });
-	spin->signal_value_changed().connect([this, col, spin](){ col->m_nivel_inmo = spin->get_value_as_int(); });
+  spin->set_adjustment(Gtk::Adjustment::create(col->m_nivel_inmo, 0, 999));
+  spin->signal_changed().connect([this, col, spin]()
+                                 { col->m_nivel_inmo = spin->get_value_as_int(); });
+  spin->signal_value_changed().connect([this, col, spin]()
+                                       { col->m_nivel_inmo = spin->get_value_as_int(); });
 }
 
 void VRefill::on_bind_inmo_min(const Glib::RefPtr<Gtk::ListItem> &list_item)
 {
-	auto col = std::dynamic_pointer_cast<MLevelCash>(list_item->get_item());
-	auto spin = dynamic_cast<Gtk::SpinButton *>(list_item->get_child());
+  auto col = std::dynamic_pointer_cast<MLevelCash>(list_item->get_item());
+  auto spin = dynamic_cast<Gtk::SpinButton *>(list_item->get_child());
 
-	spin->set_adjustment(Gtk::Adjustment::create(col->m_nivel_inmo_min, 0, 999));
-	spin->signal_changed().connect([this, col, spin](){ col->m_nivel_inmo_min = spin->get_value_as_int(); });
-	spin->signal_value_changed().connect([this, col, spin](){ col->m_nivel_inmo_min = spin->get_value_as_int(); });
+  spin->set_adjustment(Gtk::Adjustment::create(col->m_nivel_inmo_min, 0, 999));
+  spin->signal_changed().connect([this, col, spin]()
+                                 { col->m_nivel_inmo_min = spin->get_value_as_int(); });
+  spin->signal_value_changed().connect([this, col, spin]()
+                                       { col->m_nivel_inmo_min = spin->get_value_as_int(); });
 }
 
 void VRefill::on_bind_inmo_max(const Glib::RefPtr<Gtk::ListItem> &list_item)
 {
-	auto col = std::dynamic_pointer_cast<MLevelCash>(list_item->get_item());
-	auto spin = dynamic_cast<Gtk::SpinButton *>(list_item->get_child());
+  auto col = std::dynamic_pointer_cast<MLevelCash>(list_item->get_item());
+  auto spin = dynamic_cast<Gtk::SpinButton *>(list_item->get_child());
 
-	spin->set_adjustment(Gtk::Adjustment::create(col->m_nivel_inmo_max, 0, 999));
-	spin->signal_changed().connect([this, col, spin](){ col->m_nivel_inmo_max = spin->get_value_as_int(); });
-	spin->signal_value_changed().connect([this, col, spin](){ col->m_nivel_inmo_max = spin->get_value_as_int(); });
+  spin->set_adjustment(Gtk::Adjustment::create(col->m_nivel_inmo_max, 0, 999));
+  spin->signal_changed().connect([this, col, spin]()
+                                 { col->m_nivel_inmo_max = spin->get_value_as_int(); });
+  spin->signal_value_changed().connect([this, col, spin]()
+                                       { col->m_nivel_inmo_max = spin->get_value_as_int(); });
 }
 
 void VRefill::on_bind_btn(const Glib::RefPtr<Gtk::ListItem> &list_item)
 {
-	auto col = std::dynamic_pointer_cast<MLevelCash>(list_item->get_item());
-	auto button = dynamic_cast<Gtk::Button *>(list_item->get_child());
+  auto col = std::dynamic_pointer_cast<MLevelCash>(list_item->get_item());
+  auto button = dynamic_cast<Gtk::Button *>(list_item->get_child());
 
-	button->signal_clicked().connect([this, col]()
-	{
+  button->signal_clicked().connect([this, col]()
+                                   {
 
       auto json = nlohmann::json
       {
@@ -135,8 +142,7 @@ void VRefill::on_bind_btn(const Glib::RefPtr<Gtk::ListItem> &list_item)
                 Global::Widget::reveal_toast("Exito");
             else
                 std::cerr << "Error: " << response.status_code << std::endl;
-        }); 
-  	});
+        }); });
 }
 
 VRefill::~VRefill()
@@ -145,13 +151,12 @@ VRefill::~VRefill()
 
 namespace View
 {
-	const char *refill_ui = R"(<?xml version='1.0' encoding='UTF-8'?>
-<!-- Created with Cambalache 0.96.3 -->
+  const char *refill_ui = R"(
+  <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <!-- interface-name refill.ui -->
   <requires lib="gtk" version="4.0"/>
   <object class="GtkBox" id="box_refill">
-    <property name="halign">fill</property>
+    <property name="halign">0</property>
     <property name="margin-bottom">15</property>
     <property name="margin-end">15</property>
     <property name="margin-start">15</property>
@@ -160,7 +165,7 @@ namespace View
     <child>
       <object class="GtkBox">
         <property name="homogeneous">true</property>
-        <property name="orientation">vertical</property>
+        <property name="orientation">1</property>
         <property name="spacing">20</property>
         <property name="vexpand">true</property>
         <child>
@@ -169,7 +174,7 @@ namespace View
               <object class="GtkBox">
                 <property name="margin-end">12</property>
                 <property name="margin-start">12</property>
-                <property name="orientation">vertical</property>
+                <property name="orientation">1</property>
                 <child>
                   <object class="GtkLabel">
                     <property name="label">Monedas</property>
@@ -188,26 +193,26 @@ namespace View
                       <object class="GtkColumnView" id="treeRecicladorMonedas">
                         <property name="enable-rubberband">true</property>
                         <property name="hadjustment">
-                          <object class="GtkAdjustment"/>
+                          <object class="GtkAdjustment"></object>
                         </property>
                         <property name="hexpand">true</property>
                         <property name="hexpand-set">true</property>
                         <property name="show-column-separators">true</property>
                         <property name="vadjustment">
-                          <object class="GtkAdjustment"/>
+                          <object class="GtkAdjustment"></object>
                         </property>
                         <property name="vexpand">true</property>
                         <property name="vexpand-set">true</property>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkSeparator"/>
+                      <object class="GtkSeparator"></object>
                     </child>
                     <child>
                       <object class="GtkBox">
-                        <property name="halign">end</property>
+                        <property name="halign">2</property>
                         <property name="hexpand-set">true</property>
-                        <property name="orientation">vertical</property>
+                        <property name="orientation">1</property>
                         <child>
                           <object class="GtkLabel">
                             <property name="label">Total Recyclador</property>
@@ -238,7 +243,7 @@ namespace View
               <object class="GtkBox">
                 <property name="margin-end">12</property>
                 <property name="margin-start">12</property>
-                <property name="orientation">vertical</property>
+                <property name="orientation">1</property>
                 <child>
                   <object class="GtkLabel">
                     <property name="label">Billetes</property>
@@ -256,34 +261,34 @@ namespace View
                       <object class="GtkColumnView" id="treeRecicladorBilletes">
                         <property name="enable-rubberband">true</property>
                         <property name="hadjustment">
-                          <object class="GtkAdjustment"/>
+                          <object class="GtkAdjustment"></object>
                         </property>
                         <property name="hexpand">true</property>
                         <property name="hexpand-set">true</property>
                         <property name="show-column-separators">true</property>
                         <property name="vadjustment">
-                          <object class="GtkAdjustment"/>
+                          <object class="GtkAdjustment"></object>
                         </property>
                         <property name="vexpand">true</property>
                         <property name="vexpand-set">true</property>
                       </object>
                     </child>
                     <child>
-                      <object class="GtkSeparator"/>
+                      <object class="GtkSeparator"></object>
                     </child>
                     <child>
                       <object class="GtkBox">
-                        <property name="orientation">vertical</property>
+                        <property name="orientation">1</property>
                         <property name="spacing">10</property>
                         <child>
                           <object class="GtkBox">
-                            <property name="halign">end</property>
-                            <property name="orientation">vertical</property>
+                            <property name="halign">2</property>
+                            <property name="orientation">1</property>
                             <child>
                               <object class="GtkLabel">
-                                <property name="justify">fill</property>
+                                <property name="justify">3</property>
                                 <property name="label">Total Recycaldor</property>
-                                <property name="natural-wrap-mode">word</property>
+                                <property name="natural-wrap-mode">2</property>
                                 <style>
                                   <class name="title-2"/>
                                 </style>
@@ -301,15 +306,15 @@ namespace View
                         </child>
                         <child>
                           <object class="GtkBox">
-                            <property name="orientation">vertical</property>
+                            <property name="orientation">1</property>
                             <child>
                               <object class="GtkBox">
-                                <property name="orientation">vertical</property>
+                                <property name="orientation">1</property>
                                 <child>
                                   <object class="GtkLabel">
-                                    <property name="justify">fill</property>
+                                    <property name="justify">3</property>
                                     <property name="label">Total Casette</property>
-                                    <property name="natural-wrap-mode">word</property>
+                                    <property name="natural-wrap-mode">2</property>
                                     <style>
                                       <class name="title-2"/>
                                     </style>
@@ -339,7 +344,7 @@ namespace View
     </child>
     <child>
       <object class="GtkBox">
-        <property name="orientation">vertical</property>
+        <property name="orientation">1</property>
         <property name="spacing">20</property>
         <child>
           <object class="GtkFrame" id="frmTotal">
@@ -349,7 +354,7 @@ namespace View
                 <property name="margin-end">12</property>
                 <property name="margin-start">12</property>
                 <property name="margin-top">12</property>
-                <property name="orientation">vertical</property>
+                <property name="orientation">1</property>
                 <child>
                   <object class="GtkLabel">
                     <property name="label">Total</property>
@@ -378,7 +383,7 @@ namespace View
                 <property name="margin-end">12</property>
                 <property name="margin-start">12</property>
                 <property name="margin-top">12</property>
-                <property name="orientation">vertical</property>
+                <property name="orientation">1</property>
                 <child>
                   <object class="GtkLabel">
                     <property name="label">Total Monedas</property>
@@ -407,7 +412,7 @@ namespace View
                 <property name="margin-end">12</property>
                 <property name="margin-start">12</property>
                 <property name="margin-top">12</property>
-                <property name="orientation">vertical</property>
+                <property name="orientation">1</property>
                 <child>
                   <object class="GtkLabel">
                     <property name="label">Total Billetes</property>
@@ -430,19 +435,23 @@ namespace View
         </child>
         <child>
           <object class="GtkButton" id="btn_iniciar">
-            <property name="css-classes">suggested-action</property>
             <property name="label" translatable="yes">Iniciar Refill / Carga</property>
             <style>
-              <class name="pill"/>
+              <class name="suggested-action"/>
+            </style>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="btn_imprime_faltante">
+            <property name="label" translatable="yes">Imprime Faltantes</property>
+            <style>
+              <class name="warning"/>
             </style>
           </object>
         </child>
         <child>
           <object class="GtkButton" id="btn_transpaso">
             <property name="label">Transpasar a Casette</property>
-            <style>
-              <class name="pill"/>
-            </style>
           </object>
         </child>
         <child>
@@ -450,7 +459,6 @@ namespace View
             <property name="label">Detener</property>
             <style>
               <class name="destructive-action"/>
-              <class name="pill"/>
             </style>
           </object>
         </child>
@@ -458,5 +466,5 @@ namespace View
     </child>
   </object>
 </interface>
-)";
+  )";
 } // namespace View
