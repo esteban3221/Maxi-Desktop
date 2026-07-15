@@ -15,28 +15,29 @@ namespace Global
         Gtk::Revealer *v_revealer = nullptr;
         Gtk::Label *v_revealer_title = nullptr;
         Gtk::ProgressBar *v_progress_bar = nullptr;
-        Glib::RefPtr<Gio::SimpleActionGroup> m_refActionGroup = Gio::SimpleActionGroup::create();;
+        Glib::RefPtr<Gio::SimpleActionGroup> m_refActionGroup = Gio::SimpleActionGroup::create();
+        ;
 
-        void reveal_toast(const Glib::ustring &title, Gtk::MessageType type, int duration )
+        void reveal_toast(const Glib::ustring &title, Gtk::MessageType type, int duration)
         {
             switch (type)
             {
             case Gtk::MessageType::INFO:
                 v_button_conatiner->set_css_classes({"osd"});
-            break;
+                break;
             case Gtk::MessageType::WARNING:
                 v_button_conatiner->set_css_classes({"warning"});
-            break;
+                break;
             case Gtk::MessageType::QUESTION:
                 v_button_conatiner->set_css_classes({"suggested-action"});
-            break;
+                break;
             case (Gtk::MessageType)3:
                 v_button_conatiner->set_css_classes({"destructive-action"});
-            break;
+                break;
             case Gtk::MessageType::OTHER:
                 v_button_conatiner->set_css_classes({"button"});
-            break;
-            
+                break;
+
             default:
                 break;
             }
@@ -54,21 +55,21 @@ namespace Global
 
     namespace Utility
     {
-        #ifdef __WIN32__
-        std::string WStrToUTF8(const wchar_t* wstr)
+#ifdef __WIN32__
+        std::string WStrToUTF8(const wchar_t *wstr)
         {
             int size_needed = WideCharToMultiByte(CP_UTF8, 0, wstr, -1, NULL, 0, NULL, NULL);
             std::string utf8_str(size_needed - 1, 0);
             WideCharToMultiByte(CP_UTF8, 0, wstr, -1, &utf8_str[0], size_needed, NULL, NULL);
             return utf8_str;
         }
-        #endif
+#endif
 
         cpr::Header header{{"Authorization", "Bearer " + Global::System::token}};
         void consume_and_do(cpr::AsyncResponse &async, const std::function<void(const cpr::Response &)> &callback)
         {
-            std::thread([async = std::move(async), callback]() mutable 
-            {
+            std::thread([async = std::move(async), callback]() mutable
+                        {
                 try 
                 {
                     auto lookup = Widget::m_refActionGroup->lookup_action("cerrarsesion");
@@ -76,7 +77,11 @@ namespace Global
                     {
                         Glib::signal_idle().connect_once([lookup]() 
                         {
-                            if(lookup) lookup->set_property("enabled", false);
+                            if(lookup) 
+                            {
+                                lookup->set_property("enabled", false);
+                                Widget::v_main_window->set_deletable(false);
+                            }
                             Global::Widget::v_progress_bar->pulse();
                         });
                     }
@@ -85,7 +90,11 @@ namespace Global
         
                     Glib::signal_idle().connect_once([response, callback, lookup]() 
                     {
-                        if(lookup) lookup->set_property("enabled", true);
+                        if(lookup) 
+                        {
+                            lookup->set_property("enabled", true);
+                            Widget::v_main_window->set_deletable(true);
+                        }
                         Global::Widget::v_progress_bar->set_fraction(1.0);
                         callback(response);
                     });
@@ -94,25 +103,25 @@ namespace Global
                 {
                     g_error(e.what());
                     Widget::m_refActionGroup->lookup_action("cerrarsesion")->set_property("enabled", true);
-                } 
-            }).detach();
+                } })
+                .detach();
         }
-        
+
         void set_multiline_text(Gtk::Entry &entry)
         {
             entry.property_truncate_multiline() = false;
             entry.property_primary_icon_name() = "insert-text-symbolic";
-            entry.signal_icon_press().connect([&entry](Gtk::Entry::IconPosition position) {
+            entry.signal_icon_press().connect([&entry](Gtk::Entry::IconPosition position)
+                                              {
                 if (position == Gtk::Entry::IconPosition::PRIMARY) {
                     auto text = entry.get_text();
                     auto cursor_pos = entry.get_position();
                     text.insert(cursor_pos, "\n");
                     entry.set_text(text);
                     entry.set_position(cursor_pos + 1);
-                }
-            });
+                } });
         }
-    
+
     } // namespace Utility
 
     namespace System

@@ -351,7 +351,6 @@ void Refill::on_btn_transpaso()
                 auto log = std::make_unique<Log>();
                 auto ticket = log->get_log(j["ticket"])->get_item(0);
                 
-
                 Global::System::imprime_ticket(ticket);
             }
         }
@@ -367,7 +366,7 @@ std::string Refill::faltante_to_string(const Glib::RefPtr<Gio::ListStore<MLevelC
         int diff = item->m_nivel_inmo - item->m_cant_recy;
         if (diff < 0)
         {
-            result += Glib::ustring::compose("$%1, Sobrante: %2\n", item->m_denominacion, -diff);
+            // result += Glib::ustring::compose("$%1, Sobrante: %2\n", item->m_denominacion, -diff);
         }
         else
         {

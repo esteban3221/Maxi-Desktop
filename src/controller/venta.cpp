@@ -22,9 +22,12 @@ void Venta::on_btn_cancelar_clicked()
                                           std::string("Cancelar ") + (is_view_ingreso ? "Ingreso" : "Venta"),
                                           false,
                                           Gtk::MessageType::QUESTION,
-                                          Gtk::ButtonsType::OK_CANCEL));
+                                          Gtk::ButtonsType::NONE));
 
-    v_dialog->set_secondary_text("¿Está seguro que desea cancelar la operación?");
+    v_dialog->set_secondary_text("¿Que desea hacer?");
+    v_dialog->add_button("Regresar", Gtk::ResponseType::CANCEL);
+    v_dialog->add_button("Cambiar tipo de ingreso", Gtk::ResponseType::OK)->set_css_classes({"warning"});
+    v_dialog->add_button("Cancelacion total", Gtk::ResponseType::REJECT)->set_css_classes({"destructive-action"});
     v_dialog->signal_response().connect([this](int response_id)
                                         {
         if (response_id == Gtk::ResponseType::OK)
@@ -34,6 +37,18 @@ void Venta::on_btn_cancelar_clicked()
                 
             v_box_columns->v_btn_cancelar->set_sensitive(false);
         }
+        if (response_id == Gtk::ResponseType::REJECT)
+        {
+            ws.send(nlohmann::json{{"action", "cancelar"}}.dump());
+            Global::Widget::reveal_toast(Glib::ustring::compose("<span weight=\"bold\">Peticion de cancelar %1 enviada.</span>", is_view_ingreso ? "Ingreso" : "Venta"));
+                
+            v_box_columns->v_btn_cancelar->set_sensitive(false);
+        }
+        else
+        {
+            /* code */
+        }
+        
         v_dialog->close(); });
     v_dialog->set_hide_on_close();
     v_dialog->set_visible();
@@ -52,15 +67,16 @@ void Venta::on_btn_enter_clicked()
     }
 
     // Deshabilita el botón para evitar múltiples clics
-    Glib::signal_idle().connect_once([this, monto]()
-                                     { 
+    // Glib::signal_idle().connect_once([this, monto]()
+    //                                  {
     v_revealer_columns.set_reveal_child(true);
-    v_box_columns->v_ety_columns[0]->set_text(Glib::ustring::format(monto));
+    v_box_columns->v_ety_columns[0]->set_text("$" + std::to_string(monto));
     v_box_columns->v_ety_columns[1]->set_text("");
     v_box_columns->v_ety_columns[2]->set_text("");
     v_base_nip->set_sensitive(false);
     v_ety_concepto.set_sensitive(false);
-    v_base_nip->v_ety_spin->update(); });
+    v_base_nip->v_ety_spin->update();
+    // });
 
     ws.connect(Global::System::WS + "/ws/venta", sigc::mem_fun(*this, &Venta::enviar_datos_venta), sigc::mem_fun(*this, &Venta::manejar_respuesta_servidor), [this](const std::string &err)
                { Global::Widget::reveal_toast(Glib::ustring::compose("Error de conexión: %1", err), (Gtk::MessageType)3, 5000); }, [this](int code, const std::string &reason)
@@ -111,6 +127,7 @@ void Venta::on_map_show()
     v_ety_concepto.grab_focus();
     v_base_nip->set_sensitive(true);
     v_ety_concepto.set_sensitive(true);
+    v_box_columns->v_btn_cancelar->set_sensitive(true);
 }
 
 // WBSocket methods
@@ -130,18 +147,14 @@ void Venta::manejar_respuesta_servidor(const std::string &respuesta)
     {
         auto json = nlohmann::json::parse(respuesta);
 
-        if (json.contains("terminado"))
+        if (json.contains("terminado") || json.contains("status") && json["status"].get<std::string>() == "cancelado")
         {
-            auto terminado = json["terminado"].get<bool>();
 
-            if (terminado)
-            {
-                Glib::signal_idle().connect_once([this]()
-                                                 {
-                    ws.close();
-                    g_info("WebSocket cerrado desde hilo principal"); });
-                return;
-            }
+            Glib::signal_idle().connect_once([this]()
+                                             {
+                ws.close();
+                g_info("WebSocket cerrado desde hilo principal"); });
+            return;
         }
 
         if (json.contains("total"))
@@ -152,10 +165,12 @@ void Venta::manejar_respuesta_servidor(const std::string &respuesta)
                                                  v_box_columns->v_ety_columns[1]->set_text(Glib::ustring::compose("$ %1", json["ingreso"].get<int>()));
                                                  v_box_columns->v_ety_columns[2]->set_text(Glib::ustring::compose("$ %1", json["cambio"].get<int>())); });
         }
+
+        if (json.contains("status"))
+            Global::Widget::reveal_toast(Glib::ustring::compose("<span weight=\"bold\">%1</span>", json["status"].get<std::string>()));
     }
     catch (const std::exception &e)
     {
         g_warning("Error respuesta WS: %s", e.what());
-        ws.close();
     }
 }
