@@ -19,41 +19,67 @@ void PagoM::on_show_map()
     total = 0;
 
     for (auto &&i : v_box_level_validadores->get_children())
-            v_box_level_validadores->remove(*i);
+        v_box_level_validadores->remove(*i);
 
     auto future = cpr::GetAsync(cpr::Url{Global::System::URL, "log/get_levels"}, Global::Utility::header);
-    Global::Utility::consume_and_do(future, [this](cpr::Response response)
-    {
-        if (response.status_code == 200) 
-        {
-            std::vector<std::pair<size_t,size_t>> vec_val;
-            auto json = nlohmann::json::parse(response.text);
-            for (auto &&i : json.items())
-            {
-                for (auto &&j : i.value())
-                {
-                    vec_val.push_back({j["value"].get<int>() / 100, j["storedInPayout"].get<int>()});
-                }
-                v_box_level_validadores->append(*agregar_contenedor(vec_val, i.key()));
-                vec_val.clear();
-            }
 
-            for (auto const& [device_id, data_list] : m_inputs_pago) 
-            {
-                for (auto const& item : data_list) 
-                    item.spin->signal_changed().connect(sigc::mem_fun(*this,&PagoM::on_spin_value_changed));
-            }
-        } 
-    });
+    Global::Utility::consume_and_do(future, [this](cpr::Response response)
+                                    {
+                                        bool exito_permiso = false;
+
+                                        if (response.status_code == 200)
+                                        {
+                                            std::vector<std::pair<size_t, size_t>> vec_val;
+                                            auto json = nlohmann::json::parse(response.text);
+                                            for (auto &&i : json.items())
+                                            {
+                                                for (auto &&j : i.value())
+                                                {
+                                                    vec_val.push_back({j["value"].get<int>() / 100, j["storedInPayout"].get<int>()});
+                                                }
+                                                v_box_level_validadores->append(*agregar_contenedor(vec_val, i.key()));
+                                                vec_val.clear();
+                                            }
+
+                                            exito_permiso = true;
+                                        }
+
+                                        if (!exito_permiso)
+                                        {
+                                            auto future2 = cpr::GetAsync(cpr::Url{Global::System::URL, "log/get_levels_sin_permiso"}, Global::Utility::header);
+
+                                            Global::Utility::consume_and_do(future2, [this](cpr::Response response2)
+                                                                            {
+                if (response2.status_code == 200)
+                {
+                    std::vector<std::pair<size_t, size_t>> vec_val;
+                    auto json = nlohmann::json::parse(response2.text);
+                    for (auto &&i : json.items())
+                    {
+                        for (auto &&j : i.value())
+                        {
+                            vec_val.push_back({j["value"].get<int>() / 100, 1000});
+                        }
+                        v_box_level_validadores->append(*agregar_contenedor(vec_val, i.key()));
+                        vec_val.clear();
+                    }
+
+                    for (auto const &[device_id, data_list] : m_inputs_pago)
+                    {
+                        for (auto const &item : data_list)
+                            item.spin->signal_changed().connect(sigc::mem_fun(*this, &PagoM::on_spin_value_changed));
+                    }
+                } });
+                                        } });
 }
 
 void PagoM::on_spin_value_changed()
 {
     total = 0;
 
-    for (auto const& [device_id, data_list] : m_inputs_pago) 
+    for (auto const &[device_id, data_list] : m_inputs_pago)
     {
-        for (auto const& item : data_list) 
+        for (auto const &item : data_list)
             total += (item.spin->get_value_as_int() * item.denominacion);
     }
 
@@ -70,18 +96,19 @@ void PagoM::on_btn_cobrar_clicked()
         nlohmann::json envio;
         envio["concepto"] = v_ety_concepto->get_text();
         envio["total"] = total;
-        for (auto const& [device_id, spins] : m_inputs_pago) 
+        for (auto const &[device_id, spins] : m_inputs_pago)
         {
             std::vector<int> cantidades;
-            for (auto const& s : spins) cantidades.push_back(s.spin->get_value_as_int());
-            
+            for (auto const &s : spins)
+                cantidades.push_back(s.spin->get_value_as_int());
+
             envio["pago_manual"][device_id] = cantidades;
         }
 
-        auto future = cpr::PostAsync(cpr::Url{Global::System::URL + "accion/inicia_pago_manual"}, Global::Utility::header, cpr::Body{envio.dump()} );
+        auto future = cpr::PostAsync(cpr::Url{Global::System::URL + "accion/inicia_pago_manual"}, Global::Utility::header, cpr::Body{envio.dump()});
 
         Global::Utility::consume_and_do(future, [this](const cpr::Response &response)
-        {
+                                        {
             if (response.status_code == 200)
             {
                 auto j = nlohmann::json::parse(response.text);
@@ -108,8 +135,7 @@ void PagoM::on_btn_cobrar_clicked()
                 v_dialog->set_secondary_text(response.text);
                 v_dialog->set_visible();
             }
-            Global::Widget::m_refActionGroup->lookup_action("cerrarsesion")->activate(); 
-        });
+            Global::Widget::m_refActionGroup->lookup_action("cerrarsesion")->activate(); });
     }
     else
     {

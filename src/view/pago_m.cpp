@@ -31,8 +31,7 @@ VPagoM::VPagoM(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBui
         min-height: 40px;
         min-width: 120px;
     }
-    )"
-  );
+    )");
 
   Gtk::StyleContext::add_provider_for_display(
       Gdk::Display::get_default(),
@@ -71,7 +70,7 @@ Gtk::Box *VPagoM::agregar_contenedor(const std::vector<std::pair<size_t, size_t>
     label->set_halign(Gtk::Align::START);
     label->set_css_classes({"denom-label"});
 
-    auto spin = Gtk::make_managed<Gtk::SpinButton>(Gtk::Adjustment::create(0, 0, i.second, 1, 10, 0));
+    auto spin = Gtk::make_managed<Gtk::SpinButton>(Gtk::Adjustment::create(0, 0, i.second));
     spin->set_tooltip_text(Glib::ustring::format(i.second));
     spin->set_numeric(true);
     spin->set_halign(Gtk::Align::END);
