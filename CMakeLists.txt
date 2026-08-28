@@ -4,23 +4,15 @@ project("Maxicajero Client Desktop" VERSION 2.0.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -fPIC") 
+set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
 
 message(STATUS "Proyecto: ${PROJECT_NAME}")
 message(STATUS "Versión: ${PROJECT_VERSION}")
-message(STATUS "Versión mayor: ${PROJECT_VERSION_MAJOR}")
-message(STATUS "Versión menor: ${PROJECT_VERSION_MINOR}")
-message(STATUS "Parche: ${PROJECT_VERSION_PATCH}")
 
-# Configurar archivo de versión
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/include/version.hpp.in
     ${CMAKE_CURRENT_BINARY_DIR}/include/configuracion/version.hpp
 )
-
-if (WIN32)
-    set(APP_ICON_RESOURCE ${CMAKE_CURRENT_SOURCE_DIR}/icono.rc)
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -mwindows")
-endif()
 
 find_package(Threads REQUIRED)
 find_package(PkgConfig REQUIRED)
@@ -119,22 +111,28 @@ include_directories(include
                     ui/menu
                     ui/componente
                     ui/conf
-
 )
 
 add_subdirectory(lib/Sqlit3-cpp-lib/)
 
 if(WIN32)
-add_executable(Maxicajero ${SOURCES}  ${APP_ICON_RESOURCE})
-target_link_libraries(Maxicajero
-        PUBLIC
-        ws2_32
-        wldap32
-        crypt32
-    )
+    set(APP_ICON_RESOURCE ${CMAKE_CURRENT_SOURCE_DIR}/icono.rc)
+    add_executable(Maxicajero ${SOURCES} ${APP_ICON_RESOURCE})
+    set_target_properties(Maxicajero PROPERTIES LINK_FLAGS "-mwindows")
+    add_executable(Maxicajero-Debug ${SOURCES} ${APP_ICON_RESOURCE})
+
+    foreach(TARGET_NAME Maxicajero Maxicajero-Debug)
+        target_link_libraries(${TARGET_NAME}
+            PUBLIC
+            ws2_32
+            wldap32
+            crypt32
+        )
+    endforeach()
 else()
     add_executable(Maxicajero ${SOURCES})
 endif()
+
 if (UNIX AND NOT APPLE)
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(CUPS REQUIRED cups)
@@ -142,18 +140,38 @@ if (UNIX AND NOT APPLE)
     target_link_libraries(Maxicajero PRIVATE ${CUPS_LIBRARIES})
 endif()
 
-target_link_libraries(Maxicajero 
-                        PUBLIC 
-                        Sqlite-cpp
-                        nlohmann_json::nlohmann_json 
-                        ixwebsocket::ixwebsocket
-                        OpenSSL::SSL
-                        OpenSSL::Crypto
-                        ${GTKMM_LIBRARIES} 
-                        ${MINIZIP_LIBRARY}
-                        ${MZIP_LIBRARIES}
-                        ${IXWEBSOCKET_LIBRARY}
-                        ZLIB::ZLIB
-                        cpr::cpr
-)
-target_include_directories(Maxicajero PRIVATE ${GTKMM_INCLUDE_DIRS})
+if(WIN32)
+    foreach(TARGET_NAME Maxicajero Maxicajero-Debug)
+        target_link_libraries(${TARGET_NAME} 
+            PUBLIC 
+            Sqlite-cpp
+            nlohmann_json::nlohmann_json 
+            ixwebsocket::ixwebsocket
+            OpenSSL::SSL
+            OpenSSL::Crypto
+            ${GTKMM_LIBRARIES} 
+            ${MINIZIP_LIBRARY}
+            ${MZIP_LIBRARIES}
+            ${IXWEBSOCKET_LIBRARY}
+            ZLIB::ZLIB
+            cpr::cpr
+        )
+        target_include_directories(${TARGET_NAME} PRIVATE ${GTKMM_INCLUDE_DIRS})
+    endforeach()
+else()
+    target_link_libraries(Maxicajero 
+        PUBLIC 
+        Sqlite-cpp
+        nlohmann_json::nlohmann_json 
+        ixwebsocket::ixwebsocket
+        OpenSSL::SSL
+        OpenSSL::Crypto
+        ${GTKMM_LIBRARIES} 
+        ${MINIZIP_LIBRARY}
+        ${MZIP_LIBRARIES}
+        ${IXWEBSOCKET_LIBRARY}
+        ZLIB::ZLIB
+        cpr::cpr
+    )
+    target_include_directories(Maxicajero PRIVATE ${GTKMM_INCLUDE_DIRS})
+endif()
