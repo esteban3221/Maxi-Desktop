@@ -3,16 +3,26 @@ project("Maxicajero Client Desktop" VERSION 2.0.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_FLAGS_RELEASE "-O3 -fPIC") 
-set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3 -fPIC -pthread") 
+#add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0)
+add_compile_options(-fno-declone-ctor-dtor)
 
 message(STATUS "Proyecto: ${PROJECT_NAME}")
 message(STATUS "Versión: ${PROJECT_VERSION}")
+message(STATUS "Versión mayor: ${PROJECT_VERSION_MAJOR}")
+message(STATUS "Versión menor: ${PROJECT_VERSION_MINOR}")
+message(STATUS "Parche: ${PROJECT_VERSION_PATCH}")
 
+# Configurar archivo de versión
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/include/version.hpp.in
     ${CMAKE_CURRENT_BINARY_DIR}/include/configuracion/version.hpp
 )
+
+if (WIN32)
+    set(APP_ICON_RESOURCE ${CMAKE_CURRENT_SOURCE_DIR}/icono.rc)
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -mwindows")
+endif()
 
 find_package(Threads REQUIRED)
 find_package(PkgConfig REQUIRED)
@@ -111,24 +121,21 @@ include_directories(include
                     ui/menu
                     ui/componente
                     ui/conf
+
 )
 
 add_subdirectory(lib/Sqlit3-cpp-lib/)
 
 if(WIN32)
-    set(APP_ICON_RESOURCE ${CMAKE_CURRENT_SOURCE_DIR}/icono.rc)
     add_executable(Maxicajero ${SOURCES} ${APP_ICON_RESOURCE})
-    set_target_properties(Maxicajero PROPERTIES LINK_FLAGS "-mwindows")
-    add_executable(Maxicajero-Debug ${SOURCES} ${APP_ICON_RESOURCE})
-
-    foreach(TARGET_NAME Maxicajero Maxicajero-Debug)
-        target_link_libraries(${TARGET_NAME}
-            PUBLIC
-            ws2_32
-            wldap32
-            crypt32
-        )
-    endforeach()
+    # Forzamos las librerías del sistema de Windows y las de soporte de hilos/estándar primero
+    target_link_libraries(Maxicajero
+        PUBLIC
+        ws2_32
+        wldap32
+        crypt32
+        shlwapi
+    )
 else()
     add_executable(Maxicajero ${SOURCES})
 endif()
@@ -140,38 +147,24 @@ if (UNIX AND NOT APPLE)
     target_link_libraries(Maxicajero PRIVATE ${CUPS_LIBRARIES})
 endif()
 
-if(WIN32)
-    foreach(TARGET_NAME Maxicajero Maxicajero-Debug)
-        target_link_libraries(${TARGET_NAME} 
-            PUBLIC 
-            Sqlite-cpp
-            nlohmann_json::nlohmann_json 
-            ixwebsocket::ixwebsocket
-            OpenSSL::SSL
-            OpenSSL::Crypto
-            ${GTKMM_LIBRARIES} 
-            ${MINIZIP_LIBRARY}
-            ${MZIP_LIBRARIES}
-            ${IXWEBSOCKET_LIBRARY}
-            ZLIB::ZLIB
-            cpr::cpr
-        )
-        target_include_directories(${TARGET_NAME} PRIVATE ${GTKMM_INCLUDE_DIRS})
-    endforeach()
-else()
-    target_link_libraries(Maxicajero 
-        PUBLIC 
+# ORDEN ESTRICTO: Las dependencias de terceros van arriba y las librerías base (hilos/C++) abajo
+target_link_libraries(Maxicajero 
+    PUBLIC 
         Sqlite-cpp
         nlohmann_json::nlohmann_json 
-        ixwebsocket::ixwebsocket
-        OpenSSL::SSL
-        OpenSSL::Crypto
+        cpr::cpr
         ${GTKMM_LIBRARIES} 
         ${MINIZIP_LIBRARY}
         ${MZIP_LIBRARIES}
-        ${IXWEBSOCKET_LIBRARY}
         ZLIB::ZLIB
-        cpr::cpr
-    )
-    target_include_directories(Maxicajero PRIVATE ${GTKMM_INCLUDE_DIRS})
-endif()
+        ixwebsocket::ixwebsocket    # ixwebsocket depende de OpenSSL y hilos, va primero
+        ${IXWEBSOCKET_LIBRARY}
+        OpenSSL::SSL
+        OpenSSL::Crypto
+    PRIVATE
+        Threads::Threads            # Forzamos la abstracción de CMake
+        -pthread                    # Forzamos la bandera nativa de hilos de GCC
+        stdc++                      # Forzamos el re-enlazado de la librería estándar de C++ al final
+)
+
+target_include_directories(Maxicajero PRIVATE ${GTKMM_INCLUDE_DIRS})
