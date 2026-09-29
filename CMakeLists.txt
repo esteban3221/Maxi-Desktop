@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.25)
-project("Maxicajero Client Desktop" VERSION 2.0.0 LANGUAGES CXX)
+project("Maxicajero Client Desktop" VERSION 2.1.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_FLAGS_RELEASE "-O3 -fPIC -pthread") 
+set(CMAKE_CXX_FLAGS_RELEASE "-O3 -pthread") 
 #add_definitions(-D_GLIBCXX_USE_CXX11_ABI=0)
-add_compile_options(-fno-declone-ctor-dtor)
+#add_compile_options(-fno-declone-ctor-dtor)
 
 message(STATUS "Proyecto: ${PROJECT_NAME}")
 message(STATUS "Versión: ${PROJECT_VERSION}")
@@ -128,7 +128,6 @@ add_subdirectory(lib/Sqlit3-cpp-lib/)
 
 if(WIN32)
     add_executable(Maxicajero ${SOURCES} ${APP_ICON_RESOURCE})
-    # Forzamos las librerías del sistema de Windows y las de soporte de hilos/estándar primero
     target_link_libraries(Maxicajero
         PUBLIC
         ws2_32
@@ -147,7 +146,6 @@ if (UNIX AND NOT APPLE)
     target_link_libraries(Maxicajero PRIVATE ${CUPS_LIBRARIES})
 endif()
 
-# ORDEN ESTRICTO: Las dependencias de terceros van arriba y las librerías base (hilos/C++) abajo
 target_link_libraries(Maxicajero 
     PUBLIC 
         Sqlite-cpp
@@ -157,14 +155,14 @@ target_link_libraries(Maxicajero
         ${MINIZIP_LIBRARY}
         ${MZIP_LIBRARIES}
         ZLIB::ZLIB
-        ixwebsocket::ixwebsocket    # ixwebsocket depende de OpenSSL y hilos, va primero
+        ixwebsocket::ixwebsocket  
         ${IXWEBSOCKET_LIBRARY}
         OpenSSL::SSL
         OpenSSL::Crypto
     PRIVATE
-        Threads::Threads            # Forzamos la abstracción de CMake
-        -pthread                    # Forzamos la bandera nativa de hilos de GCC
-        stdc++                      # Forzamos el re-enlazado de la librería estándar de C++ al final
+        Threads::Threads            
+        -pthread                    
+        stdc++                  
 )
 
 target_include_directories(Maxicajero PRIVATE ${GTKMM_INCLUDE_DIRS})
