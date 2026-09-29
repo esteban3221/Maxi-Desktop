@@ -40,6 +40,11 @@ void PagoM::on_show_map()
                                                 v_box_level_validadores->append(*agregar_contenedor(vec_val, i.key()));
                                                 vec_val.clear();
                                             }
+                                            for (auto const &[device_id, data_list] : m_inputs_pago)
+    {
+        for (auto const &item : data_list)
+            item.spin->signal_value_changed().connect(sigc::mem_fun(*this, &PagoM::on_spin_value_changed));
+    }
 
                                             exito_permiso = true;
                                         }
@@ -65,11 +70,15 @@ void PagoM::on_show_map()
                     }
 
                     for (auto const &[device_id, data_list] : m_inputs_pago)
-                    {
-                        for (auto const &item : data_list)
-                            item.spin->signal_changed().connect(sigc::mem_fun(*this, &PagoM::on_spin_value_changed));
-                    }
-                } });
+    {
+        for (auto const &item : data_list)
+            item.spin->signal_value_changed().connect(sigc::mem_fun(*this, &PagoM::on_spin_value_changed));
+    }
+                    
+                } 
+            
+            });
+            
                                         } });
 }
 

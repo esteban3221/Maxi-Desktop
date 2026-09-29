@@ -15,7 +15,7 @@ CambioM::CambioM(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refB
     v_box_botones.append(v_btn_cancelar);
     append(v_box_botones);
 
-    //Controller
+    // Controller
     this->signal_map().connect(sigc::mem_fun(*this, &CambioM::on_show_map));
     v_btn_cobrar->signal_clicked().connect(sigc::mem_fun(*this, &CambioM::on_btn_cobrar_clicked));
     v_btn_aceptar.signal_clicked().connect(sigc::mem_fun(*this, &CambioM::on_btn_aceptar_clicked));
@@ -70,9 +70,6 @@ void CambioM::on_btn_cobrar_clicked()
                                             int pos_coin = j["pos_coin"].get<int>();
                                             int pos_bill = j["pos_bill"].get<int>();
 
-                                            // activa_spinners(v_spin_bill, pos_bill, 6);
-                                            // activa_spinners(v_spin_coin, pos_coin, 4);
-
                                             v_btn_aceptar.set_sensitive(true);
                                             v_btn_cancelar.set_sensitive(true);
                                             
@@ -81,7 +78,6 @@ void CambioM::on_btn_cobrar_clicked()
 
 void CambioM::on_btn_aceptar_clicked()
 {
-
 }
 
 void CambioM::on_btn_cancelar_clicked()

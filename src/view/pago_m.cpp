@@ -45,7 +45,6 @@ VPagoM::~VPagoM()
 
 Gtk::Box *VPagoM::agregar_contenedor(const std::vector<std::pair<size_t, size_t>> &vec_val, std::string key)
 {
-  // El Frame le da un borde y un título al grupo (Billetero o Monedero)
   auto name_frame = key;
   name_frame.erase(name_frame.find_first_of('-'), name_frame.size());
   std::replace(name_frame.begin(), name_frame.end(), '_', ' ');
@@ -57,14 +56,11 @@ Gtk::Box *VPagoM::agregar_contenedor(const std::vector<std::pair<size_t, size_t>
   frame->set_margin(10);
   frame->set_css_classes({"card-pago"}); // Clase personalizada para CSS
 
-  auto &lista_spins = m_inputs_pago[key];
-  lista_spins.clear();
-
+  std::vector<SpinData> lista_spins;
   for (auto &&i : vec_val)
   {
     auto row = Gtk::make_managed<Gtk::Box>(Gtk::Orientation::HORIZONTAL, 0);
 
-    // Label con ancho fijo para que todos los Spins queden alineados verticalmente
     auto label = Gtk::make_managed<Gtk::Label>(Glib::ustring::compose("$ %1", i.first));
     label->set_width_chars(6);
     label->set_halign(Gtk::Align::START);
@@ -82,8 +78,8 @@ Gtk::Box *VPagoM::agregar_contenedor(const std::vector<std::pair<size_t, size_t>
     row->append(*spin);
     root->append(*row);
   }
+  m_inputs_pago[key] = lista_spins;
 
-  // Retornamos el frame en lugar del box para que incluya el borde y título
   auto wrapper = Gtk::make_managed<Gtk::Box>(Gtk::Orientation::VERTICAL);
   wrapper->append(*frame);
   wrapper->set_hexpand(true);
