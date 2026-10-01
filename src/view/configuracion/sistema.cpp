@@ -51,7 +51,7 @@ namespace View
         <property name="position">515</property>
         <child>
           <object class="GtkBox">
-            <property name="accessible-role">widget</property>
+            <!--<property name="accessible-role">widget</property>-->
             <property name="halign">baseline-fill</property>
             <property name="margin-bottom">10</property>
             <property name="margin-end">10</property>

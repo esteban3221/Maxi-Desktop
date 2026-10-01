@@ -96,7 +96,7 @@ private:
     
     #ifdef _WIN32
     static bool abrirEnWindows(const std::string& url) {
-        std::cout << "URL generada: " << url << std::endl;
+        g_message("URL generada: %s", url.c_str());
         
         // Método 1: Usar ShellExecute (recomendado)
         HINSTANCE result = ShellExecuteA(
@@ -114,7 +114,7 @@ private:
         
         // Método 2: Fallback con comando escapado correctamente
         std::string comando = "rundll32.exe url.dll,FileProtocolHandler \"" + url + "\"";
-        std::cout << "Ejecutando comando: " << comando << std::endl;
+        g_message("Ejecutando comando: %s", comando.c_str());
         
         return system(comando.c_str()) == 0;
     }
@@ -122,7 +122,7 @@ private:
     
     static bool abrirEnUnix(const std::string& url) {
         std::string comando = "xdg-open \"" + url + "\"";
-        std::cout << "Ejecutando: " << comando << std::endl;
+        g_message("Ejecutando: %s", comando.c_str());
         return system(comando.c_str()) == 0;
     }
 };

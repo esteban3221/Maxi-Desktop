@@ -214,7 +214,7 @@ void General::on_folder_dialog_finish(const Glib::RefPtr<Gio::AsyncResult>& resu
     {
         auto folder = dialog->select_folder_finish(result);
         auto folder_path = folder->get_path();
-        std::cout << "Folder selected: " << folder_path << std::endl;
+        g_message("Folder selected: %s", folder_path.c_str());
 
         std::string zip_path = "carrousel.zip";
         if (comprimir_carpeta(folder_path, zip_path))
@@ -230,7 +230,7 @@ void General::on_folder_dialog_finish(const Glib::RefPtr<Gio::AsyncResult>& resu
                 else
                     Global::Widget::reveal_toast("Error al subir la carpeta", (Gtk::MessageType)3 /*La macro de windows permea TODO LO QUE TENGA ERROR*/);
                 
-                std::cout << response.text << std::endl; 
+                g_message("Response: %s", response.text.c_str());
             });
         }
         else
@@ -238,7 +238,7 @@ void General::on_folder_dialog_finish(const Glib::RefPtr<Gio::AsyncResult>& resu
     }
     catch (const Gtk::DialogError &err)
     {
-        std::cout << "No folder selected. " << err.what() << std::endl;
+        g_message("No folder selected. %s", err.what());
     }
 }
 
@@ -278,7 +278,7 @@ void General::on_btn_reinicia_val_clicked()
 }
 void General::on_btn_actualiza_pos_clicked()
 {
-    v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window, "Actualización", false, Gtk::MessageType::QUESTION, Gtk::ButtonsType::CANCEL, true));
+    auto v_dialog = std::make_shared<Gtk::MessageDialog>(*Global::Widget::v_main_window, "Actualización", false, Gtk::MessageType::QUESTION, Gtk::ButtonsType::CANCEL, true);
     auto btn = v_dialog->add_button("Continuar", Gtk::ResponseType::OK);
     btn->add_css_class({"suggested-action"});
     btn->set_sensitive(false);
@@ -291,7 +291,7 @@ void General::on_btn_actualiza_pos_clicked()
     chkb->signal_toggled().connect([btn, chkb]()
                                    { btn->set_sensitive(chkb->get_active()); });
 
-    v_dialog->signal_response().connect([this](int response)
+    v_dialog->signal_response().connect([this, v_dialog](int response)
                                         {
         if(Gtk::ResponseType::OK == response)
         {
@@ -337,7 +337,7 @@ void General::on_file_dialog_image_finish(const Glib::RefPtr<Gio::AsyncResult> &
     {
         auto file = dialog->open_finish(result);
         auto filename = file->get_path();
-        std::cout << "Image selected: " << filename << std::endl;
+        g_message("Image selected: %s", filename.c_str());
 
         auto future = cpr::PostAsync(cpr::Url{Global::System::URL + "configuracion/sube_imagen_pos"},
                                      Global::Utility::header,
@@ -350,15 +350,16 @@ void General::on_file_dialog_image_finish(const Glib::RefPtr<Gio::AsyncResult> &
             else
                 Global::Widget::reveal_toast("Error al subir la imagen", (Gtk::MessageType)3 /*La macro de windows permea TODO LO QUE TENGA ERROR*/);
             
-            std::cout << response.text << std::endl; });
+            g_message("Response: %s", response.text.c_str());
+        });
     }
     catch (const Gtk::DialogError &err)
     {
-        std::cout << "No file selected. " << err.what() << std::endl;
+        g_message("No file selected. %s", err.what());
     }
     catch (const Glib::Error &err)
     {
-        std::cout << "Unexpected exception. " << err.what() << std::endl;
+        g_message("Unexpected exception. %s", err.what());
     }
 }
 void General::on_file_dialog_finish(const Glib::RefPtr<Gio::AsyncResult> &result, const Glib::RefPtr<Gtk::FileDialog> &dialog)
@@ -367,7 +368,7 @@ void General::on_file_dialog_finish(const Glib::RefPtr<Gio::AsyncResult> &result
     {
         auto file = dialog->open_finish(result);
         auto filename = file->get_path();
-        std::cout << "File selected: " << filename << std::endl;
+        g_message("File selected: %s", filename.c_str());
 
         auto future = cpr::PostAsync(cpr::Url{Global::System::URL + "configuracion/actualiza_pos"},
                                      Global::Utility::header,
@@ -378,15 +379,15 @@ void General::on_file_dialog_finish(const Glib::RefPtr<Gio::AsyncResult> &result
             if (response.status_code == 200)
                 Global::Widget::reveal_toast("Exito");
             
-            std::cout << response.text << std::endl; 
+            g_message("Response: %s", response.text.c_str());
         });
     }
     catch (const Gtk::DialogError &err)
     {
-        std::cout << "No file selected. " << err.what() << std::endl;
+        g_message("No file selected. %s", err.what());
     }
     catch (const Glib::Error &err)
     {
-        std::cout << "Unexpected exception. " << err.what() << std::endl;
+        g_message("Unexpected exception. %s", err.what());
     }
 }

@@ -11,7 +11,6 @@ private:
 protected:
     VBaseNip *v_base_nip = nullptr;
     Gtk::Entry v_ety_concepto;
-    std::unique_ptr<Gtk::MessageDialog> v_dialog;
 public:
     VPago();
     ~VPago();

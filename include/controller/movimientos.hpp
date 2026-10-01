@@ -18,7 +18,7 @@ private:
     Glib::RefPtr<Gtk::TreeListModel> tree_model_list;
     // Glib::RefPtr<Gio::ListStore<MLog>> m_log;
 
-    std::unique_ptr<Gtk::MessageDialog> v_dialog;
+    
 
     void init_datos();
     void reimprime_tickets();

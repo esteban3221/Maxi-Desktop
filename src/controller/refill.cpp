@@ -3,7 +3,6 @@
 Refill::Refill(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuilder) : VRefill(cobject, refBuilder)
 {
     this->signal_map().connect(sigc::mem_fun(*this, &Refill::on_show_map));
-    poll_alerta_niveles();
 
     auto m_list_bill = Gio::ListStore<MLevelCash>::create();
     auto m_list_coin = Gio::ListStore<MLevelCash>::create();
@@ -22,11 +21,16 @@ Refill::~Refill()
 
 void Refill::on_btn_detener()
 {
-    v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window, "Refill", false, Gtk::MessageType::QUESTION, Gtk::ButtonsType::YES_NO, true));
-    v_dialog->set_secondary_text("¿Está seguro de detener el proceso de Refill?");
-    v_dialog->signal_response().connect([this](int response_id)
-                                        {
-        if (response_id == Gtk::ResponseType::YES)
+    auto v_dialog = Gtk::AlertDialog::create("Refill");
+    v_dialog->set_detail("¿Está seguro de detener el proceso de Refill?");
+    v_dialog->set_buttons({"Cancelar", "Detener"});
+    v_dialog->set_default_button(1);
+    v_dialog->set_cancel_button(0);
+
+    v_dialog->choose(*Global::Widget::v_main_window, [v_dialog, this](const Glib::RefPtr<Gio::AsyncResult> &result)
+    {
+        int button_clicked = v_dialog->choose_finish(result);
+        if (button_clicked == 1)
         {
             ws.send(nlohmann::json{{"action", "detener"}}.dump());
             Global::Widget::reveal_toast("Refill detenido");
@@ -34,8 +38,7 @@ void Refill::on_btn_detener()
             v_btn_detener->set_sensitive(false);
             v_btn_incia->set_visible(true);
         }
-        v_dialog->close(); });
-    v_dialog->set_visible();
+    });
 }
 
 void Refill::poll_alerta_niveles()

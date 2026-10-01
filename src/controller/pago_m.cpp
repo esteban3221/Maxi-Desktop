@@ -24,37 +24,36 @@ void PagoM::on_show_map()
     auto future = cpr::GetAsync(cpr::Url{Global::System::URL, "log/get_levels"}, Global::Utility::header);
 
     Global::Utility::consume_and_do(future, [this](cpr::Response response)
-                                    {
-                                        bool exito_permiso = false;
-
-                                        if (response.status_code == 200)
-                                        {
-                                            std::vector<std::pair<size_t, size_t>> vec_val;
-                                            auto json = nlohmann::json::parse(response.text);
-                                            for (auto &&i : json.items())
-                                            {
-                                                for (auto &&j : i.value())
-                                                {
-                                                    vec_val.push_back({j["value"].get<int>() / 100, j["storedInPayout"].get<int>()});
-                                                }
-                                                v_box_level_validadores->append(*agregar_contenedor(vec_val, i.key()));
-                                                vec_val.clear();
-                                            }
-                                            for (auto const &[device_id, data_list] : m_inputs_pago)
     {
-        for (auto const &item : data_list)
-            item.spin->signal_value_changed().connect(sigc::mem_fun(*this, &PagoM::on_spin_value_changed));
-    }
+        bool exito_permiso = false;
 
-                                            exito_permiso = true;
-                                        }
+        if (response.status_code == 200)
+        {
+            std::vector<std::pair<size_t, size_t>> vec_val;
+            auto json = nlohmann::json::parse(response.text);
+            for (auto &&i : json.items())
+            {
+                for (auto &&j : i.value())
+                    vec_val.push_back({j["value"].get<int>() / 100, j["storedInPayout"].get<int>()});
+                                                
+                v_box_level_validadores->append(*agregar_contenedor(vec_val, i.key()));
+                vec_val.clear();
+            }
+            for (auto const &[device_id, data_list] : m_inputs_pago)
+            {
+                for (auto const &item : data_list)
+                    item.spin->signal_value_changed().connect(sigc::mem_fun(*this, &PagoM::on_spin_value_changed));
+            }
 
-                                        if (!exito_permiso)
-                                        {
-                                            auto future2 = cpr::GetAsync(cpr::Url{Global::System::URL, "log/get_levels_sin_permiso"}, Global::Utility::header);
+            exito_permiso = true;
+        }
 
-                                            Global::Utility::consume_and_do(future2, [this](cpr::Response response2)
-                                                                            {
+        if (!exito_permiso)
+        {
+            auto future2 = cpr::GetAsync(cpr::Url{Global::System::URL, "log/get_levels_sin_permiso"}, Global::Utility::header);
+
+            Global::Utility::consume_and_do(future2, [this](cpr::Response response2)
+            {
                 if (response2.status_code == 200)
                 {
                     std::vector<std::pair<size_t, size_t>> vec_val;
@@ -70,16 +69,14 @@ void PagoM::on_show_map()
                     }
 
                     for (auto const &[device_id, data_list] : m_inputs_pago)
-    {
-        for (auto const &item : data_list)
-            item.spin->signal_value_changed().connect(sigc::mem_fun(*this, &PagoM::on_spin_value_changed));
-    }
-                    
+                    {
+                        for (auto const &item : data_list)
+                            item.spin->signal_value_changed().connect(sigc::mem_fun(*this, &PagoM::on_spin_value_changed));
+                    }
                 } 
-            
             });
-            
-                                        } });
+        } 
+    });
 }
 
 void PagoM::on_spin_value_changed()
@@ -140,16 +137,16 @@ void PagoM::on_btn_cobrar_clicked()
             }
             else
             {
-                v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window,"Info",false,Gtk::MessageType::INFO, Gtk::ButtonsType::NONE));
-                v_dialog->set_secondary_text(response.text);
-                v_dialog->set_visible();
+                auto v_dialog = Gtk::AlertDialog::create("Error");
+                v_dialog->set_detail(response.text);
+                v_dialog->show(*Global::Widget::v_main_window);
             }
             Global::Widget::m_refActionGroup->lookup_action("cerrarsesion")->activate(); });
     }
     else
     {
-        v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window, "Info", false, Gtk::MessageType::INFO, Gtk::ButtonsType::NONE));
-        v_dialog->set_secondary_text("El monto a vender debe ser mayor a 0");
-        v_dialog->set_visible();
+        auto v_dialog = Gtk::AlertDialog::create("Info");
+        v_dialog->set_detail("El monto a vender debe ser mayor a 0");
+        v_dialog->show(*Global::Widget::v_main_window);
     }
 }

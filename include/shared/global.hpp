@@ -23,7 +23,7 @@
 #define BOLDMAGENTA "\033[1m\033[35m" /* Bold Magenta */
 #define BOLDCYAN "\033[1m\033[36m"    /* Bold Cyan */
 #define BOLDWHITE "\033[1m\033[37m"   /* Bold White */
-    
+
 // por conveniencia algunas cosas estan en ingles
 namespace Global
 {
@@ -44,20 +44,20 @@ namespace Global
 
         namespace Impresora
         {
-            extern bool state_vizualizacion[6] ,is_activo;
+            extern bool state_vizualizacion[6], is_activo;
         } // namespace Impresora
-        
+
     } // namespace WidgetSimpleApp
 
     namespace Utility
     {
         extern cpr::Header header;
-        extern void consume_and_do(cpr::AsyncResponse &async , const std::function<void(const cpr::Response &)> &callback);
-        #ifdef __WIN32__
-        #include <locale>
-        #include <codecvt>
-        extern std::string WStrToUTF8(const wchar_t* wstr);
-        #endif
+        extern void consume_and_do(cpr::AsyncResponse &async, const std::function<void(const cpr::Response &)> &callback);
+#ifdef __WIN32__
+#include <locale>
+#include <codecvt>
+        extern std::string WStrToUTF8(const wchar_t *wstr);
+#endif
         extern void set_multiline_text(Gtk::Entry &entry);
     } // namespace Utility
 
@@ -78,6 +78,7 @@ namespace Global
         extern std::string WS;
         extern std::string URL;
         extern std::string token;
+        extern std::atomic_bool is_in_process;
     } // namespace System
 
     class Async

@@ -18,26 +18,23 @@ Venta::~Venta()
 
 void Venta::on_btn_cancelar_clicked()
 {
-    v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window,
-                                          std::string("Cancelar ") + (is_view_ingreso ? "Ingreso" : "Venta"),
-                                          false,
-                                          Gtk::MessageType::QUESTION,
-                                          Gtk::ButtonsType::NONE));
+    const auto tipo = is_view_ingreso ? std::string("Ingreso") : std::string("Venta");
+    auto v_dialog = Gtk::AlertDialog::create(std::string("Cancelar ") + tipo);
+    v_dialog->set_detail(std::string("¿Está seguro de cancelar el proceso de ") + tipo + "?");
+    v_dialog->set_buttons({"Regresar", "Cambiar tipo de ingreso", "Cancelacion total"});
+    v_dialog->set_cancel_button(0);
 
-    v_dialog->set_secondary_text("¿Que desea hacer?");
-    v_dialog->add_button("Regresar", Gtk::ResponseType::CANCEL);
-    v_dialog->add_button("Cambiar tipo de ingreso", Gtk::ResponseType::OK)->set_css_classes({"warning"});
-    v_dialog->add_button("Cancelacion total", Gtk::ResponseType::REJECT)->set_css_classes({"destructive-action"});
-    v_dialog->signal_response().connect([this](int response_id)
-                                        {
-        if (response_id == Gtk::ResponseType::OK)
+    v_dialog->choose(*Global::Widget::v_main_window, [v_dialog, this, tipo](const Glib::RefPtr<Gio::AsyncResult> &result)
+                     {
+        int button_clicked = v_dialog->choose_finish(result);
+        if (button_clicked == 1)
         {
             ws.send(nlohmann::json{{"action", "detener"}}.dump());
             Global::Widget::reveal_toast(Glib::ustring::compose("<span weight=\"bold\">Peticion de cancelar %1 enviada.</span>", is_view_ingreso ? "Ingreso" : "Venta"));
                 
             v_box_columns->v_btn_cancelar->set_sensitive(false);
         }
-        if (response_id == Gtk::ResponseType::REJECT)
+        if (button_clicked == 2)
         {
             ws.send(nlohmann::json{{"action", "cancelar"}}.dump());
             Global::Widget::reveal_toast(Glib::ustring::compose("<span weight=\"bold\">Peticion de cancelar %1 enviada.</span>", is_view_ingreso ? "Ingreso" : "Venta"));
@@ -47,11 +44,9 @@ void Venta::on_btn_cancelar_clicked()
         else
         {
             /* code */
-        }
-        
-        v_dialog->close(); });
-    v_dialog->set_hide_on_close();
-    v_dialog->set_visible();
+        } });
+
+    
 }
 
 void Venta::on_btn_enter_clicked()
@@ -59,11 +54,9 @@ void Venta::on_btn_enter_clicked()
     auto monto = v_base_nip->v_ety_spin->get_value_as_int();
     if (monto < 1)
     {
-        v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window, "Info", false, Gtk::MessageType::INFO, Gtk::ButtonsType::NONE));
-        v_dialog->set_secondary_text("El monto a vender debe ser mayor a 0");
-        v_dialog->set_hide_on_close();
-        v_dialog->set_visible();
-        return;
+        auto v_dialog = Gtk::AlertDialog::create("Info");
+        v_dialog->set_detail("El monto a vender debe ser mayor a 0");
+        v_dialog->show(*Global::Widget::v_main_window);
     }
 
     // Deshabilita el botón para evitar múltiples clics
@@ -111,9 +104,9 @@ void Venta::on_btn_enter_clicked()
         } 
         else 
         {
-            v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window, "Error"));
-            v_dialog->set_secondary_text(response.text);
-            v_dialog->set_visible();
+            auto v_dialog = Gtk::AlertDialog::create("Error");
+            v_dialog->set_detail(response.text);
+            v_dialog->show(*Global::Widget::v_main_window);
         }
         Global::Widget::m_refActionGroup->lookup_action("cerrarsesion")->activate();
         set_sensitive(true); });

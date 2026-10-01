@@ -21,7 +21,7 @@ protected:
     Gtk::Box *agregar_contenedor(const std::vector<std::pair<size_t,size_t>> &vec_val, std::string key);
     std::map<std::string, std::vector<SpinData>> m_inputs_pago;
 
-    std::unique_ptr<Gtk::MessageDialog> v_dialog;
+    
 public:
     VPagoM(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuilder);
     ~VPagoM();

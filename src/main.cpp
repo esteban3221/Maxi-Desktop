@@ -13,9 +13,8 @@ int main(int argc, char *argv[])
     if (GetLastError() == ERROR_ALREADY_EXISTS)
     {
         if (hMutex)
-        {
             CloseHandle(hMutex);
-        }
+
         return 0;
     }
 #endif

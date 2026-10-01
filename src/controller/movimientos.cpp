@@ -39,11 +39,16 @@ void Movimientos::imprime_corte()
 
     auto fecha = f_ini.empty() || f_fin.empty() ? "Todo el dia" : "Desde " + Glib::DateTime::create_from_iso8601(f_ini).format("%F") + " hasta " + Glib::DateTime::create_from_iso8601(f_fin).format("%F");
 
-    v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window, "Atención", false, Gtk::MessageType::QUESTION, Gtk::ButtonsType::OK_CANCEL, true));
-    v_dialog->set_secondary_text("¿Desea imprimir el tipo de movimiento \"" + tipo + "\" y " + fecha + " en el corte de caja?");
-    v_dialog->signal_response().connect([this, tipo](int response)
-                                        {
-        if (Gtk::ResponseType::OK == response)
+    auto v_dialog = Gtk::AlertDialog::create("Atención");
+    v_dialog->set_detail("¿Desea imprimir el tipo de movimiento \"" + tipo + "\" y " + fecha + " en el corte de caja?");
+    v_dialog->set_buttons({"Aceptar", "Cancelar"});
+    v_dialog->set_cancel_button(1);
+    v_dialog->set_default_button(0);
+
+    v_dialog->choose(*Global::Widget::v_main_window,[v_dialog, this, tipo](const Glib::RefPtr<Gio::AsyncResult>& result)
+    {
+        int button_clicked = v_dialog->choose_finish(result);
+        if (button_clicked == 0)
         {
             auto json = nlohmann::json{{"tipo", tipo},
                                        {"f_ini", v_ety_ini->get_text()},
@@ -86,9 +91,7 @@ void Movimientos::imprime_corte()
                 }
             });
         }
-        v_dialog->close(); });
-
-    v_dialog->show();
+    });
 }
 
 void Movimientos::init_datos()

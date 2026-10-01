@@ -14,7 +14,7 @@ protected:
 
     Gtk::Entry v_ety_concepto;
     Gtk::Revealer v_revealer_columns;
-    std::unique_ptr<Gtk::MessageDialog> v_dialog;
+    
 public:
     VVenta();
     ~VVenta();

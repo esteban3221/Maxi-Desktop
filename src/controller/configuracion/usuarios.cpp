@@ -106,7 +106,7 @@ void CUsuarios::on_row_activated(guint id)
 
 void CUsuarios::lanza_dialog(const std::string &title)
 {
-    v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window, title, false, Gtk::MessageType::INFO,Gtk::ButtonsType::NONE, true));
+    auto v_dialog = (new Gtk::MessageDialog(*Global::Widget::v_main_window, title, false, Gtk::MessageType::INFO,Gtk::ButtonsType::NONE, true));
     auto titlebar = Gtk::manage(new Gtk::HeaderBar());
     btn_add = Gtk::manage(new Gtk::Button());
     auto btn_cancel = Gtk::manage(new Gtk::Button());
@@ -117,8 +117,6 @@ void CUsuarios::lanza_dialog(const std::string &title)
     v_entry_usuario = Gtk::manage(new Gtk::Entry());
     v_entry_contrasena = Gtk::manage(new Gtk::PasswordEntry());
 
-    v_dialog->set_default_size(300, 200);
-    v_dialog->set_resizable(false);
 
     v_entry_usuario->set_placeholder_text("Escriba el nombre de usuario");
     v_entry_usuario->property_primary_icon_name() = "system-users-symbolic";
@@ -146,7 +144,7 @@ void CUsuarios::lanza_dialog(const std::string &title)
     v_dialog->set_titlebar(*titlebar);
     v_dialog->set_transient_for(*Global::Widget::v_main_window);
 
-    btn_cancel->signal_clicked().connect([this](){v_dialog->close();});
+    btn_cancel->signal_clicked().connect([this, v_dialog](){v_dialog->close();});
 
     v_dialog->show();
 }
@@ -180,14 +178,13 @@ void CUsuarios::on_btn_edit_clicked()
 
 void CUsuarios::on_btn_delete_clicked()
 {
-    v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window, "Eliminar Usuario", false, Gtk::MessageType::WARNING,Gtk::ButtonsType::CANCEL, true));
-    auto button = v_dialog->add_button("Eliminar", Gtk::ResponseType::APPLY);
-    button->set_css_classes({"destructive-action"});
-    v_dialog->set_secondary_text("¿Esta seguro de eliminar el usuario?");
-
-    v_dialog->signal_response().connect(sigc::mem_fun(*this, &CUsuarios::on_dialog_btn_delete_clicked));
-    v_dialog->set_transient_for(*Global::Widget::v_main_window);
-    v_dialog->show();
+    v_dialog_delete = Gtk::AlertDialog::create("Eliminar Usuario");
+    v_dialog_delete->set_detail("¿Esta seguro de eliminar el usuario?");
+    v_dialog_delete->set_buttons({"Eliminar","Cancelar"});
+    v_dialog_delete->set_modal(true);
+    v_dialog_delete->set_default_button(0);
+    v_dialog_delete->set_cancel_button(1);
+    v_dialog_delete->choose(*Global::Widget::v_main_window, sigc::mem_fun(*this, &CUsuarios::on_dialog_btn_delete_clicked));
 }
 
 void CUsuarios::on_dialog_btn_edit_clicked()
@@ -216,11 +213,7 @@ void CUsuarios::on_dialog_btn_edit_clicked()
     Global::Utility::consume_and_do(future, [this](const cpr::Response &response)
     {
         if (response.status_code == 200)
-        {
-            
             Global::Widget::reveal_toast("Usuario editado correctamente");
-            v_dialog->close();
-        }
         else
             Global::Widget::reveal_toast("No tiene permisos para acceder a esta seccion", (Gtk::MessageType)3);
     });
@@ -228,9 +221,10 @@ void CUsuarios::on_dialog_btn_edit_clicked()
 
 }
 
-void CUsuarios::on_dialog_btn_delete_clicked(int response)
+void CUsuarios::on_dialog_btn_delete_clicked(const Glib::RefPtr<Gio::AsyncResult>& result)
 {
-    if (response == Gtk::ResponseType::APPLY)
+    int response = v_dialog_delete->choose_finish(result);
+    if (response == 0)
     {
         auto row = v_treeview->get_model()->get_selection()->get_minimum();
         if (row == -1)
@@ -256,14 +250,12 @@ void CUsuarios::on_dialog_btn_delete_clicked(int response)
                 
                 Global::Widget::reveal_toast("Usuario eliminado correctamente");
                 on_show_map();
-                v_dialog->close();
             }
             else
                 Global::Widget::reveal_toast(response.text);
         });
     }
-    else
-        v_dialog->close();
+    else;
     
 }
 
@@ -335,6 +327,5 @@ void CUsuarios::on_dialog_btn_add_clicked()
             on_show_map();
         else
             Global::Widget::reveal_toast("No tiene permisos para acceder a esta seccion", (Gtk::MessageType)3);
-        v_dialog->close();
     });
 }

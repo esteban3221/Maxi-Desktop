@@ -12,7 +12,7 @@ public:
         static std::once_flag init_flag;
         std::call_once(init_flag, []() {
             ix::initNetSystem();
-            std::cout << "[IXWS] Red inicializada (Unica)\n";
+            g_info ("[IXWS] Red inicializada (Unica)");
         });
     }
 
@@ -36,25 +36,24 @@ public:
 
             switch (msg->type) {
                 case ix::WebSocketMessageType::Open:
-                    std::cout << "[WS] Conexión abierta → " << url << "\n";
+                    g_message("[WS] Conexión abierta → %s", url.c_str());
                     if (on_open) on_open();
                     break;
 
                 case ix::WebSocketMessageType::Message:
                     if (on_message && !msg->binary) {
-                        if (debug) std::cout << "[WS] Mensaje: " << msg->str << "\n";
+                        if (debug) g_message("[WS] Mensaje: %s", msg->str.c_str());
                         on_message(msg->str);
                     }
                     break;
 
                 case ix::WebSocketMessageType::Error:
-                    std::cout << "[WS] Error: " << msg->errorInfo.reason << "\n";
+                    g_critical("[WS] Error: %s", msg->errorInfo.reason.c_str());
                     if (on_error) on_error(msg->errorInfo.reason);
                     break;
 
                 case ix::WebSocketMessageType::Close:
-                    std::cout << "[WS] Cerrado (" << msg->closeInfo.code << "): "
-                              << msg->closeInfo.reason << "\n";
+                    g_message("[WS] Cerrado (%d): %s", msg->closeInfo.code, msg->closeInfo.reason.c_str());
                     if (on_close) on_close(msg->closeInfo.code, msg->closeInfo.reason);
                     break;
             }
@@ -66,12 +65,12 @@ public:
     // Versión simple: sin url como parámetro
     void send(const std::string& payload) {
         ws.send(payload);
-        std::cout << "[WS] Enviado: " << payload << "\n";
+        g_message("[WS] Enviado: %s", payload.c_str());
     }
 
     void close() {
         ws.stop();
-        std::cout << "[WS] Conexión cerrada manualmente\n";
+        g_message("[WS] Conexión cerrada manualmente");
     }
 
 private:

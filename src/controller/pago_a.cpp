@@ -38,9 +38,9 @@ void PagoA::on_btn_enter_clicked()
         } 
         else 
         {
-            v_dialog.reset(new Gtk::MessageDialog(*Global::Widget::v_main_window, "Error", false, (Gtk::MessageType)3 /*para windows*/, Gtk::ButtonsType::NONE));
-            v_dialog->set_secondary_text(response.text);
-            v_dialog->set_visible();
+            auto v_dialog = Gtk::AlertDialog::create("Error");
+            v_dialog->set_detail(response.text);
+            v_dialog->show(*Global::Widget::v_main_window);
         }
         Global::Widget::m_refActionGroup->lookup_action("cerrarsesion")->activate();
         set_sensitive(true); });

@@ -47,7 +47,7 @@ protected:
     // Botón guardar
     Gtk::Button* v_btn_guardar_roles {nullptr};
 
-    std::unique_ptr<Gtk::MessageDialog> v_dialog;
+    
 
 public:
     VUsuarios(BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builder>& refBuilder);

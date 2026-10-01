@@ -16,7 +16,7 @@ private:
 
     void on_dialog_btn_add_clicked();
     void on_dialog_btn_edit_clicked();
-    void on_dialog_btn_delete_clicked(int response);
+    void on_dialog_btn_delete_clicked(const Glib::RefPtr<Gio::AsyncResult>& result);
     
     void on_checkbox_main_toggled();
     void state_group_checkbox();
@@ -25,6 +25,7 @@ private:
     Gtk::Button *btn_add;
     Gtk::Entry *v_entry_usuario;
     Gtk::PasswordEntry *v_entry_contrasena;
+    Glib::RefPtr<Gtk::AlertDialog> v_dialog_delete;
 
 public:
     CUsuarios(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuilder);

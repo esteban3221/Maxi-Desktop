@@ -30,7 +30,7 @@ protected:
     Gtk::Button*   v_btn_actualizar_pos         {nullptr};
     Gtk::Button*   v_btn_retirada               {nullptr};
 
-    std::unique_ptr<Gtk::MessageDialog> v_dialog;
+    
 
 public:
     VGeneral(BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builder>& refBuilder);

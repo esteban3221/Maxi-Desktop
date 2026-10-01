@@ -16,6 +16,7 @@ MainWindow::MainWindow(const Glib::RefPtr<Gtk::Application>& app)
     Global::Widget::v_revealer->set_halign(Gtk::Align::CENTER);
     Global::Widget::v_revealer->set_valign(Gtk::Align::START);
     Global::Widget::v_revealer->set_margin_top(30);
+    Global::Widget::m_refActionGroup = Gio::SimpleActionGroup::create();
 
     Gtk::Box *v_box = Gtk::manage(new Gtk::Box(Gtk::Orientation::HORIZONTAL, 30));
     Global::Widget::v_button_conatiner->set_child(*v_box);
@@ -95,9 +96,9 @@ void MainWindow::acceleretors(const Glib::RefPtr<Gtk::Application>& app)
         {
             cpr::PostAsync(cpr::Url{Global::System::URL + "sesion/logout"});
             Global::Widget::v_main_stack->set_visible_child("login");
-                Global::Widget::v_main_title->set_text("Maxicajero");
-            }
-        });
+            Global::Widget::v_main_title->set_text("Maxicajero");
+        }
+    });
 
     insert_action_group("app", Global::Widget::m_refActionGroup);
 

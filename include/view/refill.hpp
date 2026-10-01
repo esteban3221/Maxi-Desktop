@@ -32,7 +32,7 @@ protected:
     Gtk::Button *v_btn_detener = nullptr;
     Gtk::Button *v_btn_imprime_faltante = nullptr;
 
-    std::unique_ptr<Gtk::MessageDialog> v_dialog;
+    
 
     void on_setup_label(const Glib::RefPtr<Gtk::ListItem> &list_item);
     void on_setup_button(const Glib::RefPtr<Gtk::ListItem> &list_item);

@@ -15,7 +15,7 @@ namespace Global
         Gtk::Revealer *v_revealer = nullptr;
         Gtk::Label *v_revealer_title = nullptr;
         Gtk::ProgressBar *v_progress_bar = nullptr;
-        Glib::RefPtr<Gio::SimpleActionGroup> m_refActionGroup = Gio::SimpleActionGroup::create();
+        Glib::RefPtr<Gio::SimpleActionGroup> m_refActionGroup = nullptr;
         ;
 
         void reveal_toast(const Glib::ustring &title, Gtk::MessageType type, int duration)
@@ -68,11 +68,11 @@ namespace Global
         cpr::Header header{{"Authorization", "Bearer " + Global::System::token}};
         void consume_and_do(cpr::AsyncResponse &async, const std::function<void(const cpr::Response &)> &callback)
         {
-            std::thread([async = std::move(async), callback]() mutable
-                        {
+            auto lookup = Widget::m_refActionGroup->lookup_action("cerrarsesion");
+            std::thread([async = std::move(async), callback, lookup]() mutable
+            {
                 try 
                 {
-                    auto lookup = Widget::m_refActionGroup->lookup_action("cerrarsesion");
                     while (async.wait_for(std::chrono::milliseconds(100)) != std::future_status::ready) 
                     {
                         Glib::signal_idle().connect_once([lookup]() 
@@ -101,10 +101,20 @@ namespace Global
                 } 
                 catch (const std::exception& e) 
                 {
-                    g_error(e.what());
+                    g_warning(e.what());
+                    Glib::signal_idle().connect_once([lookup, e]() 
+                    {
+                        if(lookup) 
+                        {
+                            lookup->set_property("enabled", true);
+                            Widget::v_main_window->set_deletable(true);
+                            Global::Widget::reveal_toast("Error de conexión : " + std::string(e.what()), Gtk::MessageType::WARNING);
+                        }
+                        Global::Widget::v_progress_bar->set_fraction(1.0);
+                    });
                     Widget::m_refActionGroup->lookup_action("cerrarsesion")->set_property("enabled", true);
-                } })
-                .detach();
+                } 
+            }).detach();
         }
 
         void set_multiline_text(Gtk::Entry &entry)
@@ -130,6 +140,7 @@ namespace Global
         std::string WS = "";
         std::string URL{"http://" + IP + ":44333/"};
         std::string token = "";
+        std::atomic_bool is_in_process = false;
     } // namespace System
 
     namespace User
