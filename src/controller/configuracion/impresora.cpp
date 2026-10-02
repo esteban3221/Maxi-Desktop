@@ -108,13 +108,10 @@ void Impresora::on_list_test_printer(Gtk::ListBoxRow *row)
 void Impresora::on_switch_tab_changed(Gtk::Widget *, guint id)
 {
     if (id == 0)
-    {
         init_local();
-    }
     else if (id == 1)
-    {
         init_remoto();
-    }
+
     test_text_impresion(id);
 }
 
@@ -122,37 +119,40 @@ void Impresora::on_switch_tab_changed(Gtk::Widget *, guint id)
 void Impresora::init_impresoras_linux()
 {
     std::thread([this]()
-                {
-        cups_dest_t *printers;
-        int num_printers = cupsGetDests(&printers);
-
-        if (num_printers > 0)
+    {
+        Glib::signal_idle().connect_once([this]()
         {
             v_list_box_print->remove_all();
             auto db_impresora = std::make_unique<Configuracion>();
             auto db_contendor = db_impresora->get_conf_data(4, 4);
             std::string impresora_default = db_contendor->get_item(0)->m_valor;
 
-            for (int i = 0; i < num_printers; i++)
-            {
-                std::string name = printers[i].name;
-                std::string subtitle = cupsGetOption("device-uri", printers[i].num_options, printers[i].options);
-                if (subtitle.empty())
-                    subtitle = "None";
-                auto printer = Gtk::make_managed<VListPrinters>(name, subtitle);
-                
-                if (name == impresora_default)
-                {
-                    printer->v_image_check->set_opacity(1);
-                    m_refSettings->set_printer(impresora_default);
-                }
-                    
-                v_list_box_print->append(*printer);
-            }
-        }
+            cups_dest_t *printers;
+            int num_printers = cupsGetDests(&printers);
 
-        cupsFreeDests(num_printers, printers); })
-        .detach();
+            if (num_printers > 0)
+            {
+                for (int i = 0; i < num_printers; i++)
+                {
+                    std::string name = printers[i].name;
+                    std::string subtitle = cupsGetOption("device-uri", printers[i].num_options, printers[i].options);
+                    if (subtitle.empty())
+                        subtitle = "None";
+                    auto printer = Gtk::make_managed<VListPrinters>(name, subtitle);
+                    
+                    if (name == impresora_default)
+                    {
+                        printer->v_image_check->set_opacity(1);
+                        m_refSettings->set_printer(impresora_default);
+                    }
+                        
+                    v_list_box_print->append(*printer);
+                }
+            }
+
+            cupsFreeDests(num_printers, printers); 
+        });
+    }).detach();
 }
 #endif
 
@@ -443,9 +443,12 @@ namespace Global
                 ticket << "\n<span size=\"small\" style=\"italic\" weight=\"bold\">"
                        << json["agradecimiento"].get<std::string>() << "</span>\n";
 
-            ticket << "\n\n\n"; // Espacio final para corte de ticket
+            ticket << "\n\n\n"; 
 
-            // Configuración de impresión
+            auto db_imp = std::make_unique<Configuracion>();
+            auto db_cont = db_imp->get_conf_data(4, 4);
+            std::string nombre_impresora = db_cont->get_item(0)->m_valor;
+
             auto print_op = PrintFormOperation::create();
             auto settings = Gtk::PrintSettings::create();
             auto page_setup = Gtk::PageSetup::create();
@@ -453,8 +456,11 @@ namespace Global
             print_op->set_markup(ticket.str());
             print_op->set_track_print_status(true);
 
-            // Tamaño típico para ticket (80mm ancho × longitud variable)
-            auto paper_size = Gtk::PaperSize("custom", "Ticket", 80, 297, Gtk::Unit::MM); // 80mm × 297mm (largo suficiente)
+            g_message("Nombre de la impresora: %s", nombre_impresora.c_str());
+            if (!nombre_impresora.empty())
+               settings->set_printer(nombre_impresora);
+
+            auto paper_size = Gtk::PaperSize("custom", "Ticket", 80, 1000, Gtk::Unit::MM);
             page_setup->set_paper_size(paper_size);
             page_setup->set_orientation(Gtk::PageOrientation::PORTRAIT);
             page_setup->set_top_margin(5, Gtk::Unit::MM);
@@ -483,6 +489,7 @@ namespace Global
                             Global::Widget::reveal_toast("Impresión cancelada", Gtk::MessageType::WARNING);
                             break;
                         default:
+                            Global::Widget::reveal_toast("Resultado desconocido de la impresión", Gtk::MessageType(3));
                             break;
                     } 
                 });

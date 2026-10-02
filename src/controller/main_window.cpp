@@ -12,19 +12,18 @@ MainWindow::MainWindow(const Glib::RefPtr<Gtk::Application>& app)
 
     Global::Widget::v_revealer = Gtk::manage(new Gtk::Revealer());
     Global::Widget::v_revealer_title = Gtk::manage(new Gtk::Label());
-
     Global::Widget::v_revealer->set_halign(Gtk::Align::CENTER);
     Global::Widget::v_revealer->set_valign(Gtk::Align::START);
     Global::Widget::v_revealer->set_margin_top(30);
     Global::Widget::m_refActionGroup = Gio::SimpleActionGroup::create();
 
-    Gtk::Box *v_box = Gtk::manage(new Gtk::Box(Gtk::Orientation::HORIZONTAL, 30));
+    Gtk::Box *v_box = Gtk::manage(new Gtk::Box(Gtk::Orientation::HORIZONTAL, 5));
     Global::Widget::v_button_conatiner->set_child(*v_box);
 
     v_button.set_icon_name("window-close-symbolic");
-    v_button.set_css_classes({"circular"});
+    v_button.set_css_classes({"circular", "destructive-action"});
     v_button.set_halign(Gtk::Align::END);
-    v_button.set_valign(Gtk::Align::CENTER);
+    v_button.set_valign(Gtk::Align::START);
     Global::Widget::v_button_conatiner->set_css_classes({"pill","opaque"});
     Global::Widget::v_button_conatiner->set_opacity(0.9);
 
@@ -33,6 +32,7 @@ MainWindow::MainWindow(const Glib::RefPtr<Gtk::Application>& app)
 
     v_button.signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::on_button_clicked));
     Global::Widget::v_button_conatiner->signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::on_button_clicked));
+    signal_close_request().connect(sigc::mem_fun(*this, &MainWindow::on_signal_close_request), false);
 
     Global::Widget::v_revealer->set_transition_type(Gtk::RevealerTransitionType::SWING_DOWN);
     Global::Widget::v_revealer->set_child(*Global::Widget::v_button_conatiner);
@@ -69,6 +69,7 @@ void MainWindow::on_button_clicked()
 {
     Global::Widget::v_revealer->set_reveal_child(false);
 }
+
 void MainWindow::acceleretors(const Glib::RefPtr<Gtk::Application>& app)
 {
     Global::Widget::m_refActionGroup->add_action("quit", [this]() { this->close(); });
@@ -106,4 +107,15 @@ void MainWindow::acceleretors(const Glib::RefPtr<Gtk::Application>& app)
     app->set_accel_for_action("app.cerrarsesion", "<Primary>d");
     app->set_accel_for_action("app.about", "<Primary>i");
     app->set_accel_for_action("app.volcadolog", "<Primary>l");  
+}
+
+
+bool MainWindow::on_signal_close_request()
+{
+    if (Global::System::is_in_process.load())
+    {
+        Global::Widget::reveal_toast("No se puede cerrar la aplicación mientras se está procesando una operación.", Gtk::MessageType(3));
+        return true;
+    }
+    return false; 
 }

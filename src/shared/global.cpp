@@ -68,6 +68,7 @@ namespace Global
         cpr::Header header{{"Authorization", "Bearer " + Global::System::token}};
         void consume_and_do(cpr::AsyncResponse &async, const std::function<void(const cpr::Response &)> &callback)
         {
+            System::is_in_process.store(true);
             auto lookup = Widget::m_refActionGroup->lookup_action("cerrarsesion");
             std::thread([async = std::move(async), callback, lookup]() mutable
             {
@@ -98,10 +99,12 @@ namespace Global
                         Global::Widget::v_progress_bar->set_fraction(1.0);
                         callback(response);
                     });
+                    System::is_in_process.store(false);
                 } 
                 catch (const std::exception& e) 
                 {
                     g_warning(e.what());
+                    System::is_in_process.store(false);
                     Glib::signal_idle().connect_once([lookup, e]() 
                     {
                         if(lookup) 

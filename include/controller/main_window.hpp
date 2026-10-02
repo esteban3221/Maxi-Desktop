@@ -19,6 +19,7 @@ private:
     void acceleretors(const Glib::RefPtr<Gtk::Application>& app);
 
     Gtk::AboutDialog about;
+    bool on_signal_close_request();
 
 public:
     MainWindow(const Glib::RefPtr<Gtk::Application>& app);
