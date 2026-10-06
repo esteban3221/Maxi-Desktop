@@ -88,7 +88,7 @@ void Impresora::on_list_test_printer(Gtk::ListBoxRow *row)
     m_refPrintFormOperation->set_markup(ticket_markup);
     m_refPrintFormOperation->set_job_name("Prueba de Impresion Maxicajero");
 
-    //m_refPrintFormOperation->set_track_print_status();
+    // m_refPrintFormOperation->set_track_print_status();
     m_refSettings->set_paper_height(80, Gtk::Unit::MM);
     m_refSettings->set_paper_width(297, Gtk::Unit::MM);
 
@@ -106,9 +106,24 @@ void Impresora::on_list_test_printer(Gtk::ListBoxRow *row)
 
     try
     {
-        m_refPrintFormOperation->run(Gtk::PrintOperation::Action::PRINT);
         m_refPrintFormOperation->signal_done().connect([this](Gtk::PrintOperation::Result result)
-                                                       { Global::Widget::reveal_toast("Impresion realizada correctamente"); });
+                                                       { 
+                                                            switch (result)
+                                                            {
+                                                           case Gtk::PrintOperation::Result(0):
+                            Global::Widget::reveal_toast("Error al imprimir", Gtk::MessageType(3));
+                            break;
+                        case Gtk::PrintOperation::Result::APPLY:
+                            Global::Widget::reveal_toast("Ticket impreso correctamente", Gtk::MessageType::INFO);
+                            break;
+                        case Gtk::PrintOperation::Result::CANCEL:
+                            Global::Widget::reveal_toast("Impresión cancelada", Gtk::MessageType::WARNING);
+                            break;
+                        default:
+                            Global::Widget::reveal_toast("Resultado desconocido de la impresión", Gtk::MessageType(3));
+                            break;
+                                                         } });
+        m_refPrintFormOperation->run(Gtk::PrintOperation::Action::PRINT);
     }
     catch (const Gtk::PrintError &ex)
     {
@@ -130,9 +145,8 @@ void Impresora::on_switch_tab_changed(Gtk::Widget *, guint id)
 void Impresora::init_impresoras_linux()
 {
     std::thread([this]()
-    {
-        Glib::signal_idle().connect_once([this]()
-        {
+                { Glib::signal_idle().connect_once([this]()
+                                                   {
             v_list_box_print->remove_all();
             auto db_impresora = std::make_unique<Configuracion>();
             auto db_contendor = db_impresora->get_conf_data(4, 4);
@@ -161,9 +175,8 @@ void Impresora::init_impresoras_linux()
                 }
             }
 
-            cupsFreeDests(num_printers, printers); 
-        });
-    }).detach();
+            cupsFreeDests(num_printers, printers); }); })
+        .detach();
 }
 #endif
 
@@ -301,8 +314,8 @@ void Impresora::test_text_impresion(int id)
     auto response = cpr::GetAsync(cpr::Url{Global::System::URL + "configuracion/get_informacion_empresa"},
                                   Global::Utility::header);
 
-    Global::Utility::consume_and_do(response, [this, id](const cpr::Response& response)
-    {
+    Global::Utility::consume_and_do(response, [this, id](const cpr::Response &response)
+                                    {
         if (response.status_code != 200)
             return;
 
@@ -370,8 +383,7 @@ void Impresora::test_text_impresion(int id)
 
         // Insertar con markup en el TextBuffer
         ticket_markup = ticket.str();
-        text_buffer->insert_markup(text_buffer->end(), ticket.str());
-    });
+        text_buffer->insert_markup(text_buffer->end(), ticket.str()); });
 }
 namespace Global
 {
@@ -398,7 +410,7 @@ namespace Global
 
             // Encabezado centrado y destacado
             ticket << "<span size=\"x-large\" weight=\"bold\">" << log->m_tipo << "</span>\n"
-            //Dexcriocion¿ / concepto de la operacion
+                   // Dexcriocion¿ / concepto de la operacion
                    << std::left << std::setw(20) << "<span weight=\"bold\">Descripcion:</span>"
                    << std::right << std::setw(20) << log->m_descripcion << "\n"
                    << "<span size=\"small\">" << Glib::DateTime::create_now_local().format("%Y-%m-%d %H:%M:%S") << "</span>\n"
@@ -458,7 +470,7 @@ namespace Global
                 ticket << "\n<span size=\"small\" style=\"italic\" weight=\"bold\">"
                        << json["agradecimiento"].get<std::string>() << "</span>\n";
 
-            ticket << "\n\n\n"; 
+            ticket << "\n\n\n";
 
             auto db_imp = std::make_unique<Configuracion>();
             auto db_cont = db_imp->get_conf_data(4, 4);
@@ -474,7 +486,7 @@ namespace Global
 
             g_message("Nombre de la impresora: %s", nombre_impresora.c_str());
             if (!nombre_impresora.empty())
-               settings->set_printer(nombre_impresora);
+                settings->set_printer(nombre_impresora);
             else
             {
                 Global::Widget::reveal_toast("No hay una impresora seleccionada en la configuración", Gtk::MessageType(3));
@@ -495,7 +507,7 @@ namespace Global
             try
             {
                 print_op->signal_done().connect([](Gtk::PrintOperation::Result result)
-                {
+                                                {
                     switch (result)
                     {
                         case Gtk::PrintOperation::Result(0):
@@ -510,8 +522,7 @@ namespace Global
                         default:
                             Global::Widget::reveal_toast("Resultado desconocido de la impresión", Gtk::MessageType(3));
                             break;
-                    } 
-                });
+                    } });
                 print_op->run(Gtk::PrintOperation::Action::PRINT, *Global::Widget::v_main_window);
             }
             catch (const Gtk::PrintError &ex)
