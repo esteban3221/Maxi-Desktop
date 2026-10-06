@@ -55,10 +55,14 @@ namespace Global
 
     namespace Utility
     {
-#ifdef __WIN32__
+#ifdef _WIN32
         std::string WStrToUTF8(const wchar_t *wstr)
         {
+            if (!wstr) return ""; 
+
             int size_needed = WideCharToMultiByte(CP_UTF8, 0, wstr, -1, NULL, 0, NULL, NULL);
+            if (size_needed <= 1) return ""; // Protege si la cadena está vacía o falla
+
             std::string utf8_str(size_needed - 1, 0);
             WideCharToMultiByte(CP_UTF8, 0, wstr, -1, &utf8_str[0], size_needed, NULL, NULL);
             return utf8_str;

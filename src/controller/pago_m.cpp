@@ -24,7 +24,7 @@ void PagoM::on_show_map()
     auto future = cpr::GetAsync(cpr::Url{Global::System::URL, "log/get_levels"}, Global::Utility::header);
 
     Global::Utility::consume_and_do(future, [this](cpr::Response response)
-    {
+                                    {
         bool exito_permiso = false;
 
         if (response.status_code == 200)
@@ -75,8 +75,7 @@ void PagoM::on_show_map()
                     }
                 } 
             });
-        } 
-    });
+        } });
 }
 
 void PagoM::on_spin_value_changed()
@@ -115,33 +114,32 @@ void PagoM::on_btn_cobrar_clicked()
 
         Global::Utility::consume_and_do(future, [this](const cpr::Response &response)
                                         {
-            if (response.status_code == 200)
-            {
-                auto j = nlohmann::json::parse(response.text);
-                auto log = std::make_unique<Log>();
-                auto ticket = log->get_log(j["ticket"])->get_item(0);
-                
-                
-                Global::Widget::reveal_toast(Glib::ustring::compose("<span weight=\"bold\">Pago Manual</span>\n\n"
-                                        "Total: \t\t$%1\n"
-                                        "Cambio: \t$%2\n"
-                                        "Ingreso: \t$%3\n"
-                                        "Estatus \t%4", 
-                                        ticket->m_total, 
-                                        ticket->m_cambio, 
-                                        ticket->m_ingreso, 
-                                        ticket->m_estatus));
-                                        
-                Global::System::imprime_ticket(ticket);
-                
-            }
-            else
-            {
-                auto v_dialog = Gtk::AlertDialog::create("Error");
-                v_dialog->set_detail(response.text);
-                v_dialog->show(*Global::Widget::v_main_window);
-            }
-            Global::Widget::m_refActionGroup->lookup_action("cerrarsesion")->activate(); });
+                                            if (response.status_code == 200)
+                                            {
+                                                auto j = nlohmann::json::parse(response.text);
+                                                auto log = std::make_unique<Log>();
+                                                auto ticket = log->get_log(j["ticket"])->get_item(0);
+
+                                                Global::Widget::reveal_toast(Glib::ustring::compose("<span weight=\"bold\">Pago Manual</span>\n\n"
+                                                                                                    "Total: \t\t$%1\n"
+                                                                                                    "Cambio: \t$%2\n"
+                                                                                                    "Ingreso: \t$%3\n"
+                                                                                                    "Estatus \t%4",
+                                                                                                    ticket->m_total,
+                                                                                                    ticket->m_cambio,
+                                                                                                    ticket->m_ingreso,
+                                                                                                    ticket->m_estatus));
+
+                                                Global::System::imprime_ticket(ticket);
+                                            }
+                                            else
+                                            {
+                                                auto v_dialog = Gtk::AlertDialog::create("Error");
+                                                v_dialog->set_detail(response.text);
+                                                v_dialog->show(*Global::Widget::v_main_window);
+                                            }
+                                            Global::Widget::m_refActionGroup->lookup_action("cerrarsesion")->activate();
+                                        });
     }
     else
     {

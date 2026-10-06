@@ -80,13 +80,26 @@ void Impresora::on_vizaliza_list_activate_remoto(Gtk::ListBoxRow *row)
 
 void Impresora::on_list_test_printer(Gtk::ListBoxRow *row)
 {
+    auto db_imp = std::make_unique<Configuracion>();
+    auto db_cont = db_imp->get_conf_data(4, 4);
+    std::string nombre_impresora = db_cont->get_item(0)->m_valor;
     m_refPrintFormOperation = PrintFormOperation::create();
 
     m_refPrintFormOperation->set_markup(ticket_markup);
+    m_refPrintFormOperation->set_job_name("Prueba de Impresion Maxicajero");
 
-    m_refPrintFormOperation->set_track_print_status();
+    //m_refPrintFormOperation->set_track_print_status();
     m_refSettings->set_paper_height(80, Gtk::Unit::MM);
     m_refSettings->set_paper_width(297, Gtk::Unit::MM);
+
+    if (!nombre_impresora.empty())
+        m_refSettings->set_printer(nombre_impresora);
+    else
+    {
+        Global::Widget::reveal_toast("No hay una impresora seleccionada en la configuración", Gtk::MessageType(3));
+        return;
+    }
+    g_message("Nombre de la impresora: %s", nombre_impresora.c_str());
 
     m_refPrintFormOperation->set_default_page_setup(m_refPageSetup);
     m_refPrintFormOperation->set_print_settings(m_refSettings);
@@ -457,6 +470,7 @@ namespace Global
 
             print_op->set_markup(ticket.str());
             print_op->set_track_print_status(true);
+            print_op->set_job_name("Ticket " + std::to_string(log->m_id));
 
             g_message("Nombre de la impresora: %s", nombre_impresora.c_str());
             if (!nombre_impresora.empty())
@@ -480,8 +494,6 @@ namespace Global
 
             try
             {
-                print_op->run(Gtk::PrintOperation::Action::PRINT, *Global::Widget::v_main_window);
-
                 print_op->signal_done().connect([](Gtk::PrintOperation::Result result)
                 {
                     switch (result)
@@ -500,6 +512,7 @@ namespace Global
                             break;
                     } 
                 });
+                print_op->run(Gtk::PrintOperation::Action::PRINT, *Global::Widget::v_main_window);
             }
             catch (const Gtk::PrintError &ex)
             {
