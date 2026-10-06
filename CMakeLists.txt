@@ -166,3 +166,32 @@ target_link_libraries(Maxicajero
 )
 
 target_include_directories(Maxicajero PRIVATE ${GTKMM_INCLUDE_DIRS})
+
+if (WIN32)
+    find_program(OSSLSIGNCODE_EXECUTABLE osslsigncode)
+
+    if (OSSLSIGNCODE_EXECUTABLE)
+        message(STATUS "osslsigncode detectado: ${OSSLSIGNCODE_EXECUTABLE}")
+
+        set(CERT_PATH "C:/Users/Esteban/Desktop/maxicajero_cert.pfx" CACHE FILEPATH "Ruta al certificado .pfx")
+        set(CERT_PASS "1234" CACHE STRING "Contraseña del certificado")
+        set(TSA_URL "http://timestamp.digicert.com" CACHE STRING "URL del Timestamp Authority")
+
+        add_custom_command(
+            TARGET Maxicajero POST_BUILD
+            COMMAND ${OSSLSIGNCODE_EXECUTABLE} sign
+                -pkcs12 "${CERT_PATH}"
+                -pass "${CERT_PASS}"
+                -t "${TSA_URL}"
+                -in "$<TARGET_FILE:Maxicajero>"
+                -out "$<TARGET_FILE_DIR:Maxicajero>/Maxicajero_signed.exe"
+            COMMAND ${CMAKE_COMMAND} -E rename
+                "$<TARGET_FILE_DIR:Maxicajero>/Maxicajero_signed.exe"
+                "$<TARGET_FILE:Maxicajero>"
+            COMMENT "Firmando ejecutable Maxicajero con osslsigncode..."
+            VERBATIM
+        )
+    else()
+        message(WARNING "osslsigncode no fue encontrado en el PATH. El ejecutable no será firmado.")
+    endif()
+endif()
