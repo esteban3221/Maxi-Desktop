@@ -25,7 +25,7 @@ void Venta::on_btn_cancelar_clicked()
     v_dialog->set_cancel_button(0);
 
     v_dialog->choose(*Global::Widget::v_main_window, [v_dialog, this, tipo](const Glib::RefPtr<Gio::AsyncResult> &result)
-                     {
+    {
         int button_clicked = v_dialog->choose_finish(result);
         if (button_clicked == 1)
         {
@@ -44,7 +44,8 @@ void Venta::on_btn_cancelar_clicked()
         else
         {
             /* code */
-        } });
+        } 
+    });
 
     
 }
@@ -144,19 +145,21 @@ void Venta::manejar_respuesta_servidor(const std::string &respuesta)
         {
 
             Glib::signal_idle().connect_once([this]()
-                                             {
+            {
                 ws.close();
-                g_info("WebSocket cerrado desde hilo principal"); });
+                g_info("WebSocket cerrado desde hilo principal"); 
+            });
             return;
         }
 
         if (json.contains("total"))
         {
             Glib::signal_idle().connect_once([this, json]()
-                                             {
+                                            {
                                                  v_box_columns->v_ety_columns[0]->set_text(Glib::ustring::compose("$ %1", json["total"].get<int>()));
                                                  v_box_columns->v_ety_columns[1]->set_text(Glib::ustring::compose("$ %1", json["ingreso"].get<int>()));
-                                                 v_box_columns->v_ety_columns[2]->set_text(Glib::ustring::compose("$ %1", json["cambio"].get<int>())); });
+                                                 v_box_columns->v_ety_columns[2]->set_text(Glib::ustring::compose("$ %1", json["cambio"].get<int>())); 
+                                            });
         }
 
         if (json.contains("status"))

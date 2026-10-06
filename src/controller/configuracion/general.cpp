@@ -29,7 +29,7 @@ bool General::comprimir_carpeta(const std::string &carpeta_origen, const std::st
     zipFile zf = zipOpen(archivo_zip.c_str(), APPEND_STATUS_CREATE);
     if (!zf)
     {
-        std::cerr << "Error al crear archivo ZIP: " << archivo_zip << std::endl;
+        g_critical("Error al crear archivo ZIP: %s", archivo_zip.c_str());
         return false;
     }
 
@@ -57,7 +57,7 @@ bool General::comprimir_carpeta(const std::string &carpeta_origen, const std::st
         // Cerrar archivo ZIP
         if (zipClose(zf, nullptr) != ZIP_OK)
         {
-            std::cerr << "Error al cerrar archivo ZIP" << std::endl;
+            g_critical("Error al cerrar archivo ZIP");
             return false;
         }
 
@@ -65,7 +65,7 @@ bool General::comprimir_carpeta(const std::string &carpeta_origen, const std::st
     }
     catch (const std::exception &e)
     {
-        std::cerr << "Error al procesar carpeta: " << e.what() << std::endl;
+        g_critical("Error al procesar carpeta: %s", e.what());
         zipClose(zf, nullptr);
         return false;
     }
@@ -77,7 +77,7 @@ bool General::agregar_archivo_a_zip(zipFile zf, const std::string &ruta_archivo,
     std::ifstream file(ruta_archivo, std::ios::binary | std::ios::ate);
     if (!file.is_open())
     {
-        std::cerr << "No se pudo abrir archivo: " << ruta_archivo << std::endl;
+        g_critical("No se pudo abrir archivo: %s", ruta_archivo.c_str());
         return false;
     }
 
@@ -87,7 +87,7 @@ bool General::agregar_archivo_a_zip(zipFile zf, const std::string &ruta_archivo,
     std::vector<char> buffer(size);
     if (!file.read(buffer.data(), size))
     {
-        std::cerr << "Error al leer archivo: " << ruta_archivo << std::endl;
+        g_critical("Error al leer archivo: %s", ruta_archivo.c_str());
         return false;
     }
 
@@ -107,14 +107,14 @@ bool General::agregar_archivo_a_zip(zipFile zf, const std::string &ruta_archivo,
                             Z_DEFLATED,
                             Z_DEFAULT_COMPRESSION) != ZIP_OK)
     {
-        std::cerr << "Error al abrir archivo en ZIP: " << nombre_en_zip << std::endl;
+        g_critical("Error al abrir archivo en ZIP: %s", nombre_en_zip.c_str());
         return false;
     }
 
     // Escribir datos en el ZIP
     if (zipWriteInFileInZip(zf, buffer.data(), static_cast<unsigned int>(size)) != ZIP_OK)
     {
-        std::cerr << "Error al escribir archivo en ZIP: " << nombre_en_zip << std::endl;
+        g_critical("Error al escribir archivo en ZIP: %s", nombre_en_zip.c_str());
         zipCloseFileInZip(zf);
         return false;
     }
@@ -122,7 +122,7 @@ bool General::agregar_archivo_a_zip(zipFile zf, const std::string &ruta_archivo,
     // Cerrar archivo en el ZIP
     if (zipCloseFileInZip(zf) != ZIP_OK)
     {
-        std::cerr << "Error al cerrar archivo en ZIP: " << nombre_en_zip << std::endl;
+        g_critical("Error al cerrar archivo en ZIP: %s", nombre_en_zip.c_str());
         return false;
     }
 

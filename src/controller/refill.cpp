@@ -286,7 +286,7 @@ void Refill::safe_clear_column_view(Gtk::ColumnView *column_view)
     }
     catch (const std::exception &e)
     {
-        std::cerr << "Error clearing ColumnView: " << e.what() << std::endl;
+        g_critical("Error clearing ColumnView: %s", e.what());
     }
 }
 

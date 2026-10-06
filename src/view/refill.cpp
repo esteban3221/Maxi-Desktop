@@ -141,7 +141,7 @@ void VRefill::on_bind_btn(const Glib::RefPtr<Gtk::ListItem> &list_item)
             if (response.status_code == 200) 
                 Global::Widget::reveal_toast("Exito");
             else
-                std::cerr << "Error: " << response.status_code << std::endl;
+                g_critical("Error: %d", response.status_code);
         }); });
 }
 

@@ -55,7 +55,7 @@ try
     }
     catch(const std::exception& e)
     {
-        std::cerr << "Error parseando denominacion individual: " << e.what();
+        g_critical("Error parseando denominacion individual: %s", e.what());
     }
     return {};
 }

@@ -1,16 +1,15 @@
 #include "controller/configuracion/impresora.hpp"
 
 Impresora::Impresora(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuilder) : VImpresora(cobject, refBuilder),
-                                                                                              text_buffer(Gtk::TextBuffer::create())
+                                                                                              text_buffer(Gtk::TextBuffer::create()),
+                                                                                              m_refPageSetup(Gtk::PageSetup::create()),
+                                                                                              m_refSettings(Gtk::PrintSettings::create())
 {
 #ifdef __linux__
     signal_map().connect(sigc::mem_fun(*this, &Impresora::init_impresoras_linux));
 #elif defined(_WIN32) || defined(_WIN64)
     signal_map().connect(sigc::mem_fun(*this, &Impresora::init_impresoras_windows));
 #endif
-
-    m_refPageSetup = Gtk::PageSetup::create();
-    m_refSettings = Gtk::PrintSettings::create();
 
     v_text_view->set_buffer(text_buffer);
     test_text_impresion(0);
@@ -101,8 +100,7 @@ void Impresora::on_list_test_printer(Gtk::ListBoxRow *row)
     catch (const Gtk::PrintError &ex)
     {
         // See documentation for exact Gtk::PrintError error codes.
-        std::cerr << "An error occurred while trying to run a print operation:"
-                  << ex.what() << std::endl;
+        g_critical("An error occurred while trying to run a print operation: %s", ex.what());
     }
 }
 void Impresora::on_switch_tab_changed(Gtk::Widget *, guint id)
@@ -225,7 +223,10 @@ void Impresora::init_impresoras_windows()
         auto printer = Gtk::make_managed<VListPrinters>(i.name, i.uri);
         v_list_box_print->append(*printer);
         if (i.name == impresora_default)
+        {
             printer->v_image_check->set_opacity(1);
+            m_refSettings->set_printer(impresora_default);
+        }
     }
 }
 #endif
@@ -275,6 +276,7 @@ void Impresora::on_list_box_row_selected(Gtk::ListBoxRow *row)
             {
                 printer->v_image_check->set_opacity(1);
                 auto id_impresora = this_row->v_titulo->get_text();
+                m_refSettings->set_printer(id_impresora);
                 db_impresora->update_conf(MConfiguracion::create(4, "Impresora default", id_impresora));
             }
         }
@@ -459,6 +461,11 @@ namespace Global
             g_message("Nombre de la impresora: %s", nombre_impresora.c_str());
             if (!nombre_impresora.empty())
                settings->set_printer(nombre_impresora);
+            else
+            {
+                Global::Widget::reveal_toast("No hay una impresora seleccionada en la configuración", Gtk::MessageType(3));
+                return;
+            }
 
             auto paper_size = Gtk::PaperSize("custom", "Ticket", 80, 1000, Gtk::Unit::MM);
             page_setup->set_paper_size(paper_size);
@@ -497,7 +504,7 @@ namespace Global
             catch (const Gtk::PrintError &ex)
             {
                 Global::Widget::reveal_toast("Error de impresión: " + std::string(ex.what()), Gtk::MessageType(3));
-                std::cerr << "Error en impresión: " << ex.what() << std::endl;
+                g_critical("Error en impresión: %s", ex.what());
             }
         }
     }
