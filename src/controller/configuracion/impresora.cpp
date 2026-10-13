@@ -514,7 +514,7 @@ namespace Global
                             Global::Widget::reveal_toast("Error al imprimir", Gtk::MessageType(3));
                             break;
                         case Gtk::PrintOperation::Result::APPLY:
-                            Global::Widget::reveal_toast("Ticket impreso correctamente", Gtk::MessageType::INFO);
+                            // Global::Widget::reveal_toast("Ticket impreso correctamente", Gtk::MessageType::INFO);
                             break;
                         case Gtk::PrintOperation::Result::CANCEL:
                             Global::Widget::reveal_toast("Impresión cancelada", Gtk::MessageType::WARNING);

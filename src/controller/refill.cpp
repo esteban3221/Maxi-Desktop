@@ -152,7 +152,14 @@ void Refill::on_show_map()
             
             v_lbl_total_parcial_monedas->set_text(Glib::ustring::format(t_mon_recy));
             v_lbl_total->set_text(Glib::ustring::format(t_bill_cass + t_bill_recy + t_mon_cass + t_mon_recy));
-        } });
+        } 
+        else
+        {
+            actualiza_data(v_tree_reciclador_billetes->get_model(), nullptr);
+            actualiza_data(v_tree_reciclador_monedas->get_model(), nullptr);
+            // Global::Widget::reveal_toast(response.text);
+        }
+    });
 }
 
 void Refill::init_data(Gtk::ColumnView *vcolumn, const Glib::RefPtr<Gio::ListStore<MLevelCash>> &level)
@@ -253,6 +260,7 @@ void Refill::actualiza_data(const Glib::RefPtr<Gtk::SelectionModel> &selection, 
 
     list_store->remove_all();
 
+    if(level)
     for (size_t i = 0; i < level->get_n_items(); i++)
     {
         list_store->append(level->get_item(i));
