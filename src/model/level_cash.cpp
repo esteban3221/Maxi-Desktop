@@ -16,8 +16,8 @@ Glib::RefPtr<Gio::ListStore<MLevelCash>> LevelCash::get_level_cash(const nlohman
     {
         m_list->append(MLevelCash::create(
             i["value"].get<int>() / 100,
-            i["storedInCashbox"].get<int>(),
-            i["storedInPayout"].get<int>(),
+            i["storedInCashbox"].is_null() ? 0 : i["storedInCashbox"].get<int>(),
+            i["storedInPayout"].is_null() ? 0 : i["storedInPayout"].get<int>(),
             i["Inmovilidad_Min"].get<int>(),
             i["Inmovilidad"].get<int>(),
             i["Inmovilidad_Max"].get<int>(),

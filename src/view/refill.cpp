@@ -287,7 +287,7 @@ namespace View
                             <child>
                               <object class="GtkLabel">
                                 <property name="justify">3</property>
-                                <property name="label">Total Recycaldor</property>
+                                <property name="label">Total Recyclador</property>
                                 <property name="natural-wrap-mode">2</property>
                                 <style>
                                   <class name="title-2"/>

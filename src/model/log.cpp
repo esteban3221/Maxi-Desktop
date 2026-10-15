@@ -21,6 +21,7 @@ Glib::RefPtr<Gio::ListStore<MLog>> Log::get_log(const nlohmann::json_abi_v3_12_0
             i["usuario"].get<std::string>(),
             i["tipo"].get<std::string>(),
             i["descripcion"].get<std::string>(),
+            not i["metodo"].empty() ? i["metodo"].get<std::string>() : "Indeterminado",
             std::to_string(i["ingreso"].get<int>()),
             std::to_string(i["cambio"].get<int>()),
             i["total"].get<int>(),

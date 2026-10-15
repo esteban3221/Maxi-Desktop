@@ -99,7 +99,7 @@ void Impresora::on_list_test_printer(Gtk::ListBoxRow *row)
         Global::Widget::reveal_toast("No hay una impresora seleccionada en la configuración", Gtk::MessageType(3));
         return;
     }
-    g_message("Nombre de la impresora: %s", nombre_impresora.c_str());
+    g_info("Impresion enviada a %s", nombre_impresora.c_str());
 
     m_refPrintFormOperation->set_default_page_setup(m_refPageSetup);
     m_refPrintFormOperation->set_print_settings(m_refSettings);
@@ -439,18 +439,14 @@ namespace Global
             ticket << std::left << std::setw(18) << "Total:"
                    << std::right << std::setw(18) << "<span weight=\"bold\" size=\"large\">$" << log->m_total << "</span>\n";
 
-            ticket << std::left << std::setw(18) << "Tipo de pago:"
-                   << std::right << std::setw(18) << "Efectivo\n";
+            ticket << std::left << std::setw(18) << "Metodo de pago:"
+                   << std::right << std::setw(18) << log->m_metodo << '\n';
 
             ticket << std::left << std::setw(18) << "Ingreso:"
-                   << std::right << std::setw(18) << "$" << log->m_ingreso << "\n";
+                   << "$" << log->m_ingreso << '\n';
 
             ticket << std::left << std::setw(18) << "Cambio:"
-                   << std::right << std::setw(18) << "$" << log->m_cambio << "\n";
-
-            // if (faltante > 0)
-            //     ticket << std::left << std::setw(18) << "<span foreground=\"red\">Faltante:</span>"
-            //            << std::right << std::setw(18) << "<span foreground=\"red\">$" << faltante << "</span>\n";
+                   << "$" << log->m_cambio << '\n';
 
             ticket << "------------------------------------\n";
 

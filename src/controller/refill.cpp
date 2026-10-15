@@ -43,31 +43,6 @@ void Refill::on_btn_detener()
 
 void Refill::poll_alerta_niveles()
 {
-    // std::thread([this]()
-    // {
-    //     while (true)
-    //     {
-    //         std::this_thread::sleep_for(std::chrono::seconds(5));
-    //         auto db = std::make_unique<Configuracion>();
-    //         auto data = db->get_conf_data(1,1);
-    //         if (data->get_item(0)->m_valor == "1")
-    //             continue;
-
-    //         if(Global::System::token.empty())
-    //             continue;
-
-    //         auto future = cpr::GetAsync(cpr::Url{Global::System::URL, "validadores/get_dashboard"}, Global::Utility::header);
-    //         Global::Utility::consume_and_do(future,[this](cpr::Response response)
-    //         {
-    //             if (response.status_code == 200)
-    //             {
-    //                 auto json = nlohmann::json::parse(response.text);
-    //                 alerta_niveles(json["bill"]);
-    //                 alerta_niveles(json["coin"]);
-    //             }
-    //         });
-    //     }
-    // }).detach();
 }
 
 void Refill::alerta_niveles(const nlohmann::json &json)
@@ -99,9 +74,12 @@ void Refill::on_show_map()
     v_btn_incia->set_visible();
     v_btn_incia->set_sensitive();
 
-    auto future = cpr::GetAsync(cpr::Url{Global::System::URL, "validadores/get_dashboard"}, Global::Utility::header);
+    actualiza_data(v_tree_reciclador_billetes->get_model(), nullptr);
+    actualiza_data(v_tree_reciclador_monedas->get_model(), nullptr);
+
+    auto future = cpr::GetAsync(cpr::Url{Global::System::URL, "log/get_levels"}, Global::Utility::header);
     Global::Utility::consume_and_do(future, [this](cpr::Response response)
-                                    {
+    {
         if (response.status_code == 200) 
         {
             auto level = std::make_unique<LevelCash>();
@@ -120,9 +98,13 @@ void Refill::on_show_map()
 
                 for (auto& item : levels)
                 {
+                    auto cashbox_is_null = item["storedInCashbox"].is_null();
+                    column_cassette->set_visible(not cashbox_is_null );
+
                     long long val = item["value"].get<long long>();
-                    int in_cashbox = item["storedInCashbox"].get<int>();
-                    int in_payout  = item["storedInPayout"].get<int>();
+                                        
+                    int in_cashbox = cashbox_is_null ? 0 : item["storedInCashbox"].get<int>();
+                    int in_payout  = item["storedInPayout"].is_null()  ? 0 : item["storedInPayout"].get<int>();
 
                     if (type == "BILL") 
                     {
@@ -130,8 +112,10 @@ void Refill::on_show_map()
                         total_bill_recy += (val * in_payout);
                     } 
                     else 
-                        total_mon_recy  += (val * in_payout);
-                    
+                    {
+                        total_mon_cass += (val * in_cashbox);
+                        total_mon_recy += (val * in_payout);
+                    }
                 }
 
                 auto level_cash = level->get_level_cash(levels);
@@ -155,9 +139,7 @@ void Refill::on_show_map()
         } 
         else
         {
-            actualiza_data(v_tree_reciclador_billetes->get_model(), nullptr);
-            actualiza_data(v_tree_reciclador_monedas->get_model(), nullptr);
-            // Global::Widget::reveal_toast(response.text);
+            Global::Widget::reveal_toast("No tiene permisos para consultar los niveles.", Gtk::MessageType::ERROR, 3000);
         }
     });
 }
@@ -183,9 +165,9 @@ void Refill::init_data(Gtk::ColumnView *vcolumn, const Glib::RefPtr<Gio::ListSto
         auto factory = Gtk::SignalListItemFactory::create();
         factory->signal_setup().connect(sigc::mem_fun(*this, &Refill::on_setup_label));
         factory->signal_bind().connect(sigc::mem_fun(*this, &Refill::on_bind_alm));
-        auto column = Gtk::ColumnViewColumn::create("Casette", factory);
-        column->set_expand(true);
-        vcolumn->append_column(column);
+        column_cassette = Gtk::ColumnViewColumn::create("Casette", factory);
+        column_cassette->set_expand(true);
+        vcolumn->append_column(column_cassette);
     }
 
     {
@@ -413,7 +395,8 @@ void Refill::on_btn_imprimir_faltante()
     auto f_log = MLog::create(0,
                               "Sistema",         // user
                               "Refill Consulta", // tipo
-                              "",                // <-- Mueve aquí la cadena larga
+                              "",                // 
+                              "Efectivo",                // 
                               "0",               // ingreso (como string)
                               "0",               // cambio (como string)
                               0,                 // total
@@ -455,10 +438,11 @@ void Refill::manejar_respuesta_servidor(const std::string &respuesta)
             if (auto item = list_store->get_item(i); item->m_denominacion == m_item->m_denominacion)
             {
                 Glib::signal_idle().connect_once([this, list_store, single, m_item, i]
-                                                 {
+                {
                     list_store->remove(i);
                     list_store->insert(i, m_item);
-                    single->select_item(i, true); });
+                    single->select_item(i, true); 
+                });
             }
         }
 

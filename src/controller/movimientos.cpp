@@ -73,6 +73,7 @@ void Movimientos::imprime_corte()
                         detalles += "ID: " + std::to_string(i["id"].get<int>()) + " - ";
                         detalles += i["tipo"].get<std::string>() + "\n";
                         detalles += "Concepto: " + i["descripcion"].get<std::string>() + "\n";
+                        detalles += "Metodo: " + i["metodo"].get<std::string>() + "\n";
                         detalles += "Fecha: " +  Glib::DateTime::create_from_iso8601(i["fecha"].get<std::string>()).format("%F %H:%M:%S") + "\n";
                         detalles += "Ingreso: $" + std::to_string(i["ingreso"].get<int>()) + "\n";
                         detalles += "Cambio: $" + std::to_string(i["cambio"].get<int>()) + "\n";
@@ -85,7 +86,15 @@ void Movimientos::imprime_corte()
                     }
 
                     detalles += "----------------------------------------\n";
-                    auto ti_log = MLog::create(0,Global::User::Current,"Corte de Caja", "", std::to_string(ingresos), std::to_string(cambios), total, detalles, Glib::DateTime::create_now_local());
+                    auto ti_log = MLog::create(0,
+                                                Global::User::Current,"Corte de Caja",
+                                                "", 
+                                                "",
+                                                std::to_string(ingresos), 
+                                                std::to_string(cambios), 
+                                                total, 
+                                                detalles, 
+                                                Glib::DateTime::create_now_local());
 
                     Global::System::imprime_ticket(ti_log);
                 }
@@ -149,6 +158,15 @@ void Movimientos::init_datos()
         factory->signal_setup().connect(sigc::mem_fun(*this, &Movimientos::on_setup_label_text));
         factory->signal_bind().connect(sigc::mem_fun(*this, &Movimientos::on_bind_tipo));
         auto column = Gtk::ColumnViewColumn::create("Tipo", factory);
+        column->set_expand();
+        v_column_log->append_column(column);
+    }
+
+    {
+        auto factory = Gtk::SignalListItemFactory::create();
+        factory->signal_setup().connect(sigc::mem_fun(*this, &Movimientos::on_setup_label_text));
+        factory->signal_bind().connect(sigc::mem_fun(*this, &Movimientos::on_bind_metodo));
+        auto column = Gtk::ColumnViewColumn::create("Metodo", factory);
         column->set_expand();
         v_column_log->append_column(column);
     }
@@ -253,6 +271,7 @@ Glib::RefPtr<Gio::ListModel> Movimientos::create_model(const Glib::RefPtr<Glib::
                 i["usuario"].get<std::string>(),
                 i["tipo"].get<std::string>(),
                 i["descripcion"].get<std::string>(),
+                i["metodo"].get<std::string>(),
                 std::to_string(i["ingreso"].get<int>()),
                 std::to_string(i["cambio"].get<int>()),
                 i["total"].get<int>(),
@@ -279,6 +298,7 @@ Glib::RefPtr<Gio::ListModel> Movimientos::create_model(const Glib::RefPtr<Glib::
                     0, // ID 0 para hijos
                     "",
                     det["tipo_movimiento"].get<std::string>(),
+                    "",
                     "",
                     (det["tipo_movimiento"].get<std::string>() == "entrada") ? "$" + std::to_string(det["denominacion"].get<int>()) + " → " + std::to_string(det["cantidad"].get<int>()) : "0",
                     (det["tipo_movimiento"].get<std::string>() == "salida") ? "$" + std::to_string(det["denominacion"].get<int>()) + " ← " + std::to_string(det["cantidad"].get<int>()) : "0",

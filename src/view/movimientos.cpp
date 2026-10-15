@@ -187,6 +187,15 @@ void VMovimientos::on_bind_concepto(const Glib::RefPtr<Gtk::ListItem> &list_item
   label->set_text(col->m_descripcion);
 }
 
+void VMovimientos::on_bind_metodo(const Glib::RefPtr<Gtk::ListItem> &list_item)
+{
+  auto row = std::dynamic_pointer_cast<Gtk::TreeListRow>(list_item->get_item());
+  auto col = std::dynamic_pointer_cast<MLog>(row->get_item());
+  auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
+
+  label->set_text(col->m_metodo);
+}
+
 void VMovimientos::on_bind_ingreso(const Glib::RefPtr<Gtk::ListItem> &list_item)
 {
   auto row = std::dynamic_pointer_cast<Gtk::TreeListRow>(list_item->get_item());

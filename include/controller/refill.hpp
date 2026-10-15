@@ -17,6 +17,7 @@ private:
     void on_btn_imprimir_faltante();
 
     std::string faltante_to_string(const Glib::RefPtr<Gio::ListStore<MLevelCash>> &level);
+    Glib::RefPtr<Gtk::ColumnViewColumn> column_cassette;
 
     void poll_alerta_niveles();
     void alerta_niveles(const nlohmann::json &json);

@@ -29,6 +29,7 @@ protected:
     void on_bind_usuario(const Glib::RefPtr<Gtk::ListItem> &list_item);
     void on_bind_tipo(const Glib::RefPtr<Gtk::ListItem> &list_item);
     void on_bind_concepto(const Glib::RefPtr<Gtk::ListItem> &list_item);
+    void on_bind_metodo(const Glib::RefPtr<Gtk::ListItem> &list_item);
     void on_bind_ingreso(const Glib::RefPtr<Gtk::ListItem> &list_item);
     void on_bind_cambio(const Glib::RefPtr<Gtk::ListItem> &list_item);
     void on_bind_total(const Glib::RefPtr<Gtk::ListItem> &list_item);

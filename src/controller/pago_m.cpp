@@ -24,58 +24,48 @@ void PagoM::on_show_map()
     auto future = cpr::GetAsync(cpr::Url{Global::System::URL, "log/get_levels"}, Global::Utility::header);
 
     Global::Utility::consume_and_do(future, [this](cpr::Response response)
-                                    {
-        bool exito_permiso = false;
-
-        if (response.status_code == 200)
+    {
+        if (response.status_code != 200)
         {
-            std::vector<std::pair<size_t, size_t>> vec_val;
-            auto json = nlohmann::json::parse(response.text);
-            for (auto &&i : json.items())
-            {
-                for (auto &&j : i.value())
-                    vec_val.push_back({j["value"].get<int>() / 100, j["storedInPayout"].get<int>()});
-                                                
-                v_box_level_validadores->append(*agregar_contenedor(vec_val, i.key()));
-                vec_val.clear();
-            }
-            for (auto const &[device_id, data_list] : m_inputs_pago)
-            {
-                for (auto const &item : data_list)
-                    item.spin->signal_value_changed().connect(sigc::mem_fun(*this, &PagoM::on_spin_value_changed));
-            }
-
-            exito_permiso = true;
+            Global::Widget::reveal_toast("No tiene permisos para consultar los niveles.", Gtk::MessageType::ERROR, 3000);
+            return;
         }
 
-        if (!exito_permiso)
+        auto json = nlohmann::json::parse(response.text);
+
+        for (auto &&i : json.items())
         {
-            auto future2 = cpr::GetAsync(cpr::Url{Global::System::URL, "log/get_levels_sin_permiso"}, Global::Utility::header);
+            std::vector<std::pair<size_t, size_t>> vec_payout;
+            std::vector<std::pair<size_t, size_t>> vec_cashbox;
 
-            Global::Utility::consume_and_do(future2, [this](cpr::Response response2)
+            bool tiene_datos_cashbox = false;
+
+            if (i.value().contains("levels") && i.value()["levels"].is_array())
             {
-                if (response2.status_code == 200)
+                for (auto &&j : i.value()["levels"])
                 {
-                    std::vector<std::pair<size_t, size_t>> vec_val;
-                    auto json = nlohmann::json::parse(response2.text);
-                    for (auto &&i : json.items())
-                    {
-                        for (auto &&j : i.value())
-                        {
-                            vec_val.push_back({j["value"].get<int>() / 100, 1000});
-                        }
-                        v_box_level_validadores->append(*agregar_contenedor(vec_val, i.key()));
-                        vec_val.clear();
-                    }
+                    size_t denominacion = j["value"].get<int>() / 100;
+                    size_t stored_payout = j["storedInPayout"].is_null() ? 0 : j["storedInPayout"].get<size_t>();
 
-                    for (auto const &[device_id, data_list] : m_inputs_pago)
+                    vec_payout.push_back({denominacion, stored_payout});
+
+                    if (!j["storedInCashbox"].is_null())
                     {
-                        for (auto const &item : data_list)
-                            item.spin->signal_value_changed().connect(sigc::mem_fun(*this, &PagoM::on_spin_value_changed));
+                        tiene_datos_cashbox = true;
+                        vec_cashbox.push_back({denominacion, j["storedInCashbox"].get<size_t>()});
                     }
-                } 
-            });
-        } });
+                }
+            }
+
+            v_box_level_validadores->append(*agregar_contenedor(vec_payout, i.key()));
+        }
+
+        for (auto const &[device_id, data_list] : m_inputs_pago)
+        {
+            for (auto const &item : data_list)
+                item.spin->signal_value_changed().connect(sigc::mem_fun(*this, &PagoM::on_spin_value_changed));
+        }
+    });
 }
 
 void PagoM::on_spin_value_changed()

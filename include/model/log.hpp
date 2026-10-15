@@ -15,6 +15,7 @@ public:
   Glib::ustring m_user;
   Glib::ustring m_tipo;
   Glib::ustring m_descripcion;
+  Glib::ustring m_metodo;
   Glib::ustring m_ingreso;
   Glib::ustring m_cambio;
   int m_total;
@@ -27,13 +28,14 @@ public:
                                    const Glib::ustring &user,
                                    const Glib::ustring &tipo,
                                    const Glib::ustring &descripcion,
+                                   const Glib::ustring &metodo,
                                    const Glib::ustring &ingreso,
                                    const Glib::ustring &cambio,
                                    int total,
                                    const Glib::ustring &estatus,
                                    Glib::DateTime fecha)
   {
-    return Glib::make_refptr_for_instance<MLog>(new MLog(id, user, tipo, descripcion, ingreso, cambio, total, estatus, fecha));
+    return Glib::make_refptr_for_instance<MLog>(new MLog(id, user, tipo, descripcion, metodo, ingreso, cambio, total, estatus, fecha));
   }
 
 protected:
@@ -41,6 +43,7 @@ protected:
        const Glib::ustring &user,
        const Glib::ustring &tipo,
        const Glib::ustring &descripcion,
+       const Glib::ustring &metodo,
        const Glib::ustring &ingreso,
        const Glib::ustring &cambio,
        int total,
@@ -50,6 +53,7 @@ protected:
         m_user(user),
         m_tipo(tipo),
         m_descripcion(descripcion),
+        m_metodo(metodo),
         m_ingreso(ingreso),
         m_cambio(cambio),
         m_total(total),
