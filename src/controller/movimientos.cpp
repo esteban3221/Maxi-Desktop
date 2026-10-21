@@ -37,7 +37,9 @@ void Movimientos::imprime_corte()
     auto f_ini = v_ety_ini->get_text();
     auto f_fin = v_ety_fin->get_text();
 
-    auto fecha = f_ini.empty() || f_fin.empty() ? "Todo el dia" : "Desde " + Glib::DateTime::create_from_iso8601(f_ini).format("%F") + " hasta " + Glib::DateTime::create_from_iso8601(f_fin).format("%F");
+    auto fecha = f_ini.empty() || f_fin.empty() ? "Todo el dia" : "Desde " + 
+    Glib::DateTime::create_from_iso8601(f_ini).format("%F") + 
+    " hasta " + Glib::DateTime::create_from_iso8601(f_fin).format("%F");
 
     auto v_dialog = Gtk::AlertDialog::create("Atención");
     v_dialog->set_detail("¿Desea imprimir el tipo de movimiento \"" + tipo + "\" y " + fecha + " en el corte de caja?");
@@ -229,7 +231,6 @@ void Movimientos::create_context_menu()
     // Crear el modelo del menú
     auto menu_model = Gio::Menu::create();
 
-    // Agregar items
     m_menu_item_reimprimir = Gio::MenuItem::create("Reimprimir ticket/s", "win.reimprimir");
     m_menu_item_detalles = Gio::MenuItem::create("Imprimir Corte", "win.imprime_corte");
     m_menu_item_anular = Gio::MenuItem::create("Borrar Filtros", "win.borra_filtro");
@@ -238,12 +239,10 @@ void Movimientos::create_context_menu()
     menu_model->append_item(m_menu_item_detalles);
     menu_model->append_item(m_menu_item_anular);
 
-    // Crear el popover con el modelo
     m_popover_menu = Gtk::manage(new Gtk::PopoverMenu);
     m_popover_menu->set_menu_model(menu_model);
     m_popover_menu->set_parent(*v_column_log);
 
-    // Configurar acciones de la ventana
     auto action_group = Gio::SimpleActionGroup::create();
 
     action_group->add_action("reimprimir", sigc::mem_fun(*this, &Movimientos::reimprime_tickets));
@@ -258,7 +257,13 @@ Glib::RefPtr<Gio::ListModel> Movimientos::create_model(const Glib::RefPtr<Glib::
     const auto &data = consume_data();
     auto result = Gio::ListStore<MLog>::create();
 
-    // Caso A: Estamos creando la RAÍZ (el item_padre es nulo)
+    auto capitalizar = [](std::string str) {
+        if (!str.empty()) {
+            str[0] = std::toupper(static_cast<unsigned char>(str[0]));
+        }
+        return str;
+    };
+
     if (!log) 
     {
         if (!data.contains("log")) return result;
@@ -280,12 +285,11 @@ Glib::RefPtr<Gio::ListModel> Movimientos::create_model(const Glib::RefPtr<Glib::
             );
             
             if(i.contains("detalle_movimiento") && i["detalle_movimiento"].size() > 0)
-            nuevo_log->m_detalles_json = i["detalle_movimiento"]; 
+                nuevo_log->m_detalles_json = i["detalle_movimiento"]; 
             
             result->append(nuevo_log);
         }
     }
-    // Caso B: El árbol pide los HIJOS de un MLog específico
     else 
     {
         auto padre = std::dynamic_pointer_cast<MLog>(log);
@@ -293,17 +297,41 @@ Glib::RefPtr<Gio::ListModel> Movimientos::create_model(const Glib::RefPtr<Glib::
         {
             for (auto &&det : padre->m_detalles_json)
             {
+                auto tipo_movimiento = det["tipo_movimiento"].get<std::string>();
+                auto is_tipo_efectivo = (tipo_movimiento == "entrada" || tipo_movimiento == "salida");
+                
+                std::string t_tipo;
+                std::string t_digitos;
+                std::string t_estado;
+
+                if (!is_tipo_efectivo)
+                {
+                    std::stringstream ss(tipo_movimiento);
+                    std::getline(ss, t_estado, '|');
+                    std::getline(ss, t_tipo, '|');
+                    std::getline(ss, t_digitos);
+                }
+                else
+                {
+                    t_tipo = tipo_movimiento; 
+                }
+
+                std::string tipo_final = capitalizar(t_tipo);
+
+                auto denominacion = det["denominacion"].get<int>();
+                auto cantidad = det["cantidad"].get<int>();
+
                 result->append(MLog::create
                 (
-                    0, // ID 0 para hijos
+                    0,
                     "",
-                    det["tipo_movimiento"].get<std::string>(),
+                    tipo_final,
                     "",
-                    "",
-                    (det["tipo_movimiento"].get<std::string>() == "entrada") ? "$" + std::to_string(det["denominacion"].get<int>()) + " → " + std::to_string(det["cantidad"].get<int>()) : "0",
-                    (det["tipo_movimiento"].get<std::string>() == "salida") ? "$" + std::to_string(det["denominacion"].get<int>()) + " ← " + std::to_string(det["cantidad"].get<int>()) : "0",
+                    is_tipo_efectivo ? "EFECTIVO" : t_digitos,
+                    (tipo_movimiento == "entrada") ? "$" + std::to_string(denominacion) + " → " + std::to_string(cantidad) : "0",
+                    (tipo_movimiento == "salida") ? "$" + std::to_string(denominacion) + " ← " + std::to_string(cantidad) : "0",
                     det["denominacion"].get<int>() * det["cantidad"].get<int>(),
-                    "",
+                    is_tipo_efectivo ? "" : t_estado,
                     Glib::DateTime::create_from_iso8601(det["creado_en"].get<std::string>())
                 ));
             }

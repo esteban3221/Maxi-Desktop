@@ -12,7 +12,7 @@ VTerminal::~VTerminal()
 {
 }
 
-VTerminal::VFormTerminal::VFormTerminal(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuilder) : m_builder(refBuilder), Gtk::Box(cobject)
+VTerminal::VFormTerminal::VFormTerminal(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuilder) : m_builder(refBuilder), Gtk::Frame(cobject)
 {
   v_btn_close_rvl = m_builder->get_widget<Gtk::Button>("btn_close_rvl");
   v_ety_token = m_builder->get_widget<Gtk::Entry>("ety_token");
@@ -339,160 +339,166 @@ namespace View
 </interface>
     )";
 
-    const char *form_terminal_ui = R"(<?xml version="1.0" encoding="UTF-8"?>
+    const char *form_terminal_ui = R"(
+    <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk" version="4.0"/>
-  <object class="GtkBox" id="box_form">
-    <property name="margin-bottom">5</property>
-    <property name="margin-top">5</property>
-    <property name="margin-start">5</property>
-    <property name="margin-end">5</property>
-    <property name="orientation">1</property>
-    <property name="spacing">10</property>
+  <object class="GtkFrame" id="box_form">
     <child>
       <object class="GtkBox">
-        <property name="orientation">0</property>
-        <property name="homogeneous">false</property>
-        <child>
-          <object class="GtkButton" id="btn_close_rvl">
-            <property name="halign">1</property>
-            <property name="valign">3</property>
-            <property name="icon-name">close</property>
-            <style>
-              <class name="circular"/>
-              <class name="destructive-action"/>
-            </style>
-          </object>
-        </child>
-        <child>
-          <object class="GtkLabel" id="lbl_titulo_rvl">
-            <property name="hexpand">true</property>
-            <property name="halign">3</property>
-            <property name="valign">3</property>
-            <property name="label" translatable="yes">Agregar Nueva Terminal</property>
-            <style>
-              <class name="title-2"/>
-            </style>
-          </object>
-        </child>
-      </object>
-    </child>
-    <child>
-      <object class="GtkBox">
-        <property name="hexpand">true</property>
-        <child>
-          <object class="GtkLabel">
-            <property name="halign">1</property>
-            <property name="label" translatable="yes">&lt;b&gt;Primera vez configurando una terminal Point?&lt;/b&gt;
-Crea una aplicación en Mercado Pago y genera tu Access Token.</property>
-            <property name="use-markup">true</property>
-            <property name="height-request">100</property>
-            <property name="wrap">true</property>
-            <style>
-              <class name="title-5"/>
-            </style>
-          </object>
-        </child>
-        <child>
-          <object class="GtkLinkButton">
-            <property name="hexpand">true</property>
-            <property name="halign">2</property>
-            <property name="label" translatable="yes">Crear aplicación</property>
-            <property name="uri">https://www.mercadopago.com.mx/developers/es/docs/mp-point/create-application</property>
-          </object>
-        </child>
-      </object>
-    </child>
-    <child>
-      <object class="GtkBox">
-        <property name="spacing">5</property>
-        <child>
-          <object class="GtkEntry" id="ety_token">
-            <property name="hexpand">true</property>
-            <property name="placeholder-text" translatable="yes">Access Token</property>
-            <property name="truncate-multiline">true</property>
-            <property name="tooltip-text" translatable="yes">Ingrese el Access Token generada en su aplicación</property>
-          </object>
-        </child>
-        <child>
-          <object class="GtkButton" id="btn_verifica_token">
-            <property name="label" translatable="yes">Consultar</property>
-            <style>
-              <class name="suggested-action"/>
-            </style>
-          </object>
-        </child>
-      </object>
-    </child>
-    <child>
-      <object class="GtkBox">
+        <property name="margin-bottom">5</property>
+        <property name="margin-top">5</property>
+        <property name="margin-start">5</property>
+        <property name="margin-end">5</property>
         <property name="orientation">1</property>
         <property name="spacing">10</property>
         <child>
-          <object class="GtkScrolledWindow">
-            <property name="hexpand">true</property>
-            <property name="vexpand">true</property>
+          <object class="GtkBox">
+            <property name="orientation">0</property>
+            <property name="homogeneous">false</property>
             <child>
-              <object class="GtkListBox" id="list_terminales">
+              <object class="GtkButton" id="btn_close_rvl">
+                <property name="halign">1</property>
+                <property name="valign">3</property>
+                <property name="icon-name">close</property>
                 <style>
-                  <class name="boxed-list"/>
-                  <class name="rich-list"/>
+                  <class name="circular"/>
+                  <class name="destructive-action"/>
+                </style>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel" id="lbl_titulo_rvl">
+                <property name="hexpand">true</property>
+                <property name="halign">3</property>
+                <property name="valign">3</property>
+                <property name="label" translatable="yes">Agregar Nueva Terminal</property>
+                <style>
+                  <class name="title-2"/>
                 </style>
               </object>
             </child>
           </object>
         </child>
         <child>
-          <object class="GtkLabel" id="lbl_total_terminales">
-            <property name="halign">1</property>
-            <property name="label" translatable="yes">Total Terminales Encontradas: 0</property>
-            <style>
-              <class name="dim-label"/>
-            </style>
-          </object>
-        </child>
-        <child>
-          <object class="GtkDropDown" id="drop_tipo">
-            <property name="margin-top">10</property>
-            <property name="model">
-              <object class="GtkStringList">
-                <items>
-                  <item>Point Smart 2</item>
-                  <item>Point Smart</item>
-                  <item>Point Air</item>
-                  <item>Point Mini</item>
-                </items>
-              </object>
-            </property>
-          </object>
-        </child>
-        <child>
-          <object class="GtkEntry" id="ety_alias">
-            <property name="placeholder-text" translatable="yes">Alias (Opcional)</property>
-          </object>
-        </child>
-        <child>
-          <object class="GtkEntry" id="ety_descripcion">
-            <property name="placeholder-text" translatable="yes">Descripcion (Opcional)</property>
-          </object>
-        </child>
-        <child>
-          <object class="GtkButton" id="btn_agregar">
-            <property name="margin-top">10</property>
-            <property name="halign">0</property>
+          <object class="GtkBox">
             <property name="hexpand">true</property>
-            <property name="label" translatable="yes">Añadir terminal seleccionada</property>
-            <property name="sensitive">false</property>
-            <style>
-              <class name="pill"/>
-              <class name="suggested-action"/>
-            </style>
+            <child>
+              <object class="GtkLabel">
+                <property name="halign">1</property>
+                <property name="label" translatable="yes">&lt;b&gt;Primera vez configurando una terminal Point?&lt;/b&gt;
+Crea una aplicación en Mercado Pago y genera tu Access Token.</property>
+                <property name="use-markup">true</property>
+                <property name="height-request">100</property>
+                <property name="wrap">true</property>
+                <style>
+                  <class name="title-5"/>
+                </style>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLinkButton">
+                <property name="hexpand">true</property>
+                <property name="halign">2</property>
+                <property name="label" translatable="yes">Crear aplicación</property>
+                <property name="uri">https://www.mercadopago.com.mx/developers/es/docs/mp-point/create-application</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="spacing">5</property>
+            <child>
+              <object class="GtkEntry" id="ety_token">
+                <property name="hexpand">true</property>
+                <property name="placeholder-text" translatable="yes">Access Token</property>
+                <property name="truncate-multiline">true</property>
+                <property name="tooltip-text" translatable="yes">Ingrese el Access Token generada en su aplicación</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="btn_verifica_token">
+                <property name="label" translatable="yes">Consultar</property>
+                <style>
+                  <class name="suggested-action"/>
+                </style>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="orientation">1</property>
+            <property name="spacing">10</property>
+            <child>
+              <object class="GtkScrolledWindow">
+                <property name="hexpand">true</property>
+                <property name="vexpand">true</property>
+                <child>
+                  <object class="GtkListBox" id="list_terminales">
+                    <style>
+                      <class name="boxed-list"/>
+                      <class name="rich-list"/>
+                    </style>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel" id="lbl_total_terminales">
+                <property name="halign">1</property>
+                <property name="label" translatable="yes">Total Terminales Encontradas: 0</property>
+                <style>
+                  <class name="dim-label"/>
+                </style>
+              </object>
+            </child>
+            <child>
+              <object class="GtkDropDown" id="drop_tipo">
+                <property name="margin-top">10</property>
+                <property name="model">
+                  <object class="GtkStringList">
+                    <items>
+                      <item>Point Smart 2</item>
+                      <item>Point Smart</item>
+                      <item>Point Air</item>
+                      <item>Point Mini</item>
+                    </items>
+                  </object>
+                </property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkEntry" id="ety_alias">
+                <property name="placeholder-text" translatable="yes">Alias (Opcional)</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkEntry" id="ety_descripcion">
+                <property name="placeholder-text" translatable="yes">Descripcion (Opcional)</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="btn_agregar">
+                <property name="margin-top">10</property>
+                <property name="halign">0</property>
+                <property name="hexpand">true</property>
+                <property name="label" translatable="yes">Añadir terminal seleccionada</property>
+                <property name="sensitive">false</property>
+                <style>
+                  <class name="pill"/>
+                  <class name="suggested-action"/>
+                </style>
+              </object>
+            </child>
           </object>
         </child>
       </object>
     </child>
   </object>
-</interface>)";
+</interface>
+    )";
 
     const char *terminal_ui = R"(<?xml version="1.0" encoding="UTF-8"?>
 <interface>

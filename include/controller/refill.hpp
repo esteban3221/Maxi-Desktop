@@ -3,6 +3,8 @@
 #include "controller/configuracion/impresora.hpp"
 #include "ws_client.hpp"
 
+#include <utility>
+
 class Refill : public VRefill
 {
 private:
@@ -18,6 +20,11 @@ private:
 
     std::string faltante_to_string(const Glib::RefPtr<Gio::ListStore<MLevelCash>> &level);
     Glib::RefPtr<Gtk::ColumnViewColumn> column_cassette;
+
+    std::pair<Glib::RefPtr<Gtk::ColumnViewColumn> , Glib::RefPtr<Gtk::ColumnViewColumn>> column_in_min;
+    std::pair<Glib::RefPtr<Gtk::ColumnViewColumn> , Glib::RefPtr<Gtk::ColumnViewColumn>> column_in;
+    std::pair<Glib::RefPtr<Gtk::ColumnViewColumn> , Glib::RefPtr<Gtk::ColumnViewColumn>> column_in_max;
+    std::pair<Glib::RefPtr<Gtk::ColumnViewColumn> , Glib::RefPtr<Gtk::ColumnViewColumn>> column_save_in;
 
     void poll_alerta_niveles();
     void alerta_niveles(const nlohmann::json &json);

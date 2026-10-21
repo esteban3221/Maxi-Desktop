@@ -13,7 +13,7 @@ class VTerminal : public Gtk::Box
     Gtk::Revealer *v_rvl{nullptr};
 
     //Formulario de agregar terminal
-    class VFormTerminal : public Gtk::Box
+    class VFormTerminal : public Gtk::Frame
     {
     private:
         Glib::RefPtr<Gtk::Builder> m_builder;

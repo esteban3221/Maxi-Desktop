@@ -140,31 +140,30 @@ void VMovimientos::on_bind_tipo(const Glib::RefPtr<Gtk::ListItem> &list_item)
     if (!label || !col)
         return;
 
-    // Determinar texto a mostrar
-    std::string texto;
-    if (col->m_id == 0) { // Es un detalle
-        texto = col->m_tipo == "entrada" ? "Entrada" : "Salida";
-        label->set_halign(Gtk::Align::END);
-    } else {
-        texto = col->m_tipo;
-        label->set_halign(Gtk::Align::START);
-    }
-
-    // Configuración del label
-    label->set_text(texto);
+    std::string texto = col->m_tipo;
     
+    if (col->m_id == 0) 
+        label->set_halign(Gtk::Align::CENTER);
+    else 
+        label->set_halign(Gtk::Align::START);
+
+    label->set_text(texto);
     label->set_justify(Gtk::Justification::CENTER);
     
-    // Color según el tipo
     std::string color_class;
-    if (col->m_id == 0) {
-        // Para detalles
+    if (col->m_id == 0) 
+    {
         if (texto == "Entrada")
             color_class = "tipo-entrada-detalle";
-        else
+        else if (texto == "Salida")
             color_class = "tipo-salida-detalle";
-    } else {
-        // Para movimientos principales
+        else
+            color_class = "tipo-otro";
+
+        label->set_css_classes({"tipo-pill", color_class, "dim-label"});
+    } 
+    else 
+    {
         if (texto == "Ingreso" || texto == "Venta")
             color_class = "tipo-venta-ingreso";
         else if (texto == "Pago" || texto == "Pago Manual")
@@ -173,9 +172,11 @@ void VMovimientos::on_bind_tipo(const Glib::RefPtr<Gtk::ListItem> &list_item)
             color_class = "tipo-refill";
         else
             color_class = "tipo-otro";
+        
+            label->set_css_classes({"tipo-pill", color_class});
     }
     
-    label->set_css_classes({"tipo-pill", color_class});
+   
 }
 
 void VMovimientos::on_bind_concepto(const Glib::RefPtr<Gtk::ListItem> &list_item)
@@ -193,6 +194,9 @@ void VMovimientos::on_bind_metodo(const Glib::RefPtr<Gtk::ListItem> &list_item)
   auto col = std::dynamic_pointer_cast<MLog>(row->get_item());
   auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
 
+  if (col->m_id == 0) 
+    label->set_css_classes({"dim-label"});
+
   label->set_text(col->m_metodo);
 }
 
@@ -208,7 +212,10 @@ void VMovimientos::on_bind_ingreso(const Glib::RefPtr<Gtk::ListItem> &list_item)
     return;
   }
   else if (col->m_id == 0) // Es un detalle
+  {
     label->set_text(Glib::ustring::format(col->m_ingreso));
+    label->set_css_classes({"dim-label"});
+  }
   else
     label->set_text("$" + Glib::ustring::format(col->m_ingreso));
 }
@@ -225,7 +232,10 @@ void VMovimientos::on_bind_cambio(const Glib::RefPtr<Gtk::ListItem> &list_item)
     return;
   }
   else if (col->m_id == 0) // Es un detalle
+  {
     label->set_text(Glib::ustring::format(col->m_cambio));
+    label->set_css_classes({"dim-label"});
+  }
   else
     label->set_text("$" + Glib::ustring::format(col->m_cambio));
 }
@@ -236,6 +246,9 @@ void VMovimientos::on_bind_total(const Glib::RefPtr<Gtk::ListItem> &list_item)
   auto col = std::dynamic_pointer_cast<MLog>(row->get_item());
   auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
 
+  if (col->m_id == 0) 
+    label->set_css_classes({"dim-label"});
+
   label->set_text("$" + Glib::ustring::format(col->m_total));
 }
 
@@ -244,6 +257,9 @@ void VMovimientos::on_bind_estatus(const Glib::RefPtr<Gtk::ListItem> &list_item)
   auto row = std::dynamic_pointer_cast<Gtk::TreeListRow>(list_item->get_item());
   auto col = std::dynamic_pointer_cast<MLog>(row->get_item());
   auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
+
+  if (col->m_id == 0) 
+    label->set_css_classes({"dim-label"});
 
   label->set_markup(col->m_estatus);
 }
@@ -254,6 +270,8 @@ void VMovimientos::on_bind_fecha(const Glib::RefPtr<Gtk::ListItem> &list_item)
   auto col = std::dynamic_pointer_cast<MLog>(row->get_item());
   auto label = dynamic_cast<Gtk::Label *>(list_item->get_child());
 
+  if (col->m_id == 0) 
+    label->set_css_classes({"dim-label"});
   label->set_text(col->m_fecha.format("%A, %d de %B de %Y - Hora: %H:%M"));
 }
 

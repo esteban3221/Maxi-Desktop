@@ -123,8 +123,7 @@ void VRefill::on_bind_btn(const Glib::RefPtr<Gtk::ListItem> &list_item)
   auto button = dynamic_cast<Gtk::Button *>(list_item->get_child());
 
   button->signal_clicked().connect([this, col]()
-                                   {
-
+  {
       auto json = nlohmann::json
       {
           {"denominacion", col->m_denominacion},
@@ -132,17 +131,17 @@ void VRefill::on_bind_btn(const Glib::RefPtr<Gtk::ListItem> &list_item)
           {"nivel_inmo_min", col->m_nivel_inmo_min},
           {"nivel_inmo_max", col->m_nivel_inmo_max}
       };
-      cpr::Body body = json.dump();
 
-      auto future = cpr::PostAsync(cpr::Url{Global::System::URL + "validadores/update_imovilidad"}, Global::Utility::header, body);
+      auto future = cpr::PostAsync(cpr::Url{Global::System::URL + "validadores/update_imovilidad"}, Global::Utility::header, cpr::Body(json.dump()));
 
-        Global::Utility::consume_and_do(future,[this](cpr::Response response)
-        {
-            if (response.status_code == 200) 
-                Global::Widget::reveal_toast("Exito");
-            else
-                g_critical("Error: %d", response.status_code);
-        }); });
+      Global::Utility::consume_and_do(future,[this](cpr::Response response)
+      {
+          if (response.status_code == 200) 
+              Global::Widget::reveal_toast("Exito");
+          else
+              g_critical("Error: %d", response.status_code);
+      }); 
+  });
 }
 
 VRefill::~VRefill()
@@ -191,7 +190,6 @@ namespace View
                     <property name="vexpand">true</property>
                     <child>
                       <object class="GtkColumnView" id="treeRecicladorMonedas">
-                        <property name="enable-rubberband">true</property>
                         <property name="hadjustment">
                           <object class="GtkAdjustment"></object>
                         </property>
@@ -259,7 +257,6 @@ namespace View
                     <property name="spacing">10</property>
                     <child>
                       <object class="GtkColumnView" id="treeRecicladorBilletes">
-                        <property name="enable-rubberband">true</property>
                         <property name="hadjustment">
                           <object class="GtkAdjustment"></object>
                         </property>

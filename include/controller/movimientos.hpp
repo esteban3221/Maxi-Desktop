@@ -1,4 +1,6 @@
 #pragma once
+#include <sstream>
+#include <string>
 
 #include "view/movimientos.hpp"
 #include "model/log.hpp"

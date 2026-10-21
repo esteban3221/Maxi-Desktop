@@ -74,9 +74,6 @@ void Refill::on_show_map()
     v_btn_incia->set_visible();
     v_btn_incia->set_sensitive();
 
-    actualiza_data(v_tree_reciclador_billetes->get_model(), nullptr);
-    actualiza_data(v_tree_reciclador_monedas->get_model(), nullptr);
-
     auto future = cpr::GetAsync(cpr::Url{Global::System::URL, "log/get_levels"}, Global::Utility::header);
     Global::Utility::consume_and_do(future, [this](cpr::Response response)
     {
@@ -90,6 +87,12 @@ void Refill::on_show_map()
             long long total_mon_cass  = 0;
             long long total_mon_recy  = 0;
 
+            auto set_visible_pair = [](auto& par, bool visible) 
+            {
+                par.first->set_visible(visible);
+                par.second->set_visible(visible);
+            };
+
             for (auto it = json.begin(); it != json.end(); ++it)
             {
                 auto device_data = it.value();
@@ -98,8 +101,14 @@ void Refill::on_show_map()
 
                 for (auto& item : levels)
                 {
+                    auto tiene_fianza = item.contains("Inmovilidad_Min") && not item["Inmovilidad_Min"].is_null();
                     auto cashbox_is_null = item["storedInCashbox"].is_null();
                     column_cassette->set_visible(not cashbox_is_null );
+
+                    set_visible_pair(column_in, tiene_fianza);
+                    set_visible_pair(column_in_min, tiene_fianza);
+                    set_visible_pair(column_in_max, tiene_fianza);
+                    set_visible_pair(column_save_in, tiene_fianza);
 
                     long long val = item["value"].get<long long>();
                                         
@@ -140,12 +149,25 @@ void Refill::on_show_map()
         else
         {
             Global::Widget::reveal_toast("No tiene permisos para consultar los niveles.", Gtk::MessageType::ERROR, 3000);
+            actualiza_data(v_tree_reciclador_billetes->get_model(), nullptr);
+            actualiza_data(v_tree_reciclador_monedas->get_model(), nullptr);
         }
     });
 }
 
 void Refill::init_data(Gtk::ColumnView *vcolumn, const Glib::RefPtr<Gio::ListStore<MLevelCash>> &level)
 {
+    auto asignar_columna = [&](auto& par_columnas, auto column) 
+    {
+        if (vcolumn == v_tree_reciclador_billetes) 
+            par_columnas.first = column;
+        else 
+            par_columnas.second = column;
+
+        column->set_expand(true);
+        vcolumn->append_column(column);
+    };
+
     auto selection_model = Gtk::SingleSelection::create(level);
 
     safe_clear_column_view(vcolumn);
@@ -184,8 +206,7 @@ void Refill::init_data(Gtk::ColumnView *vcolumn, const Glib::RefPtr<Gio::ListSto
         factory->signal_setup().connect(sigc::mem_fun(*this, &Refill::on_setup_spin));
         factory->signal_bind().connect(sigc::mem_fun(*this, &Refill::on_bind_inmo_min));
         auto column = Gtk::ColumnViewColumn::create("Inmovilidad Minima", factory);
-        column->set_expand(true);
-        vcolumn->append_column(column);
+        asignar_columna(column_in_min, column);
     }
 
     {
@@ -193,8 +214,7 @@ void Refill::init_data(Gtk::ColumnView *vcolumn, const Glib::RefPtr<Gio::ListSto
         factory->signal_setup().connect(sigc::mem_fun(*this, &Refill::on_setup_spin));
         factory->signal_bind().connect(sigc::mem_fun(*this, &Refill::on_bind_inmo));
         auto column = Gtk::ColumnViewColumn::create("Inmovilidad", factory);
-        column->set_expand(true);
-        vcolumn->append_column(column);
+        asignar_columna(column_in, column);
     }
 
     {
@@ -202,8 +222,7 @@ void Refill::init_data(Gtk::ColumnView *vcolumn, const Glib::RefPtr<Gio::ListSto
         factory->signal_setup().connect(sigc::mem_fun(*this, &Refill::on_setup_spin));
         factory->signal_bind().connect(sigc::mem_fun(*this, &Refill::on_bind_inmo_max));
         auto column = Gtk::ColumnViewColumn::create("Inmovilidad Maxima", factory);
-        column->set_expand(true);
-        vcolumn->append_column(column);
+        asignar_columna(column_in_max, column);
     }
 
     {
@@ -211,7 +230,7 @@ void Refill::init_data(Gtk::ColumnView *vcolumn, const Glib::RefPtr<Gio::ListSto
         factory->signal_setup().connect(sigc::mem_fun(*this, &Refill::on_setup_button));
         factory->signal_bind().connect(sigc::mem_fun(*this, &Refill::on_bind_btn));
         auto column = Gtk::ColumnViewColumn::create("Guardar", factory);
-        vcolumn->append_column(column);
+        asignar_columna(column_save_in, column);
     }
 
     {
