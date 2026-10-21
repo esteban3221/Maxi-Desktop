@@ -148,7 +148,7 @@ void Refill::on_show_map()
         } 
         else
         {
-            Global::Widget::reveal_toast("No tiene permisos para consultar los niveles.", Gtk::MessageType::ERROR, 3000);
+            Global::Widget::reveal_toast("No tiene permisos para consultar los niveles.", Gtk::MessageType(3), 3000);
             actualiza_data(v_tree_reciclador_billetes->get_model(), nullptr);
             actualiza_data(v_tree_reciclador_monedas->get_model(), nullptr);
         }

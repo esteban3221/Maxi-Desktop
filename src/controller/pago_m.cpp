@@ -27,7 +27,7 @@ void PagoM::on_show_map()
     {
         if (response.status_code != 200)
         {
-            Global::Widget::reveal_toast("No tiene permisos para consultar los niveles.", Gtk::MessageType::ERROR, 3000);
+            Global::Widget::reveal_toast("No tiene permisos para consultar los niveles.", Gtk::MessageType(3), 3000);
             return;
         }
 

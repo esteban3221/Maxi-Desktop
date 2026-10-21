@@ -18,9 +18,9 @@ Glib::RefPtr<Gio::ListStore<MLevelCash>> LevelCash::get_level_cash(const nlohman
             i["value"].get<int>() / 100,
             i["storedInCashbox"].is_null() ? 0 : i["storedInCashbox"].get<int>(),
             i["storedInPayout"].is_null() ? 0 : i["storedInPayout"].get<int>(),
-            i.contains("Inmovilidad_Min") && not i["Inmovilidad_Min"].is_null() ? i["Inmovilidad_Min"].get<u_int16_t>() : -1,
-            i.contains("Inmovilidad") && not i["Inmovilidad"].is_null() ? i["Inmovilidad"].get<u_int16_t>() : -1,
-            i.contains("Inmovilidad_Max") && not i["Inmovilidad_Max"].is_null() ? i["Inmovilidad"].get<u_int16_t>() : -1,
+            i.contains("Inmovilidad_Min") && not i["Inmovilidad_Min"].is_null() ? i["Inmovilidad_Min"].get<uint32_t>() : -1,
+            i.contains("Inmovilidad") && not i["Inmovilidad"].is_null() ? i["Inmovilidad"].get<uint32_t>() : -1,
+            i.contains("Inmovilidad_Max") && not i["Inmovilidad_Max"].is_null() ? i["Inmovilidad_Max"].get<uint32_t>() : -1,
             i.contains("Ingreso") ? i["Ingreso"].get<int>() : 0
         ));
     }
