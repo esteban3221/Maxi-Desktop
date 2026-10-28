@@ -34,11 +34,7 @@ MainWindow::MainWindow(const Glib::RefPtr<Gtk::Application>& app)
     Global::Widget::v_button_conatiner->signal_clicked().connect(sigc::mem_fun(*this, &MainWindow::on_button_clicked));
     signal_close_request().connect(sigc::mem_fun(*this, &MainWindow::on_signal_close_request), false);
 
-    #ifdef _WIN32
     Global::Widget::v_revealer->set_transition_type(Gtk::RevealerTransitionType::FADE_SLIDE_DOWN);
-    #else
-    Global::Widget::v_revealer->set_transition_type(Gtk::RevealerTransitionType::SWING_DOWN);
-    #endif
     Global::Widget::v_revealer->set_child(*Global::Widget::v_button_conatiner);
 
     auto builder = Gtk::Builder::create_from_string(View::titlebar_ui);
