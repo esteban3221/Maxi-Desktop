@@ -1,5 +1,6 @@
 #pragma once
 #include "view/configuracion/usuarios.hpp"
+#include "db/coneccion.hpp"
 
 class CUsuarios : public VUsuarios
 {

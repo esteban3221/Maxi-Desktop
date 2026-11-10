@@ -21,6 +21,7 @@ protected:
 private:
     Glib::RefPtr<Gtk::Builder> m_builder;
     void on_menu_item_clicked(Gtk::ListBoxRow *row);
+    void on_show_map();
 public:
     VMenu(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuilder);
     ~VMenu();

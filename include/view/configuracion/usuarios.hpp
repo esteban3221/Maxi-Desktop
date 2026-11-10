@@ -41,6 +41,9 @@ protected:
     Gtk::CheckButton* v_chk_configuracion      {nullptr};
     Gtk::CheckButton* v_chk_salir_windows      {nullptr};
     Gtk::CheckButton* v_chk_apagar_equipo      {nullptr};
+    Gtk::CheckButton* v_check_vista_inicialo   {nullptr};
+
+    Gtk::DropDown* v_drop_vista_inicial        {nullptr};
 
     std::vector<Gtk::CheckButton*> v_chk_roles;
 

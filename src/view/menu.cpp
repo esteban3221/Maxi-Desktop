@@ -40,13 +40,7 @@ VMenu::VMenu(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &refBuild
 
 	v_stack_menu->add(*Gtk::manage(new VConfiguracion()), "8");
 
-	signal_map().connect([this]()
-  { 
-    v_stack_menu->set_visible_child("0"); 
-    v_lbl_user->set_text("Bienvenido " + Global::User::Current);
-    v_list_box_menu->set_sensitive();
-    v_list_box_menu->unselect_all();
-  });
+	signal_map().connect(sigc::mem_fun(*this, &VMenu::on_show_map));
 }
 
 VMenu::~VMenu()
@@ -57,6 +51,48 @@ void VMenu::on_menu_item_clicked(Gtk::ListBoxRow *row)
 {
 	v_stack_menu->set_visible_child(std::to_string(row->get_index()+1));
   v_list_box_menu->set_sensitive(false);
+}
+
+void VMenu::on_show_map()
+{
+  v_lbl_user->set_text("Bienvenido " + Global::User::Current);
+    v_list_box_menu->unselect_all();
+
+    std::string vista_destino = "0";
+
+    auto result = Database::getInstance().sqlite3->command(
+        "SELECT activo, vista FROM inicio_default WHERE id_usuario = ?", Global::User::id
+    );
+
+    if (result->contains("activo") && result->at("activo")[0] == "1")
+    {
+      std::string vista_db = result->at("vista")[0];
+
+      if (vista_db == "Venta")
+        vista_destino = "1";
+      else if (vista_db == "Ingreso")
+        vista_destino = "2";
+      else if (vista_db == "Pago Manual")
+        vista_destino = "4";
+      else if (vista_db == "Refill/Consulta Niveles")
+        vista_destino = "6";
+    }
+
+    v_stack_menu->set_visible_child(vista_destino);
+
+    if (vista_destino == "0")
+    {
+      v_list_box_menu->set_sensitive(true);
+    }
+    else
+    {
+      // Selecciona visualmente la fila en el menú lateral y aplica la misma sensibilidad que on_menu_item_clicked
+      int row_index = std::stoi(vista_destino) - 1;
+      if (auto row = v_list_box_menu->get_row_at_index(row_index))
+        v_list_box_menu->select_row(*row);
+
+      v_list_box_menu->set_sensitive(false);
+    }
 }
 
 namespace View

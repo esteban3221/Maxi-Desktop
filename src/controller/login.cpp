@@ -26,6 +26,7 @@ void Login::on_btn_login_clicked()
 
             Global::User::Current = j["usuario"].get<std::string>();
             Global::System::token = j["token"].get<std::string>();
+            Global::User::id = j["id"].get<int>(); 
             
             Global::Utility::header = cpr::Header{{"Authorization", "Bearer " + Global::System::token}};
             Global::Widget::v_main_title->set_text(Global::User::Current);

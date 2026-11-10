@@ -46,6 +46,11 @@ private:
                                    "(11,'Visualiza Contacto','1')");
             
         }
+        this->sqlite3->command("CREATE TABLE IF NOT EXISTS inicio_default (\n"
+                               "id_usuario INTEGER PRIMARY KEY,\n"
+                               "activo INTEGER NOT NULL DEFAULT 0,\n"
+                               "vista TEXT NOT NULL DEFAULT 'Venta'\n"
+                               ")");
     }
 
 public:

@@ -63,7 +63,7 @@ void CUsuarios::on_show_map()
             auto model = v_treeview->get_model();
             actualiza_data(model, Gio::ListStore<MUsuarios>::create());
             
-            Global::Widget::reveal_toast("No tiene permisos para acceder a esta seccion", (Gtk::MessageType)3);
+            Global::Widget::reveal_toast("No se pudieron cargar los usuarios", (Gtk::MessageType)3);
         }
         
     });
@@ -78,6 +78,33 @@ void CUsuarios::on_row_activated(guint id)
     {
         "{ \"id_usuario\" : " + std::to_string(m_list->m_id) + "}"
     });
+
+    auto result = Database::getInstance().sqlite3->command("SELECT activo, vista FROM inicio_default WHERE id_usuario = ?", m_list->m_id);
+    if (result->contains("activo"))
+    {
+        bool activo = (result->at("activo")[0] == "1");
+        std::string vista_guardada = result->at("vista")[0];
+
+        v_check_vista_inicialo->set_active(activo);
+        auto string_list = std::dynamic_pointer_cast<Gtk::StringList>(v_drop_vista_inicial->get_model());
+
+        if (string_list)
+        {
+            for (guint i = 0; i < string_list->get_n_items(); ++i)
+            {
+                if (string_list->get_string(i) == vista_guardada)
+                {
+                    v_drop_vista_inicial->set_selected(i);
+                    break;
+                }
+            }
+        }
+    }
+    else
+    {
+        v_check_vista_inicialo->set_active(false);
+        v_drop_vista_inicial->set_sensitive(1);
+    }
 
     Global::Utility::consume_and_do(future, [this](const cpr::Response &response)
     {
@@ -284,7 +311,14 @@ void CUsuarios::on_btn_guardar_roles_clicked()
 
     auto single_selection = std::dynamic_pointer_cast<Gtk::SingleSelection>(v_treeview->get_model());
     auto m_list = single_selection->get_typed_object<const MUsuarios>(row);
+    auto item = std::dynamic_pointer_cast<Gtk::StringObject>(v_drop_vista_inicial->get_selected_item());
+    std::string vista_seleccionada = item ? std::string(item->get_string()) : "Venta";
 
+    Database::getInstance().sqlite3->command("INSERT OR REPLACE INTO inicio_default (id_usuario, activo, vista) VALUES (?, ?, ?);", 
+        m_list->m_id,
+    v_check_vista_inicialo->get_active(),
+    vista_seleccionada.c_str()
+);
     auto json = nlohmann::json
     {
         {"id_usuario", m_list->m_id},

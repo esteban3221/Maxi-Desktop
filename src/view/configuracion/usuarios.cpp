@@ -31,6 +31,8 @@ VUsuarios::VUsuarios(BaseObjectType *cobject, const Glib::RefPtr<Gtk::Builder> &
     v_chk_configuracion      = m_builder->get_widget<Gtk::CheckButton>("check_configuracion");
     v_chk_salir_windows      = m_builder->get_widget<Gtk::CheckButton>("check_salir_windows");
     v_chk_apagar_equipo      = m_builder->get_widget<Gtk::CheckButton>("check_apagar_equipo");
+    v_check_vista_inicialo   = m_builder->get_widget<Gtk::CheckButton>("check_vista_inicial");
+    v_drop_vista_inicial     = m_builder->get_widget<Gtk::DropDown>("drop_vista_inicial");
 
 v_chk_roles = {
     v_chk_venta, v_chk_pago, v_chk_carga, v_chk_retirada,
@@ -186,6 +188,57 @@ namespace View
                 <child>
                   <object class="GtkListBox" id="lista_permisos">
                     <property name="selection-mode">0</property>
+                    <child>
+                      <object class="GtkListBoxRow">
+                        <property name="activatable">false</property>
+                        <child>
+                          <object class="GtkBox">
+                            <property name="orientation">1</property>
+                            <property name="spacing">12</property>
+                            <property name="margin-top">12</property>
+                            <property name="margin-bottom">12</property>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="label" translatable="yes">Inicio de sesión</property>
+                                <property name="halign">1</property>
+                                <style>
+                                  <class name="heading"/>
+                                </style>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkBox">
+                                <property name="orientation">0</property>
+                                <property name="spacing">16</property>
+                                <child>
+                                  <object class="GtkCheckButton" id="check_vista_inicial">
+                                    <property name="label" translatable="yes">Predeterminar vista al iniciar:</property>
+                                    <property name="valign">3</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkDropDown" id="drop_vista_inicial">
+                                    <property name="valign">3</property>
+                                    <property name="hexpand">true</property>
+                                    <property name="sensitive" bind-source="check_vista_inicial" bind-property="active" bind-flags="sync-create"/>
+                                    <property name="model">
+                                      <object class="GtkStringList">
+                                        <items>
+                                          <item translatable="yes">Venta</item>
+                                          <item translatable="yes">Ingreso</item>
+                                          <item translatable="yes">Pago Manual</item>
+                                          <item translatable="yes">Refill/Consulta Niveles</item>
+                                        </items>
+                                      </object>
+                                    </property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
                     <child>
                       <object class="GtkListBoxRow">
                         <property name="activatable">false</property>
